@@ -1,6 +1,6 @@
 % Functions:
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % File conversion functions:
 %
 % cp_ConvertExposurepar - Cov
