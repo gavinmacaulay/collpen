@@ -2,6 +2,9 @@
 % 
 % File converion functions:
 % cp_ConvertExposurepar - Cov
+% cp_ConvertCurrent - reads and converts the CARUSO power supply current measurement files into a Matlab formatted file. 
+%                        Will merge together multiple files into one Matlab file.
+%
 %
 % Data processing functions:
 % cp_CalibrationConstant - Get the calibration constant for each frequency for the tone stimuli
