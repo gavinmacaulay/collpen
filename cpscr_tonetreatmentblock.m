@@ -139,7 +139,7 @@ for i=1:K
     %     plot(t,p)
     disp(['TX: AmpGain=',num2str(ampGain),'dB, F=',num2str(par.F1(i)),'Hz, SL=',num2str(par.RL(i)),'dB, rt=',num2str(par.rt(i)),'ms'])
     par.treat_start(i) = now;
-    %sound(p,par.Fs)
+    sound(p,par.Fs)
     par.treat_stop(i) = now;
     disp(['TX ending, wait',num2str(par.Dt-10),'s'])
  %   pause(par.Dt-10)
