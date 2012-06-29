@@ -1,4 +1,5 @@
 clear
+
 %  
 % This file rund the vesselnoise treatment. It reads the audio files,
 % scales the level and play them back 
@@ -12,6 +13,16 @@ clear
 % 2. GOS: maxSPL = ?
 % 3. JH: realSPL = ?
 % 4. JH: maxSPL = ?
+
+% Nils Olav:
+% Suck the sound and store it to matlab
+% Make a loopable signal
+% Create a 20log r envelope on the signal
+% 
+% Gavin:
+% High pass filter
+% Frequncy respone filter
+% Calibration to get "real" spl's
 
 % SL range
 par.RL_0 = [145 177 145 177];%dB
@@ -50,7 +61,14 @@ par.rt = par0.rt(Ni);
 par.dur = par0.dur(Ni);
 
 
+%% Distance function
+
+par.vesselspeed = 11*1800/3600;%m/s
+
 %% Create the signal
+
+
+
 close all
 N = par.dur/1000*par.Fs;
 N_sweep = par.dur_sweep/1000*par.Fs;
@@ -106,7 +124,7 @@ for i=1:K
 end
 
 disp('Finished. Save the par variable!!!')
-
+%% The curves from GOS and JH
 
 %GOS
 ona.GOS =[193.3948  215.2115;...
@@ -155,12 +173,18 @@ ona.XY =[145.5756  320.5577;...
   386.1099   94.6346];
 
   
-ona.XY_h =[0.0100  100.0000;...
-    0.1000  120.0000;...
-    1.0000  140.0000];
+ona.XY_h =[log10(0.0100)  100.0000;...
+    log10(0.1000)  120.0000;...
+    log10(1.0000)  140.0000];
     
-ona.GOS_h = [interp1(ona.XY(:,1),ona.XY_h(:,1),ona.GOS(:,1),'extrap','linear') ...
-    interp1(ona.XY(:,2),ona.XY_h(:,2),ona.GOS(:,2),'extrap','linear')];
+ona.GOS_h = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.GOS(:,1),'linear','extrap')) ...
+    interp1(ona.XY(:,2),ona.XY_h(:,2),ona.GOS(:,2),'linear','extrap')];
+
+	 = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.JH(:,1),'linear','extrap')) ...
+    interp1(ona.XY(:,2),ona.XY_h(:,2),ona.JH(:,2),'linear','extrap')];
+
+semilogx(ona.GOS_h(:,1),ona.GOS_h(:,2),ona.JH_h(:,1),ona.JH_h(:,2))
+
+% SPL 50Hz-1kHz
 
 
-  

@@ -1,5 +1,12 @@
-function [scaleFactor ampGain] = genSig(f, SPL, R, fixedAmpGain)
-    
+function [scaleFactor ampGain CarusoCurrent] = cp_CalibrationConstant(f, SPL, R, fixedAmpGain)
+
+% Wishlist for Gavin
+% 1 - Input should be vectorized on frequency to be able to apply it on a chirp. 
+% 2 - Outputs needs to be cosntant, that current and ampgain.
+% 3 - testrun it on the tonetreatmentblocl script.
+% 4 - Update it with the new calibration stuff
+% 5 - Optimize for maximum scalefactor ~1 in order to have a decent SNR
+
     freq = [80 150 225 300 400 600 750 900 1000 1250 1500];
     ampGainRef = -10;
     availableGains = [0:-1:-13 -15 -17 -19 -22 -29 -54 -80];
