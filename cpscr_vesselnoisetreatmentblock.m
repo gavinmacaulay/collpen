@@ -15,7 +15,7 @@ clear
 % 4. JH: maxSPL = ?
 
 % Nils Olav:
-% Suck the sound and store it to matlab
+% Suck the sound and store it to matlab - OK
 % Make a loopable signal
 % Create a 20log r envelope on the signal
 % 
@@ -24,106 +24,51 @@ clear
 % Frequncy respone filter
 % Calibration to get "real" spl's
 
-% SL range
-par.RL_0 = [145 177 145 177];%dB
-
-% Duration
-par.dur_0 = 2000;%ms Symmetric around "before after"
- 
-par.Dt = 30;% Time between treatments within block
-par.range = 1;%m Set this to one for SL's instead of RL's
-
-%% Create treatment data
-
-% Create combined treatment vectors (not randomized)
-k=1;
-for i=1:4
-    for l=1:length(par.rt_0)
-        par0.RL(k) = par.RL_0(j);
-        par0.rt(k) = par.rt_0(l);
-        par0.dur(k) = par.dur_0;
-        k=k+1;
-    end
-end
-
-im=imread('noiselevels.bmp');
-
-
-% The number of different treatments:
-K=k;
-
-% Randomize the order of the treatments
-Ni = randperm(k);
-par.F1 = par0.F1(Ni);
-par.F2 = par0.F2(Ni);
-par.RL = par0.RL(Ni);
-par.rt = par0.rt(Ni);
-par.dur = par0.dur(Ni);
-
-
-%% Distance function
-
 par.vesselspeed = 11*1800/3600;%m/s
+par.vesselstart = -3*60;%sek
+par.vesselstop =   2*60;%sek
+par.vesselstart = -1*60;%sek
+par.vesselstop =   1*60;%sek
+par.fishdepth = 30;%m This is hte upper depth of the fish layer from the Ona paper
 
-%% Create the signal
+
+%% Load noise data
+[dumGOS,ona.GOS.FS,ona.GOS.NBITS] = wavread('NewGOSPass1wSound.wav');
+[dumJH,ona.JH.FS,ona.JH.NBITS] = wavread('NewJHPass1wSound.wav');
+
+% Pick the signal at passing
+indGOS = (9.5*10^5):(1.05*10^6);
+indJH = (9.5*10^5):(1.05*10^6);
+
+% The number of chunks to build the whole signal
+Nc = ceil((par.vesselstop - par.vesselstart)/(length(indGOS)/ona.JH.FS));
+
+% Create the merged signal
+JH.y  = repmat(dumJH(indJH),[1 Nc]);
+GOS.y = repmat(dumGOS(indGOS),[1 Nc]);
+t = (1:length(JH.y))/ona.JH.FS + par.vesselstart;
 
 
+% The range to the source
+r = sqrt((t.*par.vesselspeed).^2 + par.fishdepth.^2);
 
-close all
-N = par.dur/1000*par.Fs;
-N_sweep = par.dur_sweep/1000*par.Fs;
-% Time vector
-t_tone = (1:N)/par.Fs;
-t_sweep = (1:N_sweep)/par.Fs;
+% Apply 20logr TVG (note that this is on pressure and should be /r)
+tvg = 10*log10(r);
+JH.y_tvg = JH.y./r;
+GOS.y_tvg = GOS.y./r;
 
-for i=1:K
-    if par.F1(i)==par.F2(i)     % Tone signal
-        % Raw singal
-        t = t_tone;
-        y_raw = sin(t*par.F1(i)*2*pi);
-        % Add calibration
-        [par.k(i) ampGain] = cp_CalibrationConstant(par.F1(i), par.RL(i), par.range);
-        p_raw = par.k(i).*y_raw;
-    else % The sweep signal
-        % Frequency vector
-        t = t_sweep;
-        Fsweep = (1:N_sweep)./N_sweep*(par.F2(i)-par.F1(i))+par.F1(i);
-        % Raw sweep signal
-        y_raw = sin(t.*Fsweep.*2.*pi);
-        warning('TODO: Add frequency dependent calibration!!!')
-%         [par.k(i) ampGain] = cp_CalibrationConstant(par.F(i), par.RL(i), par.range);
-%         p_raw = par.k(i).*y_raw;
-        ampGain=NaN
-        p_raw = y_raw;
-    end
-    
-    % Linear inswing envelope
-    env.t1 = [0 par.rt(i)/1000 par.rt_end/1000 t(end)];
-    env.y1 = [0 1 1 0];
-    y_env = interp1(env.t1,env.y1,t);
-    
-    % Enveloped signal
-    p = p_raw.*y_env;
-    
-    % Play back signal and display gain information on screen
+% Apply calibration etc (This is where GAvin can play)
+JH.p = JH.y_tvg;
+GOS.p = GOS.y_tvg;
 
-    disp(['Set AmpGain=',num2str(ampGain),'dB!! F=',num2str(par.F1(i)),'Hz, SL=',num2str(par.RL(i)),'dB, rt=',num2str(par.rt(i)),'ms'])
-    for j=0:9
-        disp(num2str(10-j))
-%        pause(1)
-        
-    end
-    %     close all
-    %     plot(t,p)
-    disp(['TX: AmpGain=',num2str(ampGain),'dB, F=',num2str(par.F1(i)),'Hz, SL=',num2str(par.RL(i)),'dB, rt=',num2str(par.rt(i)),'ms'])
-    par.treat_start(i) = now;
-    %sound(p,par.Fs)
-    par.treat_stop(i) = now;
-    disp(['TX ending, wait',num2str(par.Dt-10),'s'])
- %   pause(par.Dt-10)
-end
+%% Play back signal
 
-disp('Finished. Save the par variable!!!')
+warning('Using scaled sound!! Needs calibration and filtering')
+soundsc(JH.p,ona.JH.FS)
+pause(2)
+soundsc(GOS.p,ona.GOS.FS)
+
+
 %% The curves from GOS and JH
 
 %GOS
@@ -180,7 +125,7 @@ ona.XY_h =[log10(0.0100)  100.0000;...
 ona.GOS_h = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.GOS(:,1),'linear','extrap')) ...
     interp1(ona.XY(:,2),ona.XY_h(:,2),ona.GOS(:,2),'linear','extrap')];
 
-	 = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.JH(:,1),'linear','extrap')) ...
+ona.JH_h	 = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.JH(:,1),'linear','extrap')) ...
     interp1(ona.XY(:,2),ona.XY_h(:,2),ona.JH(:,2),'linear','extrap')];
 
 semilogx(ona.GOS_h(:,1),ona.GOS_h(:,2),ona.JH_h(:,1),ona.JH_h(:,2))
