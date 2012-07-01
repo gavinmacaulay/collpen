@@ -1,21 +1,4 @@
-function cp_ConvertTDMStoMat(dataDir)
-    
-% A function to convert NI TDMS files into Matlab structures
-% Designed for the NTNU hydrophone data from the Austevoll Collpen
-% experiments.
-
-% Uses the NI .dlls to do the reading (there don't seem to be any
-% open-source alternatives that can read the particular form of TDMS that
-% the Austevoll data were recorded in).
-
-d = dir(fullfile(dataDir, '*.tdms'));
-
-for i = 1:length(d)
-    readAndSaveTDMS(dataDir, d(i).name);
-end
-
-
-function readAndSaveTDMS(dataDir, filename)
+function cp_ReadAndSaveTDMSFile(dataDir, filename)
 % Much of this code comes from example code provided by NI.
 
 % Assume that the NI dll is in a particular place relative to where this
@@ -60,7 +43,7 @@ if err==0 %Only proceed if the property is found
     pfilename=libpointer('stringPtr',blanks(filenamelen));
     [err,dummyVar,filename]=calllib(libname,'DDC_GetFileProperty',file,DDC_FILE_NAME,pfilename,filenamelen+1);
     setdatatype(filename,'int8Ptr',1,filenamelen);
-    disp(['Loading: ' char(filename.Value)]);
+    disp(['Loading: ' char(Data_Path)]);
 end
 
 %Get channel groups
@@ -177,7 +160,7 @@ for i=1:numgrps % For each channel group
     end
 end
 
-channelsToExport = [1:18];
+channelsToExport = [1:23];
 
 chanvals = single(chanvals);
 channames = channames{channelsToExport};

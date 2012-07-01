@@ -20,9 +20,9 @@ clear
 % Create a 20log r envelope on the signal
 % 
 % Gavin:
-% High pass filter
-% Frequncy respone filter
-% Calibration to get "real" spl's
+% High pass filter - OK
+% Frequncy respone filter - OK
+% Calibration to get "real" spl's 
 
 par.vesselspeed = 11*1800/3600;%m/s
 par.vesselstart = -3*60;%sek
@@ -57,9 +57,31 @@ tvg = 10*log10(r);
 JH.y_tvg = JH.y./r;
 GOS.y_tvg = GOS.y./r;
 
-% Apply calibration etc (This is where GAvin can play)
+% Apply calibration etc 
 JH.p = JH.y_tvg;
 GOS.p = GOS.y_tvg;
+
+% high pass filter
+Hd = cp_highpass_filter(); % Don't forget to tweak the parameters!!!
+JH.p = filter(Hd.Numerator, 1, JH.p);
+GOS.p = filter(Hd.Numerator, 1, GOS.p);
+
+% a filter to compensate for the CARUSO response
+Hd = cp_CarusoResponseFilter;
+JH.p = filter(Hd, JH.p);
+GOS.p = filter(Hd, GOS.p);
+
+% scale signal 
+JH.p = JH.p / max(JH.p);
+GOS.p = GOS.p / max(GOS.p);
+
+% and then work out the SPL for a given sound card output level, amplifier
+% gain and range 
+range = 33; % [m]
+amp_gain = -10;
+
+% NOT DONE YET.....
+
 
 %% Play back signal
 

@@ -12,26 +12,49 @@ function [scaleFactor ampGain carusoCurrent] = cp_CalibrationConstant(f, SPL, R)
     
     % Wishlist for Gavin
     % 3 - testrun it on the tonetreatmentblocl script.
-    % 4 - Update it with the new calibration stuff
-
+  
     % Some constants related to the calibration
     calFreq = [80 150 225 300 400 600 750 900 1000 1250 1500];
-    ampGainRef = -10;
-    availableGains = [0:-1:-13 -15 -17 -19 -22 -29 -54 -80];
-    calCurrent = 4; % [A]
-    calSL = [162.2637
-        178.8809
-        177.6352
-        180.0815
-        178.7463
-        177.2745
-        176.2 %180.1863
-        175.3353
-        175.7558
-        170.0725
-        169.5239
-        ];
 
+    availableGains = [0:-1:-13 -15 -17 -19 -22 -29 -54 -80];
+    
+    calToUse = 'NTNU'; % 'NTNU' or 'PV'
+    
+
+    if strcmp(calToUse, 'NTNU')
+        ampGainRef = -10;
+        calCurrent = 4; % [A]
+        calSL = [162.2637
+            178.8809
+            177.6352
+            180.0815
+            178.7463
+            177.2745
+            176.2 %180.1863
+            175.3353
+            175.7558
+            170.0725
+            169.5239
+            ];
+    else            
+        % Another calibration - done during PVexp
+        ampGainRef = -17;
+        calCurrent = 6; % [A]
+        calSL = [     146.1367
+            167.2366
+            165.7587
+            163.2661
+            162.0586
+            166.3345
+            163.6635
+            160.9884
+            163.1487
+            161.4420
+            172.9576
+            ];
+    end
+
+    
     TL = 20*log10(R); % transmission loss for the given range
     SLf = interp1(calFreq, calSL, f); % SL at the desired frequencies, 
                                    % interpolated from the calibrated SL.
@@ -46,9 +69,12 @@ function [scaleFactor ampGain carusoCurrent] = cp_CalibrationConstant(f, SPL, R)
         
         % how much we need to change the SL by to achieve the requested SPL
         diffSPL = SPL - SPLf;
-        % the change in signal in linear units. XXX But, is the amp gain button
-        % in volts or power???? XXXXXXXXXXXX
-        scaleFactor(j) = 10.^(diffSPL/10);
+        % the change in signal in linear units. XXX But, is the amp gain
+        % dial in volts or power???? XXXXXXXXXXXX
+        
+        % Use 20 if amp gain is for volts. This gives us a scale factor for
+        % pressure, and hence volts.
+        scaleFactor(j) = 10.^(diffSPL/20); 
         
         % We now have a scaleFactor at the calibrated amp gain. We want to
         % maximise the scaleFactor (but keep it <= 1) so now look at adjusting
