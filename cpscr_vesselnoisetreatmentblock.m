@@ -71,7 +71,7 @@ Hd = cp_CarusoResponseFilter;
 JH.p = filter(Hd, JH.p);
 GOS.p = filter(Hd, GOS.p);
 
-% scale signal 
+% scale signal
 JH.p = JH.p / max(JH.p);
 GOS.p = GOS.p / max(GOS.p);
 
@@ -101,11 +101,11 @@ calSL = [162.2637
 
 
 % visualise the signals
-clf
-subplot(2,1,1)
-spectrogram(JH.y, 256, 64, [0:100:5000], 48000) 
-subplot(2,1,2)
-spectrogram(JH.p, 256, 64, [0:100:5000], 48000) 
+% clf
+% subplot(2,1,1)
+% spectrogram(JH.y, 256, 64, [0:100:5000], 48000) 
+% subplot(2,1,2)
+% spectrogram(JH.p, 256, 64, [0:100:5000], 48000) 
 
 %% Play back signal
 

@@ -104,7 +104,7 @@ for i=1:K
         t = t_tone;
         y_raw = sin(t*par.F1(i)*2*pi);
         % Add calibration
-        [par.k(i) ampGain] = cp_CalibrationConstant(par.F1(i), par.RL(i), par.range);
+        [par.k(i) ampGain carusoCurrent] = cp_CalibrationConstant(par.F1(i), par.RL(i), par.range);
         p_raw = par.k(i).*y_raw;
     else % The sweep signal
         % Frequency vector
@@ -112,11 +112,9 @@ for i=1:K
         Fsweep = (1:N_sweep)./N_sweep*(par.F2(i)-par.F1(i))+par.F1(i);
         % Raw sweep signal
         y_raw = sin(t.*Fsweep.*2.*pi);
-        warning('TODO: Add frequency dependent calibration!!!')
-%         [par.k(i) ampGain] = cp_CalibrationConstant(par.F(i), par.RL(i), par.range);
-%         p_raw = par.k(i).*y_raw;
-        ampGain=NaN
-        p_raw = y_raw;
+        %warning('TODO: Add frequency dependent calibration!!!')
+        [k ampGain carusoCurrent] = cp_CalibrationConstant(Fsweep, par.RL(i), par.range);
+        p_raw = k.*y_raw;
     end
     
     % Linear inswing envelope
@@ -130,11 +128,14 @@ for i=1:K
     % Play back signal and display gain information on screen
 
     disp(['Set AmpGain=',num2str(ampGain),'dB!! F=',num2str(par.F1(i)),'Hz, SL=',num2str(par.RL(i)),'dB, rt=',num2str(par.rt(i)),'ms'])
-    for j=0:9
-        disp(num2str(10-j))
-%        pause(1)
-        
-    end
+    %     for j=0:9
+    %         disp(num2str(10-j))
+    %         pause(1)
+    %     end
+    disp(['Waiting for ' num2str(par.Dt) ' s before next sound.'])
+    pause(par.Dt)
+    input('Press any key when amplifier gain is set.')
+    disp(' ')
     %     close all
     %     plot(t,p)
     disp(['TX: AmpGain=',num2str(ampGain),'dB, F=',num2str(par.F1(i)),'Hz, SL=',num2str(par.RL(i)),'dB, rt=',num2str(par.rt(i)),'ms'])
@@ -142,7 +143,7 @@ for i=1:K
     sound(p,par.Fs)
     par.treat_stop(i) = now;
     disp(['TX ending, wait',num2str(par.Dt-10),'s'])
- %   pause(par.Dt-10)
+
 end
 
 disp('Finished. Save the par variable!!!')
