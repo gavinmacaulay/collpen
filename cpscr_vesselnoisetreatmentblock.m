@@ -81,7 +81,31 @@ range = 33; % [m]
 amp_gain = -10;
 
 % NOT DONE YET.....
+% Thinking so far:
+% value of 1 in playback signal, through amplifier with gain of -10 dB
+% gives SL as per the 4A calibration. These data are:
+calSL = [162.2637
+    178.8809
+    177.6352
+    180.0815
+    178.7463
+    177.2745
+    176.2 %180.1863
+    175.3353
+    175.7558
+    170.0725
+    169.5239
+    ];
+% so do fft, get the right magnitude for the PSD, apply these cal SL to
+% give the expected SL in the water, then apply the TL.
 
+
+% visualise the signals
+clf
+subplot(2,1,1)
+spectrogram(JH.y, 256, 64, [0:100:5000], 48000) 
+subplot(2,1,2)
+spectrogram(JH.p, 256, 64, [0:100:5000], 48000) 
 
 %% Play back signal
 
