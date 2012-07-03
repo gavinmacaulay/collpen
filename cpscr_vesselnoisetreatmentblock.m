@@ -26,11 +26,11 @@ clear
 
 par.vesselspeed = 11*1800/3600;%m/s
 par.vesselstart = -3*60;%sek
-par.vesselstop =   2*60;%sek
-par.vesselstart = -1*60;%sek
 par.vesselstop =   1*60;%sek
 par.fishdepth = 30;%m This is hte upper depth of the fish layer from the Ona paper
 
+par.pause = 30;%s pause between treatments
+par.order = randperm(2);%1==GOS, 2==JH
 
 %% Load noise data
 [dumGOS,ona.GOS.FS,ona.GOS.NBITS] = wavread('NewGOSPass1wSound.wav');
@@ -110,10 +110,21 @@ calSL = [162.2637
 %% Play back signal
 
 warning('Using scaled sound!! Needs calibration and filtering')
-soundsc(JH.p,ona.JH.FS)
-pause(2)
-soundsc(GOS.p,ona.GOS.FS)
 
+k=1;
+for i=par.order
+    if i==1
+        par.start(k) = now;
+        soundsc(JH.p,ona.JH.FS)
+        pause(par.pause)
+        k=k+1;
+    else
+        par.start(k) = now;
+        soundsc(GOS.p,ona.GOS.FS)
+        pause(par.pause)
+        k=k+1;
+    end
+end
 
 %% The curves from GOS and JH
 
@@ -177,5 +188,7 @@ ona.JH_h	 = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.JH(:,1),'linear','extrap
 semilogx(ona.GOS_h(:,1),ona.GOS_h(:,2),ona.JH_h(:,1),ona.JH_h(:,2))
 
 % SPL 50Hz-1kHz
+
+save(['HerringExp_vesselNoise_par_',datestr(now,30),'.mat'],'par')
 
 

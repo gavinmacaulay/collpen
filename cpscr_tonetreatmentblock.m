@@ -146,4 +146,4 @@ for i=1:K
 
 end
 
-disp('Finished. Save the par variable!!!')
+save(['HerringExp_toneTreatment_par_',datestr(now,30),'.mat'],'par')
