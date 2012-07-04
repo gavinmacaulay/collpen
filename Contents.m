@@ -10,5 +10,11 @@
 % Block treatment from vessel noise
 % Block treatment from tones 
 %
+% cpscr_preparekillerwhalesounds - Cut the original files and save'em as wavs
+%
+% Run the treatment:
+% cpscr_orcatreatmentblock - Run orca treatment
+% cpscr_vesselnoisetreatmentblock - Run vesselnoise treatment sub block
+% cpscr_tonetreatmentblock - Run the tone treatment sub block
 %
 %
