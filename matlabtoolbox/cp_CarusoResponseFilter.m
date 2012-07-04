@@ -1,4 +1,4 @@
-function Hd = cp_CarusoResponseFilter
+function Hd = cp_CarusoResponseFilter(Fs)
     %CP_CARUSORESPONSEFILTER Returns a discrete-time filter object.
     
     %
@@ -12,11 +12,10 @@ function Hd = cp_CarusoResponseFilter
     B  = 1;              % Number of Bands
     F1 = [80 170 1480 2500 5000];  % First Frequency Vector
     A1 = [28 1 2.8 2.8 2.8];     % First Amplitude Vector
-    Fs = 10000;          % Sampling Frequency
     
     h = fdesign.arbmag('N,B,F,A', N, B, F1, A1, Fs);
     
-    Hd = design(h, 'iirlpnorm');
+    Hd = design(h); % Use 'iirlpnorm' if you have the DSP toolbox
     
     
     

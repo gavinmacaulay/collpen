@@ -1,4 +1,4 @@
-function Hd = cp_highpass_filter
+function Hd = cp_highpass_filter(stopband, passband, Fs)
 %CP_HIGHPASS_FILTER Returns a discrete-time filter object.
 
 %
@@ -11,10 +11,9 @@ function Hd = cp_highpass_filter
 % Equiripple Highpass filter designed using the FIRPM function.
 
 % All frequency values are in Hz.
-Fs = 10000;  % Sampling Frequency
 
-Fstop = 50;              % Stopband Frequency
-Fpass = 100;             % Passband Frequency
+Fstop = stopband;              % Stopband Frequency
+Fpass = passband;             % Passband Frequency
 Dstop = 0.0001;          % Stopband Attenuation
 Dpass = 0.057501127785;  % Passband Ripple
 dens  = 20;              % Density Factor

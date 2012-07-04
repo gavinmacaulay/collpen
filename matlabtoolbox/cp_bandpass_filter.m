@@ -1,4 +1,4 @@
-function Hd = cp_bandpass_filter(fc)
+function Hd = cp_bandpass_filter(fc, Fs)
 %Z Returns a discrete-time filter object.
 
 %
@@ -14,7 +14,7 @@ function Hd = cp_bandpass_filter(fc)
 
 
 % All frequency values are in Hz.
-Fs = 10000;  % Sampling Frequency
+%Fs = 10000;  % Sampling Frequency
 
 Fstop1 = fc - 25;             % First Stopband Frequency
 Fpass1 = fc - 10;             % First Passband Frequency

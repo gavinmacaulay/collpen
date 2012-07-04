@@ -60,14 +60,19 @@ JH.p = JH.y_tvg;
 GOS.p = GOS.y_tvg;
 
 % high pass filter
-Hd = cp_highpass_filter; % Don't forget to tweak the parameters!!!
-JH.p = filter(Hd.Numerator, 1, JH.p);
-GOS.p = filter(Hd.Numerator, 1, GOS.p);
+stopband = 50;
+passband = 100;
+HdJH = cp_highpass_filter(stopband, passband, ona.JH.FS); % [Hz]
+HdGOS = cp_highpass_filter(stopband, passband, ona.GOS.FS); % [Hz]
+
+JH.p = filter(HdJH.Numerator, 1, JH.p);
+GOS.p = filter(HdGOS.Numerator, 1, GOS.p);
 
 % a filter to compensate for the CARUSO response
-Hd = cp_CarusoResponseFilter;
-JH.p = filter(Hd, JH.p);
-GOS.p = filter(Hd, GOS.p);
+HdGOS = cp_CarusoResponseFilter(ona.GOS.FS);
+HdJH = cp_CarusoResponseFilter(ona.JH.FS);
+JH.p = filter(HdGOS.Numerator, 1, JH.p);
+GOS.p = filter(HdJH.Numerator, 1, GOS.p);
 
 % scale signal
 JH.p = JH.p / max(JH.p);
