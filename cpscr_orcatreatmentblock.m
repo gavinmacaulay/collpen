@@ -5,31 +5,31 @@
 
 
 clear
-par.wavName{1,1}= 'NorwegianOrcaCalls.wav'
-par.wavName{2,1}= 'CanadianOrcaCalls.wav'
-par.wavName{3,1}= 'IcelandicOrcaCalls.wav'
+par.wavName{1,1}= 'NorwegianOrcaCalls.wav';
+par.wavName{2,1}= 'CanadianOrcaCalls.wav';
+par.wavName{3,1}= 'IcelandicOrcaCalls.wav';
 
 
-par.playBackDuration=[30 30 30] % duration of playback in sec
-par.playBackStartPoint=[30 30 30] % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
-par.waitTime=60 % duration pause between playbacks  in s
-par.soundCard='50 %'
+par.playBackDuration=[60 60 60]; % duration of playback in sec
+par.playBackStartPoint=[30 30 30]; % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
+par.waitTime=120; % duration pause between playbacks  in s
+par.soundCard='70 %';
 par.amplifier='Lubell';
-par.filePath='c:\Collpen\Processing\';  % path to write output files to
+par.filePath='.\';  % path to write output files to
 par.forceSoundPause=0; %whether to force a pause duining playback (Alex PC=1, Nils Olav=0)
 
 %%%%%%% prompt for changes
 disp('Check Lubell is connected and hit any key')
 pause
-disp('check that card is set to 50% and hit a key')
+disp('check that card is set to 70% and hit a key')
 pause
 disp('very well, playback starts')
 
 %%%%  present teh stimuli in random order
 
 % seed the random number generator
-reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
-%reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
+%reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
+reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
 par.randTrial=randperm(3)
 for i=1:length(par.randTrial)
     

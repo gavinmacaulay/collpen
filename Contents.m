@@ -10,7 +10,11 @@
 % Block treatment from vessel noise
 % Block treatment from tones 
 %
-% cpscr_preparekillerwhalesounds - Cut the original files and save'em as wavs
+%
+% cpscr_CARUSOcalibration - Gavins stuff
+% cpscr_convertTDMSfiles - Converting the tdms file and writes a matlab file
+% cpscr_masterconvertdata - This is the master data conversion file
+% cpscr_preparekillerwhalesounds - This is what Gavin did to Lises files
 %
 % Run the treatment:
 % cpscr_orcatreatmentblock - Run orca treatment

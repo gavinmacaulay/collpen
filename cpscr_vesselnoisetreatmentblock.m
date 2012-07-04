@@ -13,15 +13,15 @@ clear
 
 
 par.dt = 5;% pm 5 s to scalue up GOS
-par.playBackStartPoint=[0 0 0] % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
-par.waitTime=60 % duration pause between playbacks  in s
-par.soundCard='100 %'
+par.playBackStartPoint = [0 0 0]; % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
+par.waitTime = 120; % duration pause between playbacks  in s
+par.soundCard = '100 %';
 par.amplifier='Caruso';
 par.carusoCurrent=4;
-par.carusoGain=999;
+par.carusoGain=-13;
 par.filePath='.\';  % path to write output files to
 par.forceSoundPause=0; %whether to force a pause duining playback (Alex PC=1, Nils Olav=0)
- 
+
 % seed the random number generator
 reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
 %reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
@@ -35,7 +35,7 @@ ona.GOS.t=(1:length(ona.GOS.y))/ona.GOS.FS;
 ona.JH.t=(1:length(ona.JH.y ))/ona.JH.FS;
 % dum1JH = onaJH.y(ona.JH.t<10);
 % dum2JH = onaJH.y(ona.JH.t> (ona.JH.t(end)-10));
-% 
+%
 % sc1 = sqrt(mean(ona.JH.y(1:48000).^2))/sqrt(mean(dum1JH((end-48000:end)).^2));
 % sc2 = sqrt(mean(dum1JH((1:48000)).^2))/sqrt(mean(ona.JH.y((end-48000:end)).^2));
 % ona.JH.y = [dum1JH.*sc2; ona.JH.y; dum2JH.*sc2];
@@ -52,7 +52,7 @@ ona.GOS.y =  ona.GOS.y'.*k;
 % Hd = cp_highpass_filter(ona.JH.FS); % Don't forget to tweak the parameters!!!
 % ona.JH.p = filter(Hd.Numerator, 1, JH.p);
 % ona.GOS.p = filter(Hd.Numerator, 1, GOS.p);
-% 
+%
 % % a filter to compensate for the CARUSO response
 % Hd = cp_CarusoResponseFilter(ona.JH.FS);
 % ona.JH.yf = filter(Hd, ona.JH.y);
@@ -148,10 +148,16 @@ ona.JH_h	 = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.JH(:,1),'linear','extrap
 
 %semilogx(ona.GOS_h(:,1)*1000,ona.GOS_h(:,2),ona.JH_h(:,1)*1000,ona.JH_h(:,2))
 
+
+ind = ona.GOS_h(:,1)*1000>50  & ona.GOS_h(:,1)*1000 < 2000;
+
+%10*log10(trapz(ona.GOS_h(ind,1)*1000,10.^(ona.GOS_h(ind,2)/10)))
+%10*log10(trapz(ona.JH_h(ind,1)*1000,10.^(ona.JH_h(ind,2)/10)))
+
 % SPL 50Hz-1kHz
 
 
-    
+
 %%
 % cpscr_whaletreatmentblock
 %
@@ -160,7 +166,7 @@ ona.JH_h	 = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.JH(:,1),'linear','extrap
 % 1) Johan Hjort at SPL equivalent to that observed duing Ona et al expt at 30m
 % 2) G.O. Sars at SPL equivalent to that observed duing Ona et al expt at 30m
 % 2) G.O. Sars at SPL equivalent to that observed duing Ona et al expt at 30m
- 
+
 
 
 % compute playback duration (used for start and stop times)
@@ -171,7 +177,7 @@ disp('Check Caruso is connected and hit any key')
 pause
 disp(['Check Caruso current is  ' num2str(par.carusoCurrent) ' amps and hit any key'])
 pause
-disp(['Check Caruso current is  ' num2str(par.carusoGain) ' dB and hit any key'])
+disp(['Check Caruso amplifier gain is  ' num2str(par.carusoGain) ' dB and hit any key'])
 pause
 disp('Check that voltmeter is logging hit any key')
 pause
@@ -187,26 +193,26 @@ pause
 par.randTrial=randperm(3);
 for i=1:length(par.randTrial)
     
-    par.treatStart(i)=now;  
+    par.treatStart(i)=now;
     
-   % play the sound  
-  disp(['Playback: ',num2str(i),' ', vessel(par.randTrial(i)).treatment]);
-   sound(vessel(par.randTrial(i)).y,vessel(par.randTrial(i)).FS);
- 
-   if par.forceSoundPause==1
-    pause;
-    disp('.');
-    disp('forcing pause during playback') ; %needed if PC keeps executing during pause
-   end
+    % play the sound
+    disp(['Playback: ',num2str(i),' ', vessel(par.randTrial(i)).treatment]);
+    sound(vessel(par.randTrial(i)).y,vessel(par.randTrial(i)).FS);
+    
+    if par.forceSoundPause==1
+        pause;
+        disp('.');
+        disp('forcing pause during playback') ; %needed if PC keeps executing during pause
+    end
     par.treatEnd(i)=now;
-      disp('playback over') 
+    disp('playback over')
     disp('.');
-     par.treatment(i)=par.randTrial(i); % assing treatment name
+    par.treatment(i)=par.randTrial(i); % assing treatment name
     
-     if i<length(par.randTrial) % pause
-    disp(['waiting ' num2str(par.waitTime) ' sec'])
-    pause(par.waitTime)
-     end
+    if i<length(par.randTrial) % pause
+        disp(['waiting ' num2str(par.waitTime) ' sec'])
+        pause(par.waitTime)
+    end
 end
 
 
@@ -229,7 +235,7 @@ a{1,4}='treatment';
 a{1,5}='Caruso current';
 a{1,6}='Caruso Gain';
 
- 
+
 % place data in cell array
 for i=2:length(par.treatStart)+1
     a{i,1}=datestr(par.treatStart(i-1),'dd.mm.yy HH:MM:SS');

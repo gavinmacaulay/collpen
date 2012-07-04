@@ -18,6 +18,6 @@ par.Nfft=256*8;
 par.Noverlap=fix(par.Nwindow/2);
 
 %% Run
-for i=9
+for i=7
         cp_ProcessHydrophonedata(block(i).b_block,block,par);
 end

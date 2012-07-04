@@ -39,10 +39,8 @@ par.rt_0 = [18 31 250];%ms
 par.rt_end = 1800;%ms "outswing"
 par.rt_sweep = 250;%Rise time
 
-
 par.Fs = 8192;% Hz "sampling frequency"
 par.Dt = 30;% Time between treatments within block
-par.Dt = 1;% Time between treatments within block
 par.range = 1;%m Set this to one for SL's instead of RL's
 par.N = 10;% Number of replicas in this block - sweeps
 
