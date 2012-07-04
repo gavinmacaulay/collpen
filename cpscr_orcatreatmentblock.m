@@ -1,54 +1,87 @@
+% cpscr_whaletreatmentblock
+%
+% script to present 3 whale calls in random order during Collpen expts
+
+
+
 clear
-
-%
-% This file rund the vesselnoise treatment. It reads the audio files,
-% scales the level and play them back
-%
-%
-% NB: Note that the gain needs to be adjusted on the amplifier during trials.
-%
-% Range of parameters to be tested:
-%
-
-par.pause = 30;%s pause between treatments
-par.length = 60;%s
-par.order = randperm(3);%1==nor, 2==
+par.wavName{1,1}= 'NorwegianOrcaCalls.wav'
+par.wavName{2,1}= 'CanadianOrcaCalls.wav'
+par.wavName{3,1}= 'IcelandicOrcaCalls.wav'
 
 
+par.playBackDuration=[30 30 30] % duration of playback in sec
+par.playBackStartPoint=[30 30 30] % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
+par.waitTime=60 % duration pause between playbacks  in s
+par.soundCard='50 %'
+par.amplifier='Lubell';
+par.filePath='c:\Collpen\Processing\';  % path to write output files to
+par.forceSoundPause=0; %whether to force a pause duining playback (Alex PC=1, Nils Olav=0)
 
-%% Load noise data
-orca{1}.name = 'NorwegianOrcaCalls.wav';
-orca{2}.name = 'IcelandicOrcaCalls.wav';
-orca{3}.name = 'CanadianOrcaCalls.wav';
+%%%%%%% prompt for changes
+disp('Check Lubell is connected and hit any key')
+pause
+disp('check that card is set to 50% and hit a key')
+pause
+disp('very well, playback starts')
 
-[orca{1}.y,orca{1}.FS,orca{1}.NBITS] = wavread(orca{1}.name);
-[orca{2}.y,orca{2}.FS,orca{2}.NBITS] = wavread(orca{2}.name);
-[orca{3}.y,orca{3}.FS,orca{3}.NBITS] = wavread(orca{3}.name);
+%%%%  present teh stimuli in random order
 
-
-%% Play back signal
-
-warning('Using scaled sound!! Needs calibration and filtering')
-
-
-
-par.SL
-
-
-
-k=1;
-for i=par.order
-    % Pick apropriate signal length
-    ind = 1: par.length*orca{i}.FS;
-    par.start(k) = now;
-    par.name{k} = orca{i}.name;
-    disp(['Treatment_',num2str(k),'_',par.name{k}])
-    soundsc(orca{i}.y(ind),orca{i}.FS)
-    par.stop(k) = now;
-    disp('Pause...')
-    pause(par.pause)
-    k=k+1;
+% seed the random number generator
+reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
+%reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
+par.randTrial=randperm(3)
+for i=1:length(par.randTrial)
+    
+    [y, Fs] = wavread(par.wavName{par.randTrial(i),1});
+    disp(['Playback: ',num2str(i),' ', par.wavName{par.randTrial(i),1}, ' Duration = ',num2str(par.playBackDuration) ])
+    ind=(1:Fs*par.playBackDuration)+par.playBackStartPoint(1);
+    disp(par.wavName{par.randTrial(i),1})
+    par.treatStart(i)=now;
+    sound(y(ind),Fs)
+    if par.forceSoundPause==1
+        pause(par.playBackDuration(par.randTrial(i)));
+        disp('.');
+        disp('forcing pause during playback') ; %needed if PC keeps executing during pause
+    end
+    par.treatEnd(i)=now;
+    disp('.')
+    disp('playback over')
+    disp('.')
+    par.treatment(i,:)=par.randTrial(i); % assing treatment name
+    
+    if i<length(par.randTrial)
+        disp(['waiting ' num2str(par.waitTime) ' sec'])
+        pause(par.waitTime)
+    end
 end
 
-save(['HerringExp_orcaTreatment_par_',datestr(now,30),'.mat'],'par')
 
+% write files
+%set filename
+fname=strcat(par.filePath ,'OrcaParams_',datestr(now,30));
+
+eval(['save ', fname, ' par'])   % save parameter file in mat format
+
+% now build up the output for excel
+% prepare a cell array for export
+
+% headers
+a{1,1}='t_start_time';
+a{1,2}='t_stop_time';
+a{1,3}='t_soundsource';
+a{1,4}='treatment';
+
+
+% place data in cell array
+for i=2:length(par.treatStart)+1
+    a{i,1}=datestr(par.treatStart(i-1),'dd.mm.yy HH:MM:SS');
+    a{i,2}=datestr(par.treatEnd(i-1),'dd.mm.yy HH:MM:SS');
+    a{i,3}='Lubell';
+    a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
+    
+end
+
+xlswrite(fname,a) % write out xls file
+
+disp('Finished !')
