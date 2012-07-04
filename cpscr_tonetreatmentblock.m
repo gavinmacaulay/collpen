@@ -159,7 +159,7 @@ end
 %set filename
 fname=strcat(par.filePath ,'ToneParams_',datestr(now,30));
 
-eval(['save ', fname])   % save parameter file in mat format
+eval(['save ', fname,' par'])   % save parameter file in mat format
 
 % now build up the output for excel
 % prepare a cell array for export

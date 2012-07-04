@@ -30,6 +30,12 @@ orca{3}.name = 'CanadianOrcaCalls.wav';
 
 warning('Using scaled sound!! Needs calibration and filtering')
 
+
+
+par.SL
+
+
+
 k=1;
 for i=par.order
     % Pick apropriate signal length

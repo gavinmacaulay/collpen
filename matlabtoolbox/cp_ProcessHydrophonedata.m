@@ -2,9 +2,7 @@ function cp_ProcessHydrophonedata(blockn,block,par)
 
 % This is the block, subblock, treatment vector. If the vecotr is shorter,
 %
-bbt = []
 % Parameters for picking the right data
-
 
 % block(blockn).subblock(subblockn).treatment(treatmentn)
 %
