@@ -9,10 +9,9 @@ clear
 %  
 % Range of parameters to be tested:
 %  
-% 1. GOS: realSPL = ?
-% 2. GOS: maxSPL = ?
-% 3. JH: realSPL = ?
-% 4. JH: maxSPL = ?
+% 1. GOS: realRL = ?
+% 2. GOS: scaledRL = ?
+% 3. JH: realRL = ?
 
 % Nils Olav:
 % Suck the sound and store it to matlab - OK
@@ -48,7 +47,6 @@ JH.y  = repmat(dumJH(indJH),[1 Nc]);
 GOS.y = repmat(dumGOS(indGOS),[1 Nc]);
 t = (1:length(JH.y))/ona.JH.FS + par.vesselstart;
 
-
 % The range to the source
 r = sqrt((t.*par.vesselspeed).^2 + par.fishdepth.^2);
 
@@ -62,7 +60,7 @@ JH.p = JH.y_tvg;
 GOS.p = GOS.y_tvg;
 
 % high pass filter
-Hd = cp_highpass_filter(); % Don't forget to tweak the parameters!!!
+Hd = cp_highpass_filter; % Don't forget to tweak the parameters!!!
 JH.p = filter(Hd.Numerator, 1, JH.p);
 GOS.p = filter(Hd.Numerator, 1, GOS.p);
 
@@ -96,9 +94,9 @@ calSL = [162.2637
     170.0725
     169.5239
     ];
+
 % so do fft, get the right magnitude for the PSD, apply these cal SL to
 % give the expected SL in the water, then apply the TL.
-
 
 % visualise the signals
 % clf
@@ -110,6 +108,10 @@ calSL = [162.2637
 %% Play back signal
 
 warning('Using scaled sound!! Needs calibration and filtering')
+
+% Received levels
+
+% Set them to the same spl
 
 k=1;
 for i=par.order
@@ -185,7 +187,7 @@ ona.GOS_h = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.GOS(:,1),'linear','extra
 ona.JH_h	 = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.JH(:,1),'linear','extrap')) ...
     interp1(ona.XY(:,2),ona.XY_h(:,2),ona.JH(:,2),'linear','extrap')];
 
-semilogx(ona.GOS_h(:,1),ona.GOS_h(:,2),ona.JH_h(:,1),ona.JH_h(:,2))
+semilogx(ona.GOS_h(:,1)*1000,ona.GOS_h(:,2),ona.JH_h(:,1)*1000,ona.JH_h(:,2))
 
 % SPL 50Hz-1kHz
 

@@ -27,8 +27,6 @@ files = dir(fullfile(par.datadir,['block',num2str(blockn)],'hydrophones','block*
 
 if length(files)==0
     error('No hydrophone files available. Run preparation script.')
-else
-    
 end
 for f=1:length(files)
     file =  fullfile(par.datadir,['block',num2str(blockn)],'hydrophones',files(f).name);
