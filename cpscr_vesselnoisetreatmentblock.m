@@ -15,6 +15,8 @@ clear
 par.dt = 5;% pm 5 s to scalue up GOS
 par.playBackStartPoint = [0 0 0]; % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
 par.waitTime = 120; % duration pause between playbacks  in s
+
+par.waitTime = 1; % duration pause between playbacks  in s
 par.soundCard = '100 %';
 par.amplifier='Caruso';
 par.carusoCurrent=4;
@@ -185,7 +187,7 @@ disp('Check PC times and hit any key')
 pause
 disp('check that sound card output is set to 100% and hit a key')
 pause
-disp('very well, playback starts on next keypress')
+disp('READY? the experiment starts on next keypress')
 pause
 %%%%  present the stimuli in random order
 
@@ -241,9 +243,12 @@ for i=2:length(par.treatStart)+1
     a{i,1}=datestr(par.treatStart(i-1),'dd.mm.yy HH:MM:SS');
     a{i,2}=datestr(par.treatEnd(i-1),'dd.mm.yy HH:MM:SS');
     a{i,3}=par.amplifier;
+    
     a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
-    a{i,5}=par.carusoCurrent;
-    a{i,6}=par.carusoGain;
+    a{i,5}=par.carusoGain;
+    a{i,6}=par.carusoCurrent;   
+    a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
+ 
 end
 
 xlswrite(fname,a) % write out xls file

@@ -47,6 +47,9 @@ par.N = 10;% Number of replicas in this block - sweeps
 
 %% Create treatment data
 
+disp('READY? the experiment starts on next keypress')
+pause
+
 % Create combined treatment vectors (not randomized)
 k=1;
 for i=1:length(par.f1_0)

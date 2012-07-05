@@ -23,9 +23,10 @@ disp('Check Lubell is connected and hit any key')
 pause
 disp('check that card is set to 70% and hit a key')
 pause
-disp('very well, playback starts')
+disp('READY? the experiment starts on next keypress')
+pause
 
-%%%%  present teh stimuli in random order
+%%%%  present the stimuli in random order
 
 % seed the random number generator
 %reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
@@ -54,6 +55,7 @@ for i=1:length(par.randTrial)
         disp(['waiting ' num2str(par.waitTime) ' sec'])
         pause(par.waitTime)
     end
+    
 end
 
 
@@ -79,7 +81,6 @@ for i=2:length(par.treatStart)+1
     a{i,2}=datestr(par.treatEnd(i-1),'dd.mm.yy HH:MM:SS');
     a{i,3}='Lubell';
     a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
-    
 end
 
 xlswrite(fname,a) % write out xls file
