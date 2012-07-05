@@ -1,4 +1,4 @@
-function cp_ReadAndSaveTDMSFile(dataDir, filename)
+function cp_ReadAndSaveTDMSFile(dataDir, filename, channelsToExport)
 % Much of this code comes from example code provided by NI.
 
 % Assume that the NI dll is in a particular place relative to where this
@@ -160,7 +160,9 @@ for i=1:numgrps % For each channel group
     end
 end
 
-channelsToExport = [1:23];
+if nargin < 3
+    channelsToExport = [1:23];
+end
 
 chanvals = single(chanvals);
 channames = channames{channelsToExport};
