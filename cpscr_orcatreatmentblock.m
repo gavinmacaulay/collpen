@@ -7,22 +7,21 @@
 clear
 par.wavName{1,1}= 'NorwegianOrcaCalls.wav';
 par.wavName{2,1}= 'CanadianOrcaCalls.wav';
-par.wavName{3,1}= 'IcelandicOrcaCalls.wav';
+par.wavName{3,1}= 'IcealandicOrcaCalls_Dtag_ch1.wav';
 
 
 par.playBackDuration=[60 60 60]; % duration of playback in sec
-par.playBackStartPoint=[30 30 30]; % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
+par.playBackStartPoint=[30 30 10]; % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
 par.waitTime=120; % duration pause between playbacks  in s
 par.soundCard='100 %';
 par.amplifier='Lubell';
 par.filePath='.\';  % path to write output files to
 par.forceSoundPause=0; %whether to force a pause duining playback (Alex PC=1, Nils Olav=0)
-par.ampGain=-3;
 
 %%%%%%% prompt for changes
 disp('Check Lubell is connected and hit any key')
 pause
-disp('check that card is set to 70% and hit a key')
+disp('check that card is set to 100% and hit a key')
 pause
 disp('READY? the experiment starts on next keypress')
 pause
@@ -30,13 +29,14 @@ pause
 %%%%  present the stimuli in random order
 
 % seed the random number generator
-%reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
-reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
-par.randTrial=randperm(3)
+
+reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
+%reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
+par.randTrial=randperm(3);
 for i=1:length(par.randTrial)
     
     [y, Fs] = wavread(par.wavName{par.randTrial(i),1});
-    disp(['Playback: ',num2str(i),' ', par.wavName{par.randTrial(i),1}, ' Duration = ',num2str(par.playBackDuration) ])
+    disp(['Playback: ',num2str(i),' ', par.wavName{par.randTrial(i),1}, ' Duration = ',num2str(par.playBackDuration(i)) ])
     ind=(1:Fs*par.playBackDuration)+par.playBackStartPoint(1);
     disp(par.wavName{par.randTrial(i),1})
     par.treatStart(i)=now;
@@ -74,7 +74,7 @@ a{1,1}='t_start_time';
 a{1,2}='t_stop_time';
 a{1,3}='t_soundsource';
 a{1,4}='treatment';
-a{1,4}='Gain';
+
 
 % place data in cell array
 for i=2:length(par.treatStart)+1
@@ -82,7 +82,6 @@ for i=2:length(par.treatStart)+1
     a{i,2}=datestr(par.treatEnd(i-1),'dd.mm.yy HH:MM:SS');
     a{i,3}='Lubell';
     a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
-    a{i,4}=par.ampGain;
 end
 
 xlswrite(fname,a) % write out xls file
