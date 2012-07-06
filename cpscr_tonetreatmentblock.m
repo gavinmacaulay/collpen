@@ -40,7 +40,7 @@ par.rt_end = 1800;%ms "outswing"
 par.rt_sweep = 250;%Rise time
 
 par.Fs = 8192;% Hz "sampling frequency"
-par.Dt = 30;% Time between treatments within block
+par.Dt = 120;% Time between treatments within block
 par.range = 1;%m Set this to one for SL's instead of RL's
 par.N = 10;% Number of replicas in this block - sweeps
 
@@ -139,19 +139,21 @@ for i=1:length(par.F2)
     % Play back signal and display gain information on screen
     
     disp(['NEXTTONE Set AmpGain=',num2str(par.ampGain(i)),'dB! AmpCurrent=', num2str(par.carusoCurrent(i)),' F2=',num2str(par.F1(i)),' F2=',num2str(par.F2(i)),'Hz, SL=',num2str(par.RL(i)),'dB, rt=',num2str(par.rt(i)),'ms'])
-    
+    disp(['Make sure you made a new hydrophone file - tone number is: ' num2str(i)])
+    disp('.')
     if i>1
         disp(['Waiting for ' num2str(par.Dt) ' s before next sound.'])
         pause(par.Dt)
     end
-    disp('Press any key when amplifier gain is set.')
+    disp('.')
+    disp('Press any key when amplifier gain is set and hydrophones are logging.')
     pause
     disp(['TX: ',num2str(i), ' AmpGain=',num2str(par.ampGain(i)),'dB! AmpCurrent=', num2str(par.carusoCurrent(i)),' F1=',num2str(par.F1(i)),' F2=',num2str(par.F2(i)),'Hz, SL=',num2str(par.RL(i)),'dB, rt=',num2str(par.rt(i)),'ms'])
 
     par.treat_start(i) = now;
     sound(p,par.Fs)
     par.treat_stop(i) = now;
-    
+    disp('Break the hydrophone file')
     disp('.') % leave some space for legibility
     disp('.') % leave some space for legibility
     

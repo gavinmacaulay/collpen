@@ -6,7 +6,7 @@ close all
 par.datadir = 'F:\collpen\AustevollExp\data\HERRINGexp';
 
 % Parameters and metadata
-file = fullfile(par.datadir,'./CollPenAustevollLog.xls');
+file = fullfile(par.datadir,'CollPenAustevollLog.xls');
 block = cp_GetExpPar(file);
 
 % Parameters for the spectrogram
@@ -18,6 +18,6 @@ par.Nfft=256*8;
 par.Noverlap=fix(par.Nwindow/2);
 
 %% Run
-for i=14:15
+for i=20
         cp_ProcessHydrophonedata(block(i).b_block,block,par);
 end

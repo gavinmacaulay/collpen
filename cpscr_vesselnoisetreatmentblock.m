@@ -11,22 +11,24 @@ clear
 % 2. GOS: scaledRL = ?
 % 3. JH: realRL = ?
 
+vessel(1).treatment = 'JH_unfiltered';
+vessel(2).treatment = 'GOS_unfiltered';
+vessel(3).treatment = 'GOS_upscaled';
 
 par.dt = 5;% pm 5 s to scalue up GOS
-par.playBackStartPoint = [0 0 0]; % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
+par.playBackStartPoint = [0 0 0]; % place in the file to start in seconds  
 par.waitTime = 120; % duration pause between playbacks  in s
-
-par.waitTime = 1; % duration pause between playbacks  in s
 par.soundCard = '100 %';
 par.amplifier='Caruso';
 par.carusoCurrent=4;
-par.carusoGain=-13;
+par.carusoGain=[-8 -13 -6];
 par.filePath='.\';  % path to write output files to
 par.forceSoundPause=0; %whether to force a pause duining playback (Alex PC=1, Nils Olav=0)
 
+
 % seed the random number generator
-reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
-%reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
+%reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
+reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
 %% Load noise data
 [ona.GOS.y,ona.GOS.FS,ona.GOS.NBITS] = wavread('NewGOSPass1wSound.wav');
 [ona.JH.y,ona.JH.FS,ona.JH.NBITS] = wavread('NewJHPass1wSound.wav');
@@ -67,16 +69,14 @@ ind = [(round(length(ona.JH.t)/2)-ona.JH.FS*par.dt):(round(length(ona.JH.t)/2)+ 
 sc = mean(sqrt(ona.JH.y(ind).^2))/mean(sqrt(ona.GOS.y(ind).^2));
 
 vessel(1).y = ona.JH.y;
-vessel(2).y = ona.GOS.y;
+vessel(2).y = ona.GOS.y.*(sqrt(2));
 vessel(3).y = ona.GOS.y.*sc;
 
 vessel(1).FS = ona.JH.FS;
 vessel(2).FS = ona.GOS.FS;
 vessel(3).FS = ona.GOS.FS;
 
-vessel(1).treatment = 'JH_unfiltered';
-vessel(2).treatment = 'GOS_unfiltered';
-vessel(3).treatment = 'GOS_upscaled';
+
 
 
 % visualise the signals
@@ -153,8 +153,8 @@ ona.JH_h	 = [10.^(interp1(ona.XY(:,1),ona.XY_h(:,1),ona.JH(:,1),'linear','extrap
 
 ind = ona.GOS_h(:,1)*1000>50  & ona.GOS_h(:,1)*1000 < 2000;
 
-%10*log10(trapz(ona.GOS_h(ind,1)*1000,10.^(ona.GOS_h(ind,2)/10)))
-%10*log10(trapz(ona.JH_h(ind,1)*1000,10.^(ona.JH_h(ind,2)/10)))
+10*log10(trapz(ona.GOS_h(ind,1)*1000,10.^(ona.GOS_h(ind,2)/10)))
+10*log10(trapz(ona.JH_h(ind,1)*1000,10.^(ona.JH_h(ind,2)/10)))
 
 % SPL 50Hz-1kHz
 
@@ -179,15 +179,11 @@ disp('Check Caruso is connected and hit any key')
 pause
 disp(['Check Caruso current is  ' num2str(par.carusoCurrent) ' amps and hit any key'])
 pause
-disp(['Check Caruso amplifier gain is  ' num2str(par.carusoGain) ' dB and hit any key'])
-pause
-disp('Check that voltmeter is logging hit any key')
-pause
 disp('Check PC times and hit any key')
 pause
 disp('check that sound card output is set to 100% and hit a key')
 pause
-disp('READY? the experiment starts on next keypress')
+
 pause
 %%%%  present the stimuli in random order
 
@@ -195,6 +191,15 @@ pause
 par.randTrial=randperm(3);
 for i=1:length(par.randTrial)
     
+   disp('NOTE THAT WE ARE NOW CHANGING GAINS DURING THIS TRIAL')
+   disp(['Set AmpGain=',num2str(par.carusoGain(par.randTrial(i))),'dB! and press any key' ])
+    pause
+    disp('.')
+   if i==1
+    disp('READY? the experiment starts on next keypress')
+    pause
+   end
+   
     par.treatStart(i)=now;
     
     % play the sound
@@ -210,7 +215,7 @@ for i=1:length(par.randTrial)
     disp('playback over')
     disp('.');
     par.treatment(i)=par.randTrial(i); % assing treatment name
-    
+    par.carusoGainOrdered(i)=(par.carusoGain(par.randTrial(i)));
     if i<length(par.randTrial) % pause
         disp(['waiting ' num2str(par.waitTime) ' sec'])
         pause(par.waitTime)
@@ -245,9 +250,10 @@ for i=2:length(par.treatStart)+1
     a{i,3}=par.amplifier;
     
     a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
-    a{i,5}=par.carusoGain;
-    a{i,6}=par.carusoCurrent;   
-    a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
+    a{i,5}=par.carusoCurrent;
+    a{i,6}=par.carusoGainOrdered(i-1);
+       
+  
  
 end
 

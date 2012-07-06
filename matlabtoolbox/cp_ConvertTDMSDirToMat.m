@@ -11,7 +11,11 @@ d = dir(fullfile(dataDir, '*.tdms'));
 for i = 1:length(d)
     if exist(fullfile(dataDir,d(i).name))
         if nargin<2
-            cp_ReadAndSaveTDMSFile(dataDir, d(i).name);
+            try
+                cp_ReadAndSaveTDMSFile(dataDir, d(i).name);
+            catch
+                    warning([d(i).name,' failed'])
+            end
         else
             cp_ReadAndSaveTDMSFile(dataDir, d(i).name,channelsToExport);
         end
