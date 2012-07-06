@@ -16,7 +16,7 @@ vessel(2).treatment = 'GOS_unfiltered';
 vessel(3).treatment = 'GOS_upscaled';
 
 par.dt = 5;% pm 5 s to scalue up GOS
-par.playBackStartPoint = [0 0 0]; % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
+par.playBackStartPoint = [0 0 0]; % place in the file to start in seconds  
 par.waitTime = 120; % duration pause between playbacks  in s
 par.soundCard = '100 %';
 par.amplifier='Caruso';
@@ -27,8 +27,8 @@ par.forceSoundPause=0; %whether to force a pause duining playback (Alex PC=1, Ni
 
 
 % seed the random number generator
-reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
-%reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
+%reset(RandStream.getDefaultStream,sum(100*clock)) % works in r2010b and r2012a
+reset(RandStream.getGlobalStream,sum(100*clock))  % works in r2012a
 %% Load noise data
 [ona.GOS.y,ona.GOS.FS,ona.GOS.NBITS] = wavread('NewGOSPass1wSound.wav');
 [ona.JH.y,ona.JH.FS,ona.JH.NBITS] = wavread('NewJHPass1wSound.wav');
@@ -250,9 +250,10 @@ for i=2:length(par.treatStart)+1
     a{i,3}=par.amplifier;
     
     a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
-    a{i,5}=par.carusoGainOrdered(i-1);
-    a{i,6}=par.carusoCurrent;   
-    a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
+    a{i,5}=par.carusoCurrent;
+    a{i,6}=par.carusoGainOrdered(i-1);
+       
+  
  
 end
 
