@@ -21,7 +21,7 @@ par.waitTime = 120; % duration pause between playbacks  in s
 par.soundCard = '100 %';
 par.amplifier='Caruso';
 par.carusoCurrent=4;
-par.carusoGain=[-10 -13 -8];
+par.carusoGain=[-8 -13 -6];
 par.filePath='.\';  % path to write output files to
 par.forceSoundPause=0; %whether to force a pause duining playback (Alex PC=1, Nils Olav=0)
 
@@ -69,7 +69,7 @@ ind = [(round(length(ona.JH.t)/2)-ona.JH.FS*par.dt):(round(length(ona.JH.t)/2)+ 
 sc = mean(sqrt(ona.JH.y(ind).^2))/mean(sqrt(ona.GOS.y(ind).^2));
 
 vessel(1).y = ona.JH.y;
-vessel(2).y = ona.GOS.y;
+vessel(2).y = ona.GOS.y.*(sqrt(2));
 vessel(3).y = ona.GOS.y.*sc;
 
 vessel(1).FS = ona.JH.FS;

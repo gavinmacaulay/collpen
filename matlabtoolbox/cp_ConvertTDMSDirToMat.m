@@ -8,11 +8,14 @@ function cp_ConvertTDMSDirToMat(dataDir,channelsToExport)
 % channels is converting only the cannels specified
 
 d = dir(fullfile(dataDir, '*.tdms'));
-warning('hack')
-for i = 1:9%10:length(d)
+for i = 1:length(d)
     if exist(fullfile(dataDir,d(i).name))
         if nargin<2
-            cp_ReadAndSaveTDMSFile(dataDir, d(i).name);
+            try
+                cp_ReadAndSaveTDMSFile(dataDir, d(i).name);
+            catch
+                    warning([d(i).name,' failed'])
+            end
         else
             cp_ReadAndSaveTDMSFile(dataDir, d(i).name,channelsToExport);
         end
