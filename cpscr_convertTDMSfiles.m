@@ -33,5 +33,8 @@ channelsToExport = [17 18];
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block15\hydrophones'))
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block16\hydrophones'),channelsToExport)%FAILED!!!
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block17\hydrophones'),channelsToExport)%FAILED
-cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block18\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block18\hydrophones'),channelsToExport)%FAILED
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block18\hydrophones'),channelsToExport)%FAILED
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block19\hydrophones'))% File 9 FAILED!!!
+
 

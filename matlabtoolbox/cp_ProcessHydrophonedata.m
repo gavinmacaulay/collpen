@@ -21,7 +21,7 @@ function cp_ProcessHydrophonedata(blockn,block,par)
 % par.nexus2.cal= 37.6% 37.6% Pa/volt FOR BLOCK 9 AND LOWER , 118.816 for block 10 and higher
 
 %% Load hydrophone data
-files = dir(fullfile(par.datadir,['block',num2str(blockn)],'hydrophones','block*.mat'));
+files = dir(fullfile(par.datadir,['block',num2str(blockn)],'hydrophones','*.mat'));
 
 if length(files)==0
     error('No hydrophone files available. Run preparation script.')
@@ -42,25 +42,30 @@ for f=1:length(files)
     %     error('bbt vector is wrong')
     % end
     
+    nexus1 = 17;
+    nexus2 = 18;
+%     nexus1 = 1;
+%     nexus2 = 2;
+    
     load(file)
-    par.Fs=data.sample_rate(17);
-    par.start_time=data.start_time(17);
-    par.avg_bin=par.Fs*par.avgtime;  % average into 1/10 second  bins
-    nexus.ch1.press= data.values(:,17).*block(blockn).b_nexus1sens;  % pressure in Pa
-    nexus.ch2.press= data.values(:,18).*block(blockn).b_nexus2sens;  % pressure in Pa
+    par.Fs=data.sample_rate(nexus1);
+    par.start_time=data.start_time(nexus1);
+    par.avg_bin=floor(par.Fs*par.avgtime);  % average into 1/10 second  bins
+    nexus.ch1.press= data.values(:,nexus1).*block(blockn).b_nexus1sens;  % pressure in Pa
+    nexus.ch2.press= data.values(:,nexus2).*block(blockn).b_nexus2sens;  % pressure in Pa
     % Release memory
     clear data
     
     %% compute RMS pressure by averaging
     for i=1:floor(length(nexus.ch2.press)/par.avg_bin)-1
-        ind_start=((i-1)*par.avg_bin)+1;
-        ind_end=((i)*par.avg_bin);
+        ind_start(i)=((i-1)*floor(par.avg_bin))+1;
+        ind_end(i)=((i)*floor(par.avg_bin));
         % compute rms via a homebrew function by taking rms of small section
-        temp=nexus.ch1.press(ind_start:ind_end)-mean(nexus.ch1.press(ind_start:ind_end)); %  % these are de-trended as per Nils Olav's suggestion
+        temp=nexus.ch1.press(ind_start(i):ind_end(i))-mean(nexus.ch1.press(ind_start(i):ind_end(i))); %  % these are de-trended as per Nils Olav's suggestion
         nexus.ch1.press_rms_avg(i)= (mean(temp.^2))^.5;
-        temp=nexus.ch2.press(ind_start:ind_end)-mean(nexus.ch2.press(ind_start:ind_end));  % these are de-trended as per Nils Olav's suggestion
+        temp=nexus.ch2.press(ind_start(i):ind_end(i))-mean(nexus.ch2.press(ind_start(i):ind_end(i)));  % these are de-trended as per Nils Olav's suggestion
         nexus.ch2.press_rms_avg(i)= (mean(temp.^2))^.5;
-        nexus.time(i) = (mean([ind_start ind_end]))./(par.Fs*24*60*60) + par.start_time;
+        nexus.time(i) = ((mean([ind_start(i) ind_end(i)])));%./(par.Fs*24*60*60)) + par.start_time;
     end
     
     

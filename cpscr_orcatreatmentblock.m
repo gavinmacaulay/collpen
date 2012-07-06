@@ -13,10 +13,11 @@ par.wavName{3,1}= 'IcelandicOrcaCalls.wav';
 par.playBackDuration=[60 60 60]; % duration of playback in sec
 par.playBackStartPoint=[30 30 30]; % place in the file to start in seconds  (starting 30 sec in as boat noise at beginning of one file
 par.waitTime=120; % duration pause between playbacks  in s
-par.soundCard='70 %';
+par.soundCard='100 %';
 par.amplifier='Lubell';
 par.filePath='.\';  % path to write output files to
 par.forceSoundPause=0; %whether to force a pause duining playback (Alex PC=1, Nils Olav=0)
+par.ampGain=-3;
 
 %%%%%%% prompt for changes
 disp('Check Lubell is connected and hit any key')
@@ -73,7 +74,7 @@ a{1,1}='t_start_time';
 a{1,2}='t_stop_time';
 a{1,3}='t_soundsource';
 a{1,4}='treatment';
-
+a{1,4}='Gain';
 
 % place data in cell array
 for i=2:length(par.treatStart)+1
@@ -81,6 +82,7 @@ for i=2:length(par.treatStart)+1
     a{i,2}=datestr(par.treatEnd(i-1),'dd.mm.yy HH:MM:SS');
     a{i,3}='Lubell';
     a{i,4}=par.treatment(i-1); % code for each treatment - could be replaced by a string later if desired
+    a{i,4}=par.ampGain;
 end
 
 xlswrite(fname,a) % write out xls file
