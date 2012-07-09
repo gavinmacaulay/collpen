@@ -63,16 +63,17 @@ if (serialnumber == 15)  %Special Case 2
     header.configflags = 3;
 end
 
-switch header.configflags % 
-case 0
+warning('Hack in didson reader to make things work')
+%switch header.configflags % 
+%case 0
     winlengths=[1.25 2.5 5 10 20 40];      % DIDSON-S, Extended Windows
-case 1
-    winlengths=[1.125 2.25 4.5 9 18 36];   % DIDSON-S, Classic Windows
-case 2
-    winlengths=[2.5 5 10 20 40 70];        % DIDSON-LR, Extended Windows
-case 3
-    winlengths=[2.25 4.5 9 18 36 72];      % DIDSON-LR, Classic Windows
-end
+% case 1
+%     winlengths=[1.125 2.25 4.5 9 18 36];   % DIDSON-S, Classic Windows
+% case 2
+%     winlengths=[2.5 5 10 20 40 70];        % DIDSON-LR, Extended Windows
+% case 3
+%     winlengths=[2.25 4.5 9 18 36 72];      % DIDSON-LR, Classic Windows
+%end
 
 header.windowlength = winlengths(index);   % Convert windowlength code to meters
 
