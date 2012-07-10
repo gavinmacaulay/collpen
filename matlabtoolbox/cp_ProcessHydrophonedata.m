@@ -58,14 +58,15 @@ for f=1:length(files)
     
     %% compute RMS pressure by averaging
     for i=1:floor(length(nexus.ch2.press)/par.avg_bin)-1
-        ind_start(i)=((i-1)*floor(par.avg_bin))+1;
-        ind_end(i)=((i)*floor(par.avg_bin));
+        ind_start(i)=((i-1)*(par.avg_bin))+1;
+        ind_end(i)=((i)*(par.avg_bin));
         % compute rms via a homebrew function by taking rms of small section
         temp=nexus.ch1.press(ind_start(i):ind_end(i))-mean(nexus.ch1.press(ind_start(i):ind_end(i))); %  % these are de-trended as per Nils Olav's suggestion
         nexus.ch1.press_rms_avg(i)= (mean(temp.^2))^.5;
         temp=nexus.ch2.press(ind_start(i):ind_end(i))-mean(nexus.ch2.press(ind_start(i):ind_end(i)));  % these are de-trended as per Nils Olav's suggestion
         nexus.ch2.press_rms_avg(i)= (mean(temp.^2))^.5;
         nexus.time(i) = ((mean([ind_start(i) ind_end(i)])));%./(par.Fs*24*60*60)) + par.start_time;
+        nexus.time(i) = i;%((mean([ind_start(i) ind_end(i)])));%./(par.Fs*24*60*60)) + par.start_time;
     end
     
     
@@ -91,7 +92,6 @@ for f=1:length(files)
     
     figure
     plot(1:length(nexus.ch2.press),nexus.ch2.press,'r',1:length(nexus.ch2.press),nexus.ch1.press,'b')
-    datetick
     xlabel('Sample number')
     ylabel('Pressure (Pa)')
     title([hdr,'_pressure'],'Interpreter','none')
@@ -99,14 +99,24 @@ for f=1:length(files)
     
     % plot SPL
     figure
-    plot(nexus.time,20*log10(nexus.ch1.press_rms_avg./par.p_ref),'b',...
-        nexus.time,20*log10(nexus.ch2.press_rms_avg./par.p_ref),'r')
+    plot(1:length(nexus.time),20*log10(nexus.ch1.press_rms_avg./par.p_ref),'b',...
+        1:length(nexus.time),20*log10(nexus.ch2.press_rms_avg./par.p_ref),'r')
     legend('nexus1','nexus2')
-    datetick
+    %datetick
     xlabel('Time')
     ylabel('SPL dB re 1 \mu Pa')
     title([hdr,'_SPL'],'Interpreter','none')
     print('-dpng','-r200',fullfile(par.figdir,[hdr,'_SPL.png']))
-    
+    clear nexus
     close all
+    
+    
+%     [S,F,T,P]=spectrogram(double(nexus.ch1.press).*10e6,par.Nwindow,par.Noverlap,par.Nfft,par.Fs,'yaxis');
+%     
+%     Po = trapz(F,P,1);
+% 
+
+    
+    
+    
 end
