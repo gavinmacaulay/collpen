@@ -3,7 +3,7 @@ clear
 close all
 
 % Data directory
-par.datadir = 'F:\collpen\AustevollExp\data\HERRINGexp';
+par.datadir = 'G:\collpen\AustevollExp\data\HERRINGexp';
 par.reposdir = 'C:\repositories\CollPen_mercurial';
 
 % used by rawreading function - cpsrReadEK60
@@ -20,13 +20,23 @@ par.ek60.channelsToProcess=[1 2]; % which channels to plot
 par.ek60.smoothWindow=31;% number of pings to smooth over with running mean
 %par.ek60.writePath='C:\Collpen\Processing\alexCode\';% ticks plotten on x axis on this interval
 par.ek60.preTrialTime=120/(24*3600) ;% time in days to plot data before and after the trial
+par.ek60.minPings=par.ek60.smoothWindow*2 %minimum pings for plotting a graph if less than this, then skip
 
 % Parameters and metadata
 file = fullfile(par.reposdir,'matlabtoolbox\CollPenAustevollLog.xls');
 block = cp_GetExpPar(file);
 
 %% Run
-for i=17%:33
+% first run processed from 17 to 33
+% problem with block 26,30 (rawreader error)- skipping for now...
+ %Error using  + 
+%Matrix dimensions must agree.
+%Error in readEKRaw_ConvertPower (line 106)
+ %               data.pings(n).Sv = double(data.pings(n).power) + ...
+
+      
+
+for i=31:33
         cp_ProcessEchosounderdata(block(i).b_block,block,par);
 end
 

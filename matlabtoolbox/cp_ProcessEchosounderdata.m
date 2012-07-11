@@ -140,6 +140,7 @@ function cpsrPlotEK60(ek60,label,eventStart,eventEnd,par)
 %par.ek60.smoothWindow=31% number of pings to smooth over with running mean
 %par.ek60.writePath='C:\Collpen\Processing\alexCode\'% ticks plotten on x axis on this interval
 %par.ek60.preTrialSec=120 % time in seconds to plot data before and after the trial
+%par.ek60.minPings=smoothWindow*2 %minimum pings for plotting
 %
 % outputs
 % generates a png file displaying echosounder data
@@ -181,6 +182,7 @@ for i=1:size(sv,2)
    medRange(i)=ek60.pings(ch).range(index.analyze(ind));
 end
 
+ if size(sv,2)>par.ek60.minPings;
 % apply a running mean to compute sv should probably ultimatley use a
 % better windowing scheme...
 meansvSmoothed=filter(ones(1,par.ek60.smoothWindow)/par.ek60.smoothWindow,1,meansv);
@@ -194,11 +196,11 @@ ind=par.ek60.smoothWindow:length(meansvSmoothed);
 scrsz = get(0,'ScreenSize');
 figure('Position',scrsz)
 subplot(4,1,1:3)
- imagesc((ek60.pings(ch).time(index.ping)-stime)*3600,(ek60.pings(ch).range(index.disp)),(ek60.pings(ch).Sv(index.disp,index.ping)))
+ imagesc((ek60.pings(ch).time(index.ping)-stime)*3600*24,(ek60.pings(ch).range(index.disp)),(ek60.pings(ch).Sv(index.disp,index.ping)))
 hold
-plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600,medRangeSmoothed(ind),'k','linewidth',2); % plot median range of backscatter 50% percentile in analysis window
+plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,medRangeSmoothed(ind),'k','linewidth',2); % plot median range of backscatter 50% percentile in analysis window
 for j=1:length(index.labels); % plot vertical marks for start/stop
-plot([(ek60.pings(ch).time(index.labels(j))-stime)*3600 (ek60.pings(ch).time(index.labels(j))-stime)*3600],...
+plot([(ek60.pings(ch).time(index.labels(j))-stime)*3600*24 (ek60.pings(ch).time(index.labels(j))-stime)*3600*24],...
     [par.ek60.displayRange(ch,1),par.ek60.displayRange(ch,2)],'w','linewidth',1.5)
 end
 
@@ -212,15 +214,15 @@ title(fname,'interpreter', 'none')
 
 % now generate an SV time series
 subplot(4,1,4)
-plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600,10*log10(meansv(ind)),'k');
+plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,10*log10(meansv(ind)),'k');
 hold
-plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600,10*log10(meansvSmoothed(ind)),'.-');
+plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,10*log10(meansvSmoothed(ind)),'.-');
 xlabel('Time relative to stimulus start (sec)')
-ylabel('Sv (m^-2)')
+ylabel('Sv (m^-1)','interpreter','none')
 axis tight
 
 eval(['print ',fname,' -r200',' -dpng'])
 close
- 
+end
 end
 
