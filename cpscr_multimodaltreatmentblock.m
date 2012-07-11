@@ -180,7 +180,7 @@ figure
 [X,map] = imread('monkeyPic.jpg');
 image(X)
 title('Nice Work Monkey Boys - maybe you will get another hard drive reward')
- pause(10) % hold figure and then close
-    close
+ %pause(10) % hold figure and then close
+  %  close
 end
 
