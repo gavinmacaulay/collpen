@@ -83,6 +83,17 @@ for i=1:size(fileList);
     % read in whole file
     [header, rawData, rstate] = readEKRaw(fullfile(dataPath,fileList(i).name),'Angles', false,'TimeOffset' ,par.ek60.timeZoneOffset);
     
+    % generate a cal file  (again assumes that no changes in calibration
+% parameters ocurred !
+if par.ek60.useCalParFile==0;
+    calParms       = readEKRaw_GetCalParms(header, rawData);
+elseif par.ek60.useCalParFile==1;
+    calParms = readEKRaw_ReadXMLParms(par.ek60.calFileName); %  extract calibration parameters from xml cal file
+end
+
+%  convert power to sv
+rawData = readEKRaw_Power2Sv(rawData, calParms);
+    
     % loop through the pings
     for chan=par.ek60.channelsWanted;
         if i==1
@@ -94,7 +105,15 @@ for i=1:size(fileList);
             if i==1
                 eval( ['ek60.pings(',num2str(chan),').', a{j} , ' =[]']); % initialize new struct
             end
-            eval( ['ek60.pings(',num2str(chan),').',a{j} '=[ ek60.pings(',num2str(chan),').',a{j},' rawData.pings(',num2str(chan),').',a{j},'];' ]);
+           
+            if (strcmp(a{j},'range'))  ;  % only do range one time  as has different orientation than the others.  Assumes range does not change
+                if i==1
+                eval( ['ek60.pings(',num2str(chan),').',a{j} '=[ rawData.pings(',num2str(chan),').',a{j},'];' ]);
+                end
+            else
+                 eval( ['ek60.pings(',num2str(chan),').',a{j} '=[ ek60.pings(',num2str(chan),').',a{j},' rawData.pings(',num2str(chan),').',a{j},'];' ]);
+           
+            end
         end
         
         % loop through config-- ASSUMES THAT CONFIGURATION IS CONSTANT BETWEEN FILES !!!
@@ -116,16 +135,7 @@ end
     
 end
 
-% generate a cal file  (again assumes that no changes in calibration
-% parameters ocurred !
-if par.ek60.useCalParFile==0;
-    calParms       = readEKRaw_GetCalParms(header, ek60);
-elseif par.ek60.useCalParFile==1;
-    calParms = readEKRaw_ReadXMLParms(par.ek60.calFileName); %  extract calibration parameters from xml cal file
-end
 
-%  convert power to sv
-ek60 = readEKRaw_Power2Sv(ek60, calParms);
 
 function cpsrPlotEK60(ek60,label,eventStart,eventEnd,par)
 % inputs
@@ -148,24 +158,23 @@ function cpsrPlotEK60(ek60,label,eventStart,eventEnd,par)
 % smoothwindow
 % also gives mean Sv
 
-
-% covert times of interest into indices
-% piece of interest
-[index.ping]=( ((ek60.pings(1).time>eventStart-par.ek60.preTrialTime))...
-    &((ek60.pings(1).time<eventEnd+par.ek60.preTrialTime)) ) ;
-index.ping=find(index.ping==1);  % index into data of interest to plot
- 
-index.labels=[ min(find(ek60.pings(1).time>eventStart))  min(find(ek60.pings(1).time>eventEnd))]; % indicies for vertical axis labels based on start and stop times of the event
-% 
-
 % for each channel of interest, process the data
 for i=1:length(par.ek60.channelsToProcess);
-    ch=par.ek60.channelsToProcess(i);
+     ch=par.ek60.channelsToProcess(i);
+% covert times of interest into indices
+% piece of interest
+[index.ping]=( ((ek60.pings(ch).time>eventStart-par.ek60.preTrialTime))...
+    &((ek60.pings(ch).time<eventEnd+par.ek60.preTrialTime)) ) ;
+index.ping=find(index.ping==1);  % index into data of interest to plot
+ 
+index.labels=[ min(find(ek60.pings(ch).time>eventStart))  min(find(ek60.pings(ch).time>eventEnd))]; % indicies for vertical axis labels based on start and stop times of the event
+% 
+   
  fname=[label,'_channel_', num2str(ch)]; % string for naming
 
 % range index for data anlysis and display    
-index.analyze=find(ek60.pings(i).range >=par.ek60.AnalyzeRange(ch,1) & ek60.pings(i).range <=par.ek60.AnalyzeRange(ch,2) );
-index.disp=find(ek60.pings(i).range >=par.ek60.displayRange(ch,1) & ek60.pings(i).range <=par.ek60.displayRange(ch,2) );
+index.analyze=find(ek60.pings(ch).range >=par.ek60.AnalyzeRange(ch,1) & ek60.pings(ch).range<=par.ek60.AnalyzeRange(ch,2) );
+index.disp=find(ek60.pings(ch).range >=par.ek60.displayRange(ch,1) & ek60.pings(ch).range <=par.ek60.displayRange(ch,2) );
 
 stime=(ek60.pings(ch).time(index.labels(1))); % start time
 
