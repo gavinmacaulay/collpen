@@ -3,9 +3,10 @@ clear
 close all
 
 % Data directory
-par.datadir = 'G:\collpen\AustevollExp\data\HERRINGexp';
-par.reposdir = 'C:\repositories\CollPen_mercurial';
-
+%par.datadir = 'G:\collpen\AustevollExp\data\HERRINGexp';
+par.datadir='E:\collpen\AustevollExp\data\HERRINGexp';
+%par.reposdir = 'C:\repositories\CollPen_mercurial';
+par.reposdir ='C:\Collpen\Processing';
 % used by rawreading function - cpsrReadEK60
 par.ek60.timeZoneOffset=2;  % Time offset using +2 as data timestamps are utc and we are +2 (check this if timestamps look strange)
 par.ek60.useCalParFile=0;  % 1 means use a file after calibration, 2 is just use whatever is in raw data for uncalibrated calcs
@@ -28,15 +29,16 @@ block = cp_GetExpPar(file);
 
 %% Run
 % first run processed from 17 to 33
-% problem with block 26,30 (rawreader error)- skipping for now...
- %Error using  + 
-%Matrix dimensions must agree.
-%Error in readEKRaw_ConvertPower (line 106)
- %               data.pings(n).Sv = double(data.pings(n).power) + ...
 
       
+% block30 throws this error
+% Warning: Invalid datagram at offset 14091480(d) - Searching for next datagram... 
+%these two files have malformed telegrams and can't be read so I moved them
+%into a subdirectory named malformed in block 30
+%HerringExp-D20120710-T075240.raw
+%HerringExp-D20120710-T044626.raw
 
-for i=31:33
+for i=30%26%31:33
         cp_ProcessEchosounderdata(block(i).b_block,block,par);
 end
 
