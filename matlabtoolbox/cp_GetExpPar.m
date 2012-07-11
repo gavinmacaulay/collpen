@@ -93,16 +93,20 @@ for i=1:s(1)-1
         passing(i).t_start_hydrophonePC_mt = NaN;
         warning('t_start_hydrophonePC did not convert')
     end
+    % Replace numeric treatmenttypes with characters
+    if isnumeric(passing(i).t_treatmenttype)&&~isnan(passing(i).t_treatmenttype)
+        if strcmp(passing(i).t_soundsource,'lubell')
+            %par.wavName{1,1}= 'NorwegianOrcaCalls.wav';
+            %par.wavName{2,1}= 'CanadianOrcaCalls.wav';
+            %par.wavName{3,1}= 'IcealandicOrcaCalls_Dtag_ch1.wav';
+            treatmenttype ={'orca_nor','orca_can','orca_is'};
+            passing(i).t_treatmenttype  = treatmenttype{passing(i).t_treatmenttype};
+        elseif strcmp(passing(i).t_soundsource,'caruso')
+            %vessel(1).treatment = 'JH_unfiltered';
+            %vessel(2).treatment = 'GOS_unfiltered';
+            %vessel(3).treatment = 'GOS_upscaled';
+            treatmenttype ={'JH_unfiltered','GOS_unfiltered','GOS_upscaled'};
+            passing(i).t_treatmenttype  = treatmenttype{passing(i).t_treatmenttype};
+        end
+    end
 end
-
-%t_treatmenttype
-
-% 'orca_can','orca_is','orca_nor'
-% 'vessel_GOS','vessel_JH','vessel_GOSup'
-% t_start_time t_stop_time t_start_hydrophonePC 
-% convert times and date
-% for i=1:s(1)-1
-%      passing(i).t_start_time = datenum(passing(i).t_start_time,'dd.mm.yyyy HH:MM:SS');
-%      passing(i).t_stop_time  = datenum(passing(i).t_stop_time,'dd.mm.yyyy HH:MM:SS');
-%      passing(i).t_start_time = datenum(passing(i).t_start_time,'dd.mm.yyyy HH:MM:SS');
-% end

@@ -51,15 +51,25 @@ for i=ind
     M = (12+5+3+3+4);
     for j=1:N
         disp(block(i).subblock(j))
-        plot([block(i).subblock(j).s_start_time_mt block(i).subblock(j).s_start_time_mt],[0 1])
-        plot([block(i).subblock(j).s_stop_time_mt block(i).subblock(j).s_stop_time_mt],[0 1])
-        text(block(i).subblock(j).s_start_time_mt,(M-k)/M,...
-            ['Block ',num2str(block(i).subblock(j).s_block),', Subblock ',...
-            num2str(block(i).subblock(j).s_subblock),', ',block(i).subblock(j).s_start_time],'interpreter','none')
+        plot([block(i).subblock(j).s_start_time_mt block(i).subblock(j).s_stop_time_mt],[(M-k)/M (M-k)/M],'r')
+
+%         plot([block(i).subblock(j).s_start_time_mt block(i).subblock(j).s_start_time_mt],[0 1])
+%         plot([block(i).subblock(j).s_stop_time_mt block(i).subblock(j).s_stop_time_mt],[0 1],'r')
+        text(block(i).subblock(j).s_stop_time_mt,(M-k)/M,...
+            ['Subblock ',num2str(block(i).subblock(j).s_subblock),', ',block(i).subblock(j).s_notes],'interpreter','none')
         k=k+1;
         for l = 1:length(block(i).subblock(j).treatment)
             plot([block(i).subblock(j).treatment(l).t_start_time_mt block(i).subblock(j).treatment(l).t_stop_time_mt],[(M-k)/M (M-k)/M])
             plot(block(i).subblock(j).treatment(l).t_start_hydrophonePC_mt, (M-k)/M,'*')
+            if strcmp(block(i).subblock(j).treatment(l).t_treatmenttype,'tones')
+            text(block(i).subblock(j).treatment(l).t_stop_time_mt,(M-k)/M,...
+                [block(i).subblock(j).treatment(l).t_treatmenttype,', F1=',num2str(block(i).subblock(j).treatment(l).t_F1),...
+                ', F2=',num2str(block(i).subblock(j).treatment(l).t_F1),', rt=',num2str(block(i).subblock(j).treatment(l).t_rt),...
+                ', SL=',num2str(block(i).subblock(j).treatment(l).t_SL)],'interpreter','none')
+            else
+            text(block(i).subblock(j).treatment(l).t_stop_time_mt,(M-k)/M,...
+                [block(i).subblock(j).treatment(l).t_treatmenttype],'interpreter','none')
+            end
             k=k+1;
         end
     end
