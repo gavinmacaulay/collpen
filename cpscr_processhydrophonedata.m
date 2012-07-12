@@ -3,8 +3,8 @@ clear
 close all
 
 % Data directory
-par.datadir = 'F:\collpen\AustevollExp\data\HERRINGexp';
-par.reposdir = 'C:\repositories\matlabtoolbox';
+par.datadir = 'G:\collpen\AustevollExp\data\HERRINGexp';
+par.reposdir = 'C:\repositories\CollPen_mercurial\matlabtoolbox';
 
 % Parameters and metadata
 file = fullfile(par.reposdir,'CollPenAustevollLog.xls');
@@ -22,6 +22,6 @@ par.Nfft=256*8;
 par.Noverlap=fix(par.Nwindow/2);
 
 %% Run
-for i=14
+for i=34
         cp_ProcessHydrophonedata(block(i).b_block,block,par);
 end

@@ -15,7 +15,7 @@ rootDataDir = 'F:\collpen\AustevollExp\data\HERRINGexp\';
 
 %% The HERRINGexp
 clear
-rootDataDir = 'F:\collpen\AustevollExp\data\';
+rootDataDir = 'G:\collpen\AustevollExp\data\';
 channelsToExport = [17 18];
 
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block1\hydrophones'))
@@ -42,6 +42,7 @@ channelsToExport = [17 18];
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block23\hydrophones'))% 
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block24\hydrophones'))% Warning: 24_3_2.tdms failed 
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block25\hydrophones'))% Warning: 25_1_1.tdms failed Warning: 25_4_1.tdms failed 
-cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block26\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block26\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
 
+cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block34\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
 
