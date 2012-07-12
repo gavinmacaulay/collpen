@@ -77,14 +77,14 @@ for f=1:length(files)
         warning('figure directory not created - fixed')
     end
     
-    spectrogram(double(nexus.ch1.press).*10e6,par.Nwindow,par.Noverlap,par.Nfft,par.Fs,'yaxis');
+    spectrogram(double(nexus.ch1.press).*1e6,par.Nwindow,par.Noverlap,par.Nfft,par.Fs,'yaxis');
     title([hdr,'_psd_nexus1'],'Interpreter','none')
     colorbar
     xlabel('time (s)')
     print('-dpng','-r200',fullfile(par.figdir,[hdr,'_psd_nexus1.png']))
     
     figure
-    spectrogram(double(nexus.ch2.press).*10e6,par.Nwindow,par.Noverlap,par.Nfft,par.Fs,'yaxis');
+    spectrogram(double(nexus.ch2.press).*1e6,par.Nwindow,par.Noverlap,par.Nfft,par.Fs,'yaxis');
     title([hdr,'_psd_nexus2'],'Interpreter','none')
     colorbar
     xlabel('time (s)')
