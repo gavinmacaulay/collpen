@@ -9,12 +9,13 @@
 %                        Will merge together multiple files into one Matlab file.
 %
 % cp_ConvertTDMStoMat - reads and convert the NI TDMS hydrophone files into Matlab format files.
+% cp_ConvertDidsonToMat - Convert didson files to mat files OR generate a timeindex for the didson files.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Data processing functions:
 %
 % cp_CalibrationConstant - Get the calibration constant for each frequency for the tone stimuli
-%
+% cp_ProcessDidsondata - Reads the didson files and generates movies for each treatment
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Other:
 %

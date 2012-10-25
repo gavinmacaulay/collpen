@@ -87,6 +87,11 @@ else
 end
 data.frame=frame;
 data.receivergain=fileheader.receivergain;
+try
+    data.datenum =datenum(char(fileheader.date(16:end)'),'yyyy-mm-dd_HHMMSS');
+catch
+    data.datenum =NaN;
+end
 data.flag=0; %establish a flag entry for get_new_image.m
 %data.panwcom=frameheader.panwcom;     %pan from pan/tilt with compass present
 %data.tiltwcom=frameheader.tiltwcom;   %tilt from pan/tilt with compass present

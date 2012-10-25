@@ -8,9 +8,9 @@ function cp_ConvertTDMSDirToMat(dataDir,channelsToExport)
 % channels is converting only the cannels specified
 
 d = dir(fullfile(dataDir, '*.tdms'));
-warning('Hack')
-%for i = 1:length(d)
-for i = 12:length(d)
+%warning('Hack')
+for i = 1:length(d)
+%for i = 12:length(d)
     disp(['File ',num2str(i),' of ',num2str(length(d))])
     if exist(fullfile(dataDir,d(i).name))
         if nargin<2

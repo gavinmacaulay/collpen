@@ -38,6 +38,9 @@ else
     frame=frame'; % Assume inverted sonar
 end
 data.frame=frame;
+
+data.datenum =datenum(header.year,header.month,header.day,header.hour,header.minute,header.second+header.hsecond/100);
+
 %data.panwcom=header.panwcom;     %pan from pan/tilt with compass present
 %data.tiltwcom=header.tiltwcom;   %tilt from pan/tilt with compass present
 %data.sonarpan=header.sonarpan;   %pan from pan/tilt with no compass

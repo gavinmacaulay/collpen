@@ -55,6 +55,8 @@ header.configflags =bitand(fread(fid,1,'int32'),3); % bit0: 1=classic, 0=extende
 header.userassigned=fread(fid,828,'char');  %Move pointer to end of frame header of length 1024 bytes
 header.length      =ftell(fid)-initialposition; 
 
+header.configflags = 0; % This is a hack...
+
 if (serialnumber < 19)   %Special Case 1
     header.configflags = 1;
 end
@@ -73,8 +75,12 @@ case 2
 case 3
     winlengths=[2.25 4.5 9 18 36 72];      % DIDSON-LR, Classic Windows
 end
-
-header.windowlength = winlengths(index);   % Convert windowlength code to meters
+if index>6
+    warning('Index is wrong. Set manually to 4, eq to 10m. This is a hack!')
+    header.windowlength = 10;   % Convert windowlength code to meters
+else
+    header.windowlength = winlengths(index);   % Convert windowlength code to meters
+end
 
 %Windowstart 1 to 31 times 0.75 (lo) or 0.375 (hi) or 0.419 for extended
 switch header.configflags

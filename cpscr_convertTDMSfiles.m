@@ -1,7 +1,7 @@
 % Cells to convert the hydrophone data into Matlab files
 
 %% Toplevel directory, underwhich the data can be found. Adjust as necessary
-rootDataDir = 'F:\collpen\AustevollExp\data\HERRINGexp\';
+%rootDataDir = 'F:\collpen\AustevollExp\data\HERRINGexp\';
 
 
 %% The NTNU experiment
@@ -46,3 +46,10 @@ channelsToExport = [17 18];
 
 cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block34\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
 
+%% The HERRINGcort
+
+rootDataDir = '\\callisto\collpen\AustevollExp\data\';
+channelsToExport =[1 2 3 4];
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGcortisol\test1\hydrophones'),channelsToExport)
+
+cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGcortisol\test1\hydrophones'))

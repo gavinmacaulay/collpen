@@ -20,5 +20,5 @@
 % cpscr_orcatreatmentblock - Run orca treatment
 % cpscr_vesselnoisetreatmentblock - Run vesselnoise treatment sub block
 % cpscr_tonetreatmentblock - Run the tone treatment sub block
-%
+% cpscr_convertdidsondata - Take the didson data and store it to a separate avi-file for each treatment
 %
