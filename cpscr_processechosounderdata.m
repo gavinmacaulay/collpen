@@ -21,8 +21,8 @@ par.ek60.channelsToProcess=[1 2]; % which channels to plot
 par.ek60.smoothWindow=31;% number of pings to smooth over with running mean
 %par.ek60.writePath='C:\Collpen\Processing\alexCode\';% ticks plotten on x axis on this interval
 par.ek60.preTrialTime=120/(24*3600) ;% time in days to plot data before and after the trial
-par.ek60.minPings=par.ek60.smoothWindow*2 %minimum pings for plotting a graph if less than this, then skip
-
+par.ek60.minPings=par.ek60.smoothWindow*2; %minimum pings for plotting a graph if less than this, then skip
+par.ek60.transdepth = 9.29;%m
 % Parameters and metadata
 file = fullfile(par.datadir,'\CollPenAustevollLog.xls');
 block = cp_GetExpPar(file);

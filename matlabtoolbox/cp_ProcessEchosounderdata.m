@@ -213,7 +213,16 @@ for i=1:length(par.ek60.channelsToProcess);
         scrsz = get(0,'ScreenSize');
         figure('Position',scrsz)
         subplot(4,1,1:3)
-        imagesc((ek60.pings(ch).time(index.ping)-stime)*3600*24,(ek60.pings(ch).range(index.disp)),(ek60.pings(ch).Sv(index.disp,index.ping)))
+        dum = par.ek60.transdepth-(ek60.pings(ch).range(index.disp));
+        if pl && i==2
+            imagesc((ek60.pings(ch).time(index.ping)-stime)*3600*24,dum,(ek60.pings(ch).Sv(index.disp,index.ping)))
+            axis ij  %changes frame of reference to the axis
+            ylabel('Depth (m)')
+        else
+            imagesc((ek60.pings(ch).time(index.ping)-stime)*3600*24,(ek60.pings(ch).range(index.disp)),(ek60.pings(ch).Sv(index.disp,index.ping)))
+            axis xy  %changes frame of reference to the axis
+            ylabel('Range (m)')
+        end
         hold
         h1=plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,medRangeSmoothed(ind),'k','linewidth',2); % plot median range of backscatter 50% percentile in analysis window
         for j=1:length(index.labels); % plot vertical marks for start/stop
@@ -224,9 +233,9 @@ for i=1:length(par.ek60.channelsToProcess);
         caxis(par.ek60.displayThreshold)
         colorbar('location','SouthOutside')
         % axis([min(index.ping) max(index.ping) par.ek60.displayRange(ch,:)])
-        axis xy  %changes frame of reference to the axis
+        
         %datetick('keeplimits')
-        ylabel('Range (m)')
+        
         h3=title(fname,'interpreter', 'none')
         
         % now generate an SV time series
@@ -241,12 +250,12 @@ for i=1:length(par.ek60.channelsToProcess);
         eval(['print ',fname,' -r200',' -dpng'])
         
         % Plot Guillaumes figure
-        if pl
+        if pl && i==2
             % Delete depth and vertical lines
             delete(h1)
             delete(h2)
             delete(h3)
-            print('-dpng','-r800',fullfile(par.datadir,'figures',['Guillaume_Figure1_ch',num2str(i)]))
+            print('-dpng','-r800',fullfile(par.datadir,'figures','Guillaume_Figure1'))
         end
         close
     end
