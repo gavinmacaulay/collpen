@@ -44,7 +44,7 @@ for iy = 1:iysize
     svector((ix-1)*iysize + iy)=pos; % The offset in this array is the pixel offset in the image array
                                      % The value at this offset is the offset in the sample array
     if mod(iy,100) == 0    %print your progress every 100 image lines.
-        fprintf('iy %d \n',iy);      
+       % fprintf('iy %d \n',iy);      
     end
 end
 svector(find(svector == 0)) = 1; %set all zero elements to one to satisfy matlab indexing rules.

@@ -53,7 +53,7 @@ otherwise
 end
 
 fileheader.version=version;
-fprintf('File version %d Number of frames: %d\n',fileheader.version, fileheader.numframes);
+%fprintf('File version %d Number of frames: %d\n',fileheader.version, fileheader.numframes);
 
 data.version=fileheader.version;
 data.serialnumber=fileheader.serialnumber;

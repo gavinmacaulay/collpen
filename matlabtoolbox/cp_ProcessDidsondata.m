@@ -15,36 +15,51 @@ T=T.T;
 for j=1:N
     % Loop over treatment
     for l = 1:length(block(blockn).subblock(j).treatment)
-        
-        d.ddfdir  = fullfile(par.datadir,['block',num2str(block(blockn).b_block)],'didson');
-        d.hdr  = ['didson_block',num2str(block(blockn).b_block),'_sub',num2str(block(blockn).subblock(j).s_subblock),'_treat',num2str(block(blockn).subblock(j).treatment(l).t_treatment)];
-        d.avifile = fullfile(par.datadir,'figures',[d.hdr,'.avi']);
-        
-        d.starttime = block(blockn).subblock(j).treatment(l).t_start_time_mt;
-        d.stoptime = block(blockn).subblock(j).treatment(l).t_stop_time_mt;
-        
-        d.starttime0 = block(blockn).subblock(j).treatment(l).t_start_time_mt - par.didson.preTrialTime;
-        d.stoptime0 = block(blockn).subblock(j).treatment(l).t_stop_time_mt + par.didson.preTrialTime;
-        
-        disp(d.hdr)
-        disp(d.ddfdir)
-        disp(d.avifile)
-        disp(datestr(d.starttime0))
-        disp(datestr(d.starttime))
-        disp(datestr(d.stoptime))
-        disp(datestr(d.stoptime0))
-        % Get files and frames to be read and plotted from the index data
-        % (T.mat)
-        ind = T(:,1)>d.starttime0 & T(:,1)<d.stoptime0;
-        [~,ind1]=min(abs(T(:,1)-d.starttime));
-        [~,ind2]=min(abs(T(:,1)-d.stoptime));
-        d.indstart = T(ind1,:);
-        d.indstop = T(ind2,:);
-        d.Tsub = T(ind,:);
-        d.files=unique(d.Tsub(:,3));
-        d.startindex = d.Tsub(1,2);
-        d.stopindex = d.Tsub(end,2);
-        cpsrPlotDidson(d,par);
+        try
+            
+            d.ddfdir  = fullfile(par.datadir,['block',num2str(block(blockn).b_block)],'didson');
+            d.hdr  = ['didson_block',num2str(block(blockn).b_block),'_sub',num2str(block(blockn).subblock(j).s_subblock),'_treat',num2str(block(blockn).subblock(j).treatment(l).t_treatment)];
+            d.avifile = fullfile(par.datadir,'figures',[d.hdr,'.avi']);
+            
+            d.starttime = block(blockn).subblock(j).treatment(l).t_start_time_mt;
+            d.stoptime = block(blockn).subblock(j).treatment(l).t_stop_time_mt;
+            
+            d.starttime0 = block(blockn).subblock(j).treatment(l).t_start_time_mt - par.didson.preTrialTime;
+            d.stoptime0 = block(blockn).subblock(j).treatment(l).t_stop_time_mt + par.didson.preTrialTime;
+            
+            disp(d.hdr)
+            %         disp(d.ddfdir)
+            %         disp(d.avifile)
+            %         disp(datestr(d.starttime0))
+            %         disp(datestr(d.starttime))
+            %         disp(datestr(d.stoptime))
+            %         disp(datestr(d.stoptime0))
+            %         % Get files and frames to be read and plotted from the index data
+            % (T.mat)
+            
+            %Sometimes there are NaN in the time vector. Let's interpolate:
+            nanind=~isnan(T(:,1));
+            x = 1:length(T(:,1));
+            T(:,1) = interp1(x(nanind),T(nanind,1),x,'linear','extrap');
+            ind = T(:,1)>d.starttime0 & T(:,1)<d.stoptime0;
+            if sum(ind)==0
+                warning(['Failed: No Didson data for ',d.hdr])
+                disp(['Data spans:',datestr(T(1,1)),' to ',datestr(T(end,1))])
+                disp(['Passing spans:',datestr(d.starttime0),' to ',datestr(d.stoptime0)])
+            else
+                [~,ind1]=min(abs(T(:,1)-d.starttime));
+                [~,ind2]=min(abs(T(:,1)-d.stoptime));
+                d.indstart = T(ind1,:);
+                d.indstop = T(ind2,:);
+                d.Tsub = T(ind,:);
+                d.files=unique(d.Tsub(:,3));
+                d.startindex = d.Tsub(1,2);
+                d.stopindex = d.Tsub(end,2);
+                cpsrPlotDidson(d,par);
+            end
+        catch err
+            warning([d.ddfdir,' failed'])
+        end
     end
 end
 
@@ -54,7 +69,7 @@ ddf = dir(fullfile(d.ddfdir, '*.ddf'));
 
 % Generate the avi file
 trackflowavi = avifile(d.avifile,'keyframe',20,...
-    'Quality',100);
+    'Compression','none');
 
 border=1;
 

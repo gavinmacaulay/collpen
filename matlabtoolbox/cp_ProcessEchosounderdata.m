@@ -11,54 +11,37 @@ N = length(block(blockn).subblock);
 dataPath=fullfile(par.datadir,['block',num2str(blockn)],'echosounder');
 [ek60]=cpsrReadEK60(dataPath,par);
 
-%G:\collpen\AustevollExp\data\HERRINGexp\block26\echosounder
-
-
-% label='Block_29'; % label for the plot (no spaces
-% eventStart=ek60.pings(1).time(500);
-% eventEnd=ek60.pings(1).time(1500);
-% cpsrPlotEK60(ek60,label,eventStart,eventEnd,par);
-
 % Loop over subblock
 for j=1:N
     % Loop over treatment
     for l = 1:length(block(blockn).subblock(j).treatment)
-        hdr = fullfile(par.datadir,'figures',['echosounder_block',num2str(block(blockn).b_block),'_sub',num2str(block(blockn).subblock(j).s_subblock),'_']);
-        d.starttime = block(blockn).subblock(j).treatment(l).t_start_time_mt;
-        d.stoptime = block(blockn).subblock(j).treatment(l).t_stop_time_mt;
-        
-        if strcmp(block(blockn).subblock(j).treatment(l).t_treatmenttype,'tones')
-            d.str = [hdr,block(blockn).subblock(j).treatment(l).t_treatmenttype,'_F1_',num2str(block(blockn).subblock(j).treatment(l).t_F1),...
-                '__F2_',num2str(block(blockn).subblock(j).treatment(l).t_F1),'__rt_',num2str(block(blockn).subblock(j).treatment(l).t_rt),...
-                '__SL_',num2str(block(blockn).subblock(j).treatment(l).t_SL)];
-        else
-            d.str = [hdr,block(blockn).subblock(j).treatment(l).t_treatmenttype];
-        end
-        
-        %        if ~isnan(d.starttime)
-        disp(datestr(d.starttime))
-        %        else
-        %            disp('NaN')
-        %        end
-        
-        %        if ~isnan(d.stoptime)
-        disp(datestr(d.stoptime))
-        %        else
-        %            disp('NaN')
-        %        end
-        disp(d.str)
-        
-        block(2).b_block
-        % Plot figure for Guillauem #1 paper.
-        if (block(blockn).b_block==30) && (block(blockn).subblock(j).s_subblock==3) && (block(blockn).subblock(j).treatment(l).t_treatment == 2)
-            pl=true;
-        else
-            pl=false;
-        end
-        
-        eventStart=ek60.pings(1).time(500);
-        eventEnd=ek60.pings(1).time(1500);
-        cpsrPlotEK60(ek60,d.str,d.starttime,d.stoptime,par,pl);
+       try
+            hdr = fullfile(par.datadir,'figures',['echosounder_block',num2str(block(blockn).b_block),'_sub',num2str(block(blockn).subblock(j).s_subblock),'_']);
+            d.starttime = block(blockn).subblock(j).treatment(l).t_start_time_mt;
+            d.stoptime = block(blockn).subblock(j).treatment(l).t_stop_time_mt;
+            
+            if strcmp(block(blockn).subblock(j).treatment(l).t_treatmenttype,'tones')
+                d.str = [hdr,block(blockn).subblock(j).treatment(l).t_treatmenttype,'_F1_',num2str(block(blockn).subblock(j).treatment(l).t_F1),...
+                    '__F2_',num2str(block(blockn).subblock(j).treatment(l).t_F1),'__rt_',num2str(block(blockn).subblock(j).treatment(l).t_rt),...
+                    '__SL_',num2str(block(blockn).subblock(j).treatment(l).t_SL)];
+            else
+                d.str = [hdr,block(blockn).subblock(j).treatment(l).t_treatmenttype];
+            end
+            d.str_anon  = [hdr,'treat',num2str(block(blockn).subblock(j).treatment(l).t_treatment)];
+            d.hdr = ['echosounder_block',num2str(block(blockn).b_block),'_sub',num2str(block(blockn).subblock(j).s_subblock),'_treat',num2str(block(blockn).subblock(j).treatment(l).t_treatment)];
+            %disp(d.hdr)
+            
+            % Plot figure for Guillauem #1 paper.
+            if (block(blockn).b_block==30) && (block(blockn).subblock(j).s_subblock==3) && (block(blockn).subblock(j).treatment(l).t_treatment == 2)
+                pl=true;
+            else
+                pl=false;
+            end
+            
+            cpsrPlotEK60(ek60,d,par,pl);
+         catch err
+             disp([d.hdr,' failed'])
+         end
     end
 end
 
@@ -79,10 +62,10 @@ clear ek60 %
 % outputs
 % ek60 - rawreader structure file
 
-function [ek60]=cpsrReadEK60(dataPath,par);
+function [ek60]=cpsrReadEK60(dataPath,par)
 
 
-temp=['fileList=dir(''' fullfile(dataPath,'*.raw'),''')'];
+temp=['fileList=dir(''' fullfile(dataPath,'*.raw'),''');'];
 eval(temp);
 
 % read in files from an entire directory and concatenate the pings
@@ -111,7 +94,7 @@ for i=1:size(fileList);
         
         for j=1:size(a,1);  % loop through pings
             if i==1
-                eval( ['ek60.pings(',num2str(chan),').', a{j} , ' =[]']); % initialize new struct
+                eval( ['ek60.pings(',num2str(chan),').', a{j} , ' =[];']); % initialize new struct
             end
             
             if (strcmp(a{j},'range'))  ;  % only do range one time  as has different orientation than the others.  Assumes range does not change
@@ -136,7 +119,7 @@ for i=1:size(fileList);
     end
     for j=1:size(c,1);  % loop through fields
         if i==1
-            eval( ['ek60.gps.', c{j} , ' =[]']); % initialize new struct
+            eval( ['ek60.gps.', c{j} , ' =[];']); % initialize new struct
         end
         eval( ['ek60.gps.',c{j} '=[ ek60.gps.',c{j},' rawData.gps.',c{j},'];' ]);
     end
@@ -145,7 +128,7 @@ end
 
 
 
-function cpsrPlotEK60(ek60,label,eventStart,eventEnd,par,pl)
+function cpsrPlotEK60(ek60,d,par,pl)
 % inputs
 % ek60 - ek60 data read in with rawreader for entire block
 % label - string with a description of the events
@@ -166,6 +149,9 @@ function cpsrPlotEK60(ek60,label,eventStart,eventEnd,par,pl)
 % smoothwindow
 % also gives mean Sv
 
+eventStart=d.starttime;
+eventEnd=d.stoptime;
+
 % for each channel of interest, process the data
 for i=1:length(par.ek60.channelsToProcess);
     ch=par.ek60.channelsToProcess(i);
@@ -178,7 +164,8 @@ for i=1:length(par.ek60.channelsToProcess);
     index.labels=[ min(find(ek60.pings(ch).time>eventStart))  min(find(ek60.pings(ch).time>eventEnd))]; % indicies for vertical axis labels based on start and stop times of the event
     %
     
-    fname=[label,'_channel_', num2str(ch)]; % string for naming
+    fname=[d.str,'_channel_', num2str(ch)]; % string for naming
+    fname_anon=[d.str_anon,'_channel_', num2str(ch)]; % string for naming
     
     % range index for data anlysis and display
     index.analyze=find(ek60.pings(ch).range >=par.ek60.AnalyzeRange(ch,1) & ek60.pings(ch).range<=par.ek60.AnalyzeRange(ch,2) );
@@ -223,11 +210,11 @@ for i=1:length(par.ek60.channelsToProcess);
             axis xy  %changes frame of reference to the axis
             ylabel('Range (m)')
         end
-        hold
+        hold on
         h1=plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,medRangeSmoothed(ind),'k','linewidth',2); % plot median range of backscatter 50% percentile in analysis window
         for j=1:length(index.labels); % plot vertical marks for start/stop
             h2(j)=plot([(ek60.pings(ch).time(index.labels(j))-stime)*3600*24 (ek60.pings(ch).time(index.labels(j))-stime)*3600*24],...
-                [par.ek60.displayRange(ch,1),par.ek60.displayRange(ch,2)],'w','linewidth',1.5)
+                [par.ek60.displayRange(ch,1),par.ek60.displayRange(ch,2)],'w','linewidth',1.5);
         end
         
         caxis(par.ek60.displayThreshold)
@@ -236,25 +223,27 @@ for i=1:length(par.ek60.channelsToProcess);
         
         %datetick('keeplimits')
         
-        h3=title(fname,'interpreter', 'none')
+        h3=title(fname,'interpreter', 'none');
         
         % now generate an SV time series
         subplot(4,1,4)
         plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,10*log10(meansv(ind)),'k');
-        hold
+        hold on
         plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,10*log10(meansvSmoothed(ind)),'.-');
         xlabel('Time relative to stimulus start (sec)')
         ylabel('Sv (m ^{-1})','interpreter','Tex')
         axis tight
         
         eval(['print ',fname,' -r200',' -dpng'])
+        delete(h3)
+        eval(['print ',fname_anon,' -r200',' -dpng'])
         
         % Plot Guillaumes figure
         if pl && i==2
             % Delete depth and vertical lines
             delete(h1)
             delete(h2)
-            delete(h3)
+            %delete(h3)
             print('-dpng','-r800',fullfile(par.datadir,'figures','Guillaume_Figure1'))
         end
         close

@@ -25,6 +25,7 @@ for i=1:st
 end
 %Importfunctions
 
+
 function[cruise]=importblock(file)
 % import cruise structure
 [num,txt,raw]=xlsread(file,'block');
@@ -91,7 +92,7 @@ for i=1:s(1)-1
         passing(i).t_start_hydrophonePC_mt = datenum(passing(i).t_start_hydrophonePC,'dd.mm.yyyy HH:MM:SS');
     catch
         passing(i).t_start_hydrophonePC_mt = NaN;
-        warning('t_start_hydrophonePC did not convert')
+      %  warning('t_start_hydrophonePC did not convert')
     end
     % Replace numeric treatmenttypes with characters
     if isnumeric(passing(i).t_treatmenttype)&&~isnan(passing(i).t_treatmenttype)

@@ -37,8 +37,9 @@ block = cp_GetExpPar(file);
 %into a subdirectory named malformed in block 30
 %HerringExp-D20120710-T075240.raw
 %HerringExp-D20120710-T044626.raw
-
-for i=30%26%31:33
+clc
+for i=18:36
+    disp(['Block ',num2str(i)])
         cp_ProcessEchosounderdata(block(i).b_block,block,par);
 end
 
