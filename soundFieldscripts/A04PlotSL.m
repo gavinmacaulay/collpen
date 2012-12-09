@@ -4,7 +4,11 @@ function A04PlotSL
     
     %
     
-    load(fullfile('..', 'results', 'A03CalculateSL_experiments'), 'experiments')
+    dataDir = '..\..\callisto\AustevollExp\data\NTNUtrials\block1\hydrophones\converted_data_files';
+    resultsDir = '..\..\results';
+
+    
+    load(fullfile(resultsDir, 'A03CalculateSL_experiments'), 'experiments')
     
 
     for exp_i = 1:length(experiments)
@@ -28,7 +32,7 @@ function A04PlotSL
             ylabel('SL (dB re 1m re 1\muPa)')
             title(['Experiment ' experiments(exp_i).file])
             legend(legend_text, 'Location', 'EastOutside', 'FontSize', 6)
-            print('-dpng', '-r300', fullfile('..', 'results', ...
+            print('-dpng', '-r300', fullfile(resultsDir, ...
                    ['A04PlotSL_' experiments(exp_i).file(1:end-4)]))
 
             plot([experiments(exp_i).signal.freq] , dSPL, '.-')
@@ -36,7 +40,7 @@ function A04PlotSL
             ylabel('SPL (dB re 1\muPa)')
             title(['Experiment ' experiments(exp_i).file])
             legend(legend_text, 'Location', 'EastOutside', 'FontSize', 6)
-            print('-dpng', '-r300', fullfile('..', 'results', ...
+            print('-dpng', '-r300', fullfile(resultsDir, ...
                    ['A04PlotSL_SPL_' experiments(exp_i).file(1:end-4)]))
 
                %pause

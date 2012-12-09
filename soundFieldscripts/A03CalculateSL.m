@@ -4,7 +4,9 @@ function A03CalculateSL()
     
     %
     
-    dataDir = 'q:\collpen\data\201112 Austevoll\Hydrophones\converted_data_files';
+    dataDir = '..\..\callisto\AustevollExp\data\NTNUtrials\block1\hydrophones\converted_data_files';
+    resultsDir = '..\..\results';
+    
     p_ref = 1e-6; % [Pa]
     r_ref = 1; % [m]
     % array #1, 19.5 m from CARUSO. CARUSO is 3 m deep. Arrays start at 2 m
@@ -26,7 +28,7 @@ function A03CalculateSL()
     calibration(13) = 11.346; % IMR hydrophones [Pa/V]
     
     % gives 'experiments'
-    load(fullfile('..', 'results', 'A02PlotData_experiments'), 'experiments')
+    load(fullfile(resultsDir, 'A02PlotData_experiments'), 'experiments')
     
     for i = 1:length(experiments)
         
@@ -75,7 +77,7 @@ function A03CalculateSL()
                         num2str(f_sig) ' Hz = ' ...
                         num2str(SL) ' dB re 1 m re 1uPa'])
                     
-                    save(fullfile('..', 'results', 'A03CalculateSL_experiments'), 'experiments')
+                    save(fullfile(resultsDir, 'A03CalculateSL_experiments'), 'experiments')
                 end
             end
         end
