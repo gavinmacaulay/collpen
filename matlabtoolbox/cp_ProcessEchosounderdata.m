@@ -12,9 +12,10 @@ dataPath=fullfile(par.datadir,['block',num2str(blockn)],'echosounder');
 [ek60]=cpsrReadEK60(dataPath,par);
 
 % Loop over subblock
-for j=1:N
+warning('Hack')
+for j=1%1:N
     % Loop over treatment
-    for l = 1:length(block(blockn).subblock(j).treatment)
+    for l = 6:8%1:length(block(blockn).subblock(j).treatment)
        try
             hdr = fullfile(par.datadir,'figures',['echosounder_block',num2str(block(blockn).b_block),'_sub',num2str(block(blockn).subblock(j).s_subblock),'_']);
             d.starttime = block(blockn).subblock(j).treatment(l).t_start_time_mt;
@@ -153,7 +154,8 @@ eventStart=d.starttime;
 eventEnd=d.stoptime;
 
 % for each channel of interest, process the data
-for i=1:length(par.ek60.channelsToProcess);
+warning('Hack')
+for i=2%1:length(par.ek60.channelsToProcess);
     ch=par.ek60.channelsToProcess(i);
     % covert times of interest into indices
     % piece of interest
@@ -249,4 +251,4 @@ for i=1:length(par.ek60.channelsToProcess);
         close
     end
 end
-
+keyboard
