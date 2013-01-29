@@ -22,8 +22,9 @@ I=[];
 %34	4	5
 
 
-for tr=1:length(trtype)
+for tr=1:5
     %    excelsheet{tr}.trtype = trtype{tr};
+    dat_ANOVA ={'t_treatmenttype' 'file' 'block' 'subblock' 'treatment' 'obtype' 'scorer' 'score'};
     for ob = 1:length(obtype)
         dat ={'t_treatmenttype' 'file' 'block'	'subblock'	'treatment'	 'score_AnneBritt'	'comment_AnneBritt'	'score_Felicia'	'comment_Felicia'	'score_Georg'	'comment_Georg'	'score_Lise'	'comment_Lise'	'score_Guillaume'	'comment_Guillaume'	'score_Herdis'	'comment_Herdis'	'score_Kirsti'	'comment_Kirsti'};
         % If tones
@@ -45,13 +46,29 @@ for tr=1:length(trtype)
                                         d.score_Lise d.comment_Lise d.score_Guillaume d.comment_Guillaume ...
                                         d.score_Herdis d.comment_Herdis d.score_Kirsti d.comment_Kirsti};
                                     dat_tone = [dat_tone;sub];
+                                    % Data sheet for ANOVA
+                                    
+                                    dum = {[c.t_treatmenttype,'_F1',num2str(c.t_F1),'_F2',num2str(c.t_F2),...
+                                        '_SL',num2str(c.t_SL),'_dur',num2str(c.t_duration),'_rt',num2str(c.t_rt)] ...
+                                        d.file d.block d.subblock d.treatment};
+                                    
                                 else
                                     sub ={c.t_treatmenttype d.file d.block d.subblock d.treatment d.score_AnneBritt d.comment_AnneBritt ...
                                         d.score_Felicia d.comment_Felicia d.score_Georg d.comment_Georg ...
                                         d.score_Lise d.comment_Lise d.score_Guillaume d.comment_Guillaume ...
                                         d.score_Herdis d.comment_Herdis d.score_Kirsti d.comment_Kirsti};
                                     dat = [dat;sub];
+                                    % Data sheet for ANOVA
+                                    dum = {c.t_treatmenttype d.file d.block d.subblock d.treatment};
                                 end
+                                %dat_ANOVA ={'t_treatmenttype' 'file' 'block' 'subblock' 'treatment' 'obtype' 'scorer' 'score'};
+                                dat_ANOVA = [dat_ANOVA ;[dum obtype(ob) 'AnneBritt' d.score_AnneBritt]];
+                                dat_ANOVA = [dat_ANOVA ;[dum obtype(ob) 'Felicia' d.score_Felicia]];
+                                dat_ANOVA = [dat_ANOVA ;[dum obtype(ob) 'Georg' d.score_Georg]];
+                                dat_ANOVA = [dat_ANOVA ;[dum obtype(ob) 'Lise' d.score_Lise]];
+                                dat_ANOVA = [dat_ANOVA ;[dum obtype(ob) 'Guillaume' d.score_Guillaume]];
+                                dat_ANOVA = [dat_ANOVA ;[dum obtype(ob) 'Herdis' d.score_Herdis]];
+                                dat_ANOVA = [dat_ANOVA ;[dum obtype(ob) 'Kirsti' d.score_Kirsti]];
                             end
                         end
                     end
@@ -65,5 +82,7 @@ for tr=1:length(trtype)
             xlswrite('score.xls',dat,[obtype{ob},'_',trtype{tr}])
         end
     end
+    disp(['score_anova_',trtype{tr},'.xls'])
+    xlswrite(['score_anova_',trtype{tr},'.xls'],dat_ANOVA)
 end
 
