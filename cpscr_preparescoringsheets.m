@@ -66,8 +66,8 @@ for b=17:size(block,1)
 end
 
 nrows=size(dat_ANOVA,1);
-str = '%u; %s; %u; %s; %u; %s; %f; %f; %u; %u; %u; %u; %u; %s; %s; %u\n';
-str_h = '%s; %s; %s; %s; %s; %s; %s; %s; %s; %s; %s; %s; %s; %s; %s; %s\n';
+str = '%u;%s;%u;%s;%u;%s;%f;%f;%u;%u;%u;%u;%u;%s;%s;%u\n';
+str_h = '%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s\n';
 fid = fopen('score_anova.csv', 'wt');
 fprintf(fid,str_h, dat_ANOVA{1,:});
 for row=2:nrows

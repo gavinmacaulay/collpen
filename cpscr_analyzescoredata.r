@@ -4,19 +4,11 @@ file_orca <- 'C:/repositories/CollPen_mercurial/score_anova.csv'
 dat<-read.table(file_orca,sep = ";",header = TRUE)
 names(dat)
 
-
-dat_aov <- aov(dat$v_score ~ dat$v_scorer + dat$v_obtype + dat$t_treatmenttype)
-summary(dat_aov)
-
-dat_ANOVA ={'b_block' 'b_groupsize' 's_subblock' 's_treatmenttype' 't_treatment'...
-            't_treatmenttype' 't_start_time_mt' 't_stop_time_mt' 't_F1' 't_F2' 't_SL'...
-            't_duration' ' t_rt' 'v_obtype' 'v_scorer' 'v_score'};
-
+# Checking data
 table(dat$b_block)
 table(dat$b_groupsize)
 table(dat$s_subblock)
 table(dat$s_treatmenttype)
-
 table(dat$t_treatment)
 table(dat$t_treatmenttype)
 table(dat$t_F2)
@@ -27,27 +19,45 @@ table(dat$t_rt)
 table(dat$v_obtype)
 table(dat$v_scorer)
 table(dat$v_score)
-
 table(dat$t_treatmenttype)
 
-table(dat$t_treatmenttype)
+# Overview ANOVA
+dat_aov <- aov(dat$v_score ~ dat$v_scorer + dat$v_obtype + dat$t_treatmenttype)
+summary(dat_aov)
 
+# Is there a time effect?
+time<-(dat$t_start_time_mt - min(dat$t_start_time_mt))*60*24 # In minutes
+score <- dat$score
+plot(dat$v_score,time)
+tim <- lm(dat$v_score ~ time)
+summary(tim)
 
+# Tones with sweeps
+T1<-dat[(dat$s_treatmenttype=='tones'),]
+T1_aov <- aov(T1$v_score ~ T1$v_scorer + T1$v_obtype + T1$t_SL + T1$t_F1 + T1$t_rt)
+summary(T1_aov)
+plot(T1_aov)
 
-predmodel <- aov(dat_predmodel$score ~ dat_predmodel$scorer + dat_predmodel$obtype + dat_predmodel$t_treatmenttype)
-summary(predmodel)
+# Tones without sweeps
+T2<-dat[((dat$t_F1==dat$t_F2)&(dat$s_treatmenttype=='tones')),]
+T2_aov <- aov(T2$v_score ~ T2$v_scorer + T2$v_obtype + T2$t_SL + T2$t_F1 + T2$t_rt)
+summary(T2_aov)
 
-file_vessel <- "score_anova_vessel.csv"
-dat_vessel<-read.table(file_vessel,sep = ";",header = TRUE)
-vessel_vessel <- aov(dat_vessel$score ~ dat_vessel$scorer + dat_vessel$obtype + dat_vessel$t_treatmenttype)
-summary(vessel_vessel)
+# Vessel
+V1 <- dat[(dat$s_treatmenttype=='vessel'),]
+V1_aov <- aov(V1$v_score ~ V1$v_scorer + V1$v_obtype + V1$t_treatmenttype)
+summary(V1_aov)
 
-# Something is fucked in 32.4.11 + 17.1.1 + 25.1.1
-file_tones <- "score_anova_tones.csv"
-dat_tones<-read.table(file_tones,sep = ";",header = TRUE)
-tones <- aov(dat_tones$score ~ dat_tones$scorer + dat_tones$obtype + dat_tones$t_treatmenttype)
-anova(tones)
+# Orca
+# Vessel
+O1 <- dat[(dat$s_treatmenttype=='orca'),]
+O1_aov <- aov(V1$v_score ~ V1$v_scorer + V1$v_obtype + V1$t_treatmenttype)
+summary(O1_aov)
 
+# Bottle (some fields are premodel! F¤%&%¤#)
+B1 <- dat[(dat$s_treatmenttype=='predmodel')|(dat$s_treatmenttype=='premodel'),]
+B1_aov <- aov(B1$v_score ~ B1$v_scorer + B1$v_obtype + B1$t_treatmenttype)
+summary(B1_aov)
 
 
 
