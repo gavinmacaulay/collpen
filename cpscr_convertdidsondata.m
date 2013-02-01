@@ -60,7 +60,7 @@ block = cp_GetExpPar(par.parfile);
 %17:36
 
 % Functions to convert Didson data to mat and avi files
-for i=36%34:36%17:36
+for i=34%34:36%17:36
     cp_ProcessDidsondata(block(i).b_block,block,par);
 end
 

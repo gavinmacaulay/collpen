@@ -11,7 +11,7 @@ subblock = importsubblock(file);
 treatment = importtreatment(file);
 
 % Import score structure
-[score]=importscore(file);
+score=importscore(file);
 
 % Append metadata to block
 
@@ -31,21 +31,26 @@ end
 st = size(score.video,1);
 for i=1:st
     if ~isempty(score.video(i))
-        block(score.video(i).block).subblock(score.video(i).subblock).treatment(score.video(i).treatment).score_video = score.video(i);
+        block(score.video(i).block).subblock(score.video(i).subblock).treatment(score.video(i).treatment).score(1).d_score = score.video(i);
+        block(score.video(i).block).subblock(score.video(i).subblock).treatment(score.video(i).treatment).score(1).d_obtype = 'video';
     end
 end
 
 st = size(score.didson,1);
 for i=1:st
     if ~isempty(score.didson(i))
-        block(score.didson(i).block).subblock(score.didson(i).subblock).treatment(score.didson(i).treatment).score_didson = score.didson(i);
+%        block(score.didson(i).block).subblock(score.didson(i).subblock).treatment(score.didson(i).treatment).score_didson = score.didson(i);
+        block(score.didson(i).block).subblock(score.didson(i).subblock).treatment(score.didson(i).treatment).score(2).d_score = score.didson(i);
+        block(score.didson(i).block).subblock(score.didson(i).subblock).treatment(score.didson(i).treatment).score(2).d_obtype = 'didson';
     end
 end
 
 st = size(score.ek60vertical,1);
 for i=1:st
     if ~isempty(score.ek60vertical(i))
-        block(score.ek60vertical(i).block).subblock(score.ek60vertical(i).subblock).treatment(score.ek60vertical(i).treatment).score_ek60vertical = score.ek60vertical(i);
+        %block(score.ek60vertical(i).block).subblock(score.ek60vertical(i).subblock).treatment(score.ek60vertical(i).treatment).score_ek60vertical = score.ek60vertical(i);
+        block(score.ek60vertical(i).block).subblock(score.ek60vertical(i).subblock).treatment(score.ek60vertical(i).treatment).score(3).d_score = score.ek60vertical(i);
+        block(score.ek60vertical(i).block).subblock(score.ek60vertical(i).subblock).treatment(score.ek60vertical(i).treatment).score(3).d_obtype = 'ek60vertical';
     end
 end
 
@@ -53,7 +58,9 @@ end
 st = size(score.ek60horizontal,1);
 for i=1:st
     if ~isempty(score.ek60horizontal(i))
-        block(score.ek60horizontal(i).block).subblock(score.ek60horizontal(i).subblock).treatment(score.ek60horizontal(i).treatment).score_ek60horizontal = score.ek60horizontal(i);
+%        block(score.ek60horizontal(i).block).subblock(score.ek60horizontal(i).subblock).treatment(score.ek60horizontal(i).treatment).score_ek60horizontal = score.ek60horizontal(i);
+        block(score.ek60horizontal(i).block).subblock(score.ek60horizontal(i).subblock).treatment(score.ek60horizontal(i).treatment).score(4).d_score = score.ek60horizontal(i);
+        block(score.ek60horizontal(i).block).subblock(score.ek60horizontal(i).subblock).treatment(score.ek60horizontal(i).treatment).score(4).d_obtype = 'ek60horizontal';
     end
 end
 

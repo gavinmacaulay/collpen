@@ -12,8 +12,7 @@ dataPath=fullfile(par.datadir,['block',num2str(blockn)],'echosounder');
 [ek60]=cpsrReadEK60(dataPath,par);
 
 % Loop over subblock
-warning('Hack')
-for j=1%1:N
+for j=1:N
     % Loop over treatment
     for l = 6:8%1:length(block(blockn).subblock(j).treatment)
        try
@@ -251,4 +250,4 @@ for i=2%1:length(par.ek60.channelsToProcess);
         close
     end
 end
-keyboard
+
