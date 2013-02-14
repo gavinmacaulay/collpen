@@ -32,6 +32,11 @@ plot(dat$v_score,time)
 tim <- lm(dat$v_score ~ time)
 summary(tim)
 
+# glm
+score<-dat$v_score/3
+glm.out=glm(score ~ dat$b_block + factor(dat$b_groupsize) + dat$s_subblock + dat$t_treatment + factor(dat$v_scorer) + factor(dat$v_obtype)  + factor(dat$s_treatmenttype),family=quasibinomial(logit))
+summary(glm.out)
+
 # Tones with sweeps
 T1<-dat[(dat$s_treatmenttype=='tones'),]
 T1_aov <- aov(T1$v_score ~ T1$v_scorer + T1$v_obtype + T1$t_SL + T1$t_F1 + T1$t_rt)
@@ -42,6 +47,9 @@ plot(T1_aov)
 T2<-dat[((dat$t_F1==dat$t_F2)&(dat$s_treatmenttype=='tones')),]
 T2_aov <- aov(T2$v_score ~ T2$v_scorer + T2$v_obtype + T2$t_SL + T2$t_F1 + T2$t_rt)
 summary(T2_aov)
+names(dat)
+
+glm.out=glm(T2$v_score/3 ~ T2$t_rt + T2$t_SL + T2$t_F1 + T2$b_block + factor(T2$b_groupsize) + T2$t_treatment + factor(T2$v_scorer) ,family=quasibinomial(logit))
 
 # Vessel
 V1 <- dat[(dat$s_treatmenttype=='vessel'),]
