@@ -13,14 +13,10 @@ D=dir(fullfile(par.datadir,'temporary files','*.mat'));
 %22 4 4
 
 fil = fullfile(par.datadir,'\scoring_package\didson\didson_block22_sub4_treat4.avi');
+mov=aviread(fil);
 
 %%
-close all
-m=imshow(mov(1).cdata);
-t=text(22,34,num2str(i));
-  axis equal
-hold on
-  %
+%
 %bottle =[];
 %wave =[];
 pm = 512/9;% pixels per meter
@@ -28,8 +24,13 @@ dt = 8;% pings per second
 
 load(fullfile(par.datadir,'bottlewavespeed_22_sub4_treat4.mat'))
 
-for k=1:1
-    for i=60:80
+for k=1:20
+    clf
+    m=imshow(mov(1).cdata);
+    t=text(22,34,num2str(i));
+    axis equal
+    hold on
+    for i=55:68
         set(m,'Cdata',mov(i).cdata)
         delete(t)
         t=text(22,34,num2str(i),'Color','w');
@@ -44,11 +45,11 @@ for k=1:1
             ind = (i==wave(:,1));
             plot(wave(ind,2),wave(ind,3),'c*')
         end
-        pause(1)
-%         [x,y]=ginput(1);
-%         bottle = [bottle;[i x y]];
-%          [x,y]=ginput(1);
-%          wave = [wave;[i x y]];
+        pause
+        %         [x,y]=ginput(1);
+        %         bottle = [bottle;[i x y]];
+        %          [x,y]=ginput(1);
+        %          wave = [wave;[i x y]];
     end
 end
 %save(fullfile(par.datadir,'bottlewavespeed_22_sub4_treat4.mat'),'bottle','wave')

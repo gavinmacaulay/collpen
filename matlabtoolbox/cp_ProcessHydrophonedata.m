@@ -29,6 +29,18 @@ end
 for f=1:length(files)
     file =  fullfile(par.datadir,['block',num2str(blockn)],'hydrophones',files(f).name);
     hdr = ['hydrophones_',files(f).name(1:end-4)];
+    
+    % What kind of subblock/treatment is this?
+    [a,~] = sscanf(files(f).name(1:end-4),'%u_%u_%u');
+    subblock  = a(2);
+    treatment = a(3);
+    
+    if strcmp(block(a(1)).subblock(a(2)).s_treatmenttype,'vessel')
+        vsl = true;
+    else
+        vsl = false;
+    end
+    
     % if length(bbt)==1
     %     file = fullfile(par.datadir,['block',num2str(bbt(1))],'hydrophones',['block',num2str(blockn),'.mat']);
     %     hdr = ['hydrophones_block',num2str(bbt(1))];
@@ -65,8 +77,8 @@ for f=1:length(files)
         nexus.ch1.press_rms_avg(i)= (mean(temp.^2))^.5;
         temp=nexus.ch2.press(ind_start(i):ind_end(i))-mean(nexus.ch2.press(ind_start(i):ind_end(i)));  % these are de-trended as per Nils Olav's suggestion
         nexus.ch2.press_rms_avg(i)= (mean(temp.^2))^.5;
-        nexus.time(i) = ((mean([ind_start(i) ind_end(i)])));%./(par.Fs*24*60*60)) + par.start_time;
-        nexus.time(i) = i;%((mean([ind_start(i) ind_end(i)])));%./(par.Fs*24*60*60)) + par.start_time;
+        nexus.time(i) = ((mean([ind_start(i) ind_end(i)])))./(par.Fs);%./(par.Fs*24*60*60)) + par.start_time;
+        %nexus.time(i) = i;%((mean([ind_start(i) ind_end(i)])));%./(par.Fs*24*60*60)) + par.start_time;
     end
     
     
@@ -80,35 +92,51 @@ for f=1:length(files)
     spectrogram(double(nexus.ch1.press).*1e6,par.Nwindow,par.Noverlap,par.Nfft,par.Fs,'yaxis');
     title([hdr,'_psd_nexus1'],'Interpreter','none')
     colorbar
-    xlabel('time (s)')
+    xlabel('Time (s)')
+    if vsl
+        hold on
+        ax=axis;
+        plot([par.CPA par.CPA],[ax(3) ax(4)],'k')
+    end
     print('-dpng','-r200',fullfile(par.figdir,[hdr,'_psd_nexus1.png']))
     
     figure
     spectrogram(double(nexus.ch2.press).*1e6,par.Nwindow,par.Noverlap,par.Nfft,par.Fs,'yaxis');
     title([hdr,'_psd_nexus2'],'Interpreter','none')
     colorbar
-    xlabel('time (s)')
+    xlabel('Time (s)')
     print('-dpng','-r200',fullfile(par.figdir,[hdr,'_psd_nexus2.png']))
     
     figure
-    plot(1:length(nexus.ch2.press),nexus.ch2.press,'r',1:length(nexus.ch2.press),nexus.ch1.press,'b')
-    xlabel('Sample number')
+    plot((1:length(nexus.ch2.press))./(par.Fs),nexus.ch2.press,'r',(1:length(nexus.ch2.press))./(par.Fs),nexus.ch1.press,'b')
+    xlabel('Time (s)')
     ylabel('Pressure (Pa)')
     title([hdr,'_pressure'],'Interpreter','none')
+    if vsl
+        hold on
+        ax=axis;
+        plot([par.CPA par.CPA],[ax(3) ax(4)],'k')
+    end
     print('-dpng','-r200',fullfile(par.figdir,[hdr,'_pressure.png']))
     
     % plot SPL
     figure
-    plot(1:length(nexus.time),20*log10(nexus.ch1.press_rms_avg./par.p_ref),'b',...
-        1:length(nexus.time),20*log10(nexus.ch2.press_rms_avg./par.p_ref),'r')
+    plot((nexus.time),20*log10(nexus.ch1.press_rms_avg./par.p_ref),'b',...
+        (nexus.time),20*log10(nexus.ch2.press_rms_avg./par.p_ref),'r')
     legend('nexus1','nexus2')
     %datetick
-    xlabel('Time')
+    xlabel('Time (s)')
     ylabel('SPL dB re 1 \mu Pa')
     title([hdr,'_SPL'],'Interpreter','none')
+    if vsl
+        hold on
+        ax=axis;
+        plot([par.CPA par.CPA],[ax(3) ax(4)],'k')
+    end
     print('-dpng','-r200',fullfile(par.figdir,[hdr,'_SPL.png']))
     clear nexus
-    close all
+    
+    % Example plot for Vessel avoidance experiment
     
     
 %     [S,F,T,P]=spectrogram(double(nexus.ch1.press).*10e6,par.Nwindow,par.Noverlap,par.Nfft,par.Fs,'yaxis');
