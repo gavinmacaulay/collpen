@@ -15,7 +15,8 @@
 
 %% The HERRINGexp
 clear
-rootDataDir = 'G:\collpen\AustevollExp\data\';
+
+rootDataDir = '\\callisto\collpen\AustevollExp\data\';
 channelsToExport = [17 18];
 
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block1\hydrophones'))
@@ -44,7 +45,12 @@ channelsToExport = [17 18];
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block25\hydrophones'))% Warning: 25_1_1.tdms failed Warning: 25_4_1.tdms failed 
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block26\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
 
-cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block34\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block27\hydrophones'))%FAILED 
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block28\hydrophones'))% Warning: 28_3_1.tdms failed ok tom 17
+
+cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block32\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
+
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block34\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
 
 %% The HERRINGcort
 

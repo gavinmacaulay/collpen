@@ -21,6 +21,18 @@ table(dat$v_scorer)
 table(dat$v_score)
 table(dat$t_treatmenttype)
 
+# Fix a problem in the data, i.e change premodel to predmodel
+dat$s_treatmenttype[(dat$s_treatmenttype=='premodel')] = 'predmodel'
+
+
+# After consulting Arne Johannes we have decided to merge observation type and 
+# observation system.
+dat2 <- by(dat$v_score,dat$s_subblock,mean)
+
+dat2 <- by(dat$v_score,c(as.factor(dat$b_block),as.factor(dat$s_subbblock),as.factor(dat$t_treatment)),mean)
+
+
+
 # Overview ANOVA
 dat_aov <- aov(dat$v_score ~ dat$v_scorer + dat$v_obtype + dat$t_treatmenttype)
 summary(dat_aov)

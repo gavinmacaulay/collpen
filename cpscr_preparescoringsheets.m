@@ -34,6 +34,14 @@ for b=17:size(block,1)
             else
                 t_treatmenttype = trt.t_treatmenttype;
             end
+            % Fix some errors in the data
+            if strcmp(block(b).b_groupsize,'no')
+                block(b).b_groupsize = 'large group in M09';
+            end
+            if strcmp(t_treatmenttype,'premodel')
+                t_treatmenttype = 'predmodel';
+            end
+            
             dum={block(b).b_block block(b).b_groupsize sbl.s_subblock ...
                 sbl.s_treatmenttype trt.t_treatment t_treatmenttype ...
                 trt.t_start_time_mt trt.t_stop_time_mt trt.t_F1 trt.t_F2 trt.t_SL...
@@ -41,8 +49,8 @@ for b=17:size(block,1)
             % Data sheet for ANOVA
             if ~isfield(trt,'score')||isempty(trt.score)
                 warning(['No data at all for for block:',...
-                            num2str(block(b).b_block),' Subblock:',num2str(sbl.s_subblock),...
-                            ' Treatment:',num2str(trt.t_treatment)])
+                    num2str(block(b).b_block),' Subblock:',num2str(sbl.s_subblock),...
+                    ' Treatment:',num2str(trt.t_treatment)])
             else
                 for ob = 1:length(trt.score)
                     % Add all scorers (v-level)
@@ -75,3 +83,75 @@ for row=2:nrows
 end
 fclose(fid)
 
+%% Create simplified excel sheet
+clear
+load
+%trtype={'orca','predmodel','tones','music','vessel'};
+obtype={'video','didson','ek60vertical'};
+
+dat_ANOVA ={'b_block' 'b_groupsize' 's_subblock' 's_treatmenttype' 't_treatment'...
+    't_treatmenttype' 't_start_time_mt' 't_stop_time_mt' 't_F1' 't_F2' 't_SL'...
+    't_duration' 't_rt' 'v_score'};
+ni=1;
+for b=17:size(block,1)
+    for s=1:size(block(b).subblock,2)
+        % Pick only data of the correct type
+        for t=1:size(block(b).subblock(s).treatment,2)
+            trt   = block(b).subblock(s).treatment(t);
+            sbl   = block(b).subblock(s);
+            if strcmp(sbl.s_treatmenttype,'tones')
+                t_treatmenttype = [trt.t_treatmenttype,'_F1',num2str(trt.t_F1),'_F2',num2str(trt.t_F2),...
+                    '_SL',num2str(trt.t_SL),'_dur',num2str(trt.t_duration),'_rt',num2str(trt.t_rt)];
+            else
+                t_treatmenttype = trt.t_treatmenttype;
+            end
+            % Fix some errors in the data
+            if strcmp(block(b).b_groupsize,'no')
+                block(b).b_groupsize = 'large group in M09';
+            end
+            if strcmp(t_treatmenttype,'premodel')
+                t_treatmenttype = 'predmodel';
+            end
+            
+            dum={block(b).b_block block(b).b_groupsize sbl.s_subblock ...
+                sbl.s_treatmenttype trt.t_treatment t_treatmenttype ...
+                trt.t_start_time_mt trt.t_stop_time_mt trt.t_F1 trt.t_F2 trt.t_SL...
+                trt.t_duration trt.t_rt'};
+            % Data sheet for ANOVA
+            if ~isfield(trt,'score')||isempty(trt.score)
+                warning(['No data at all for for block:',...
+                    num2str(block(b).b_block),' Subblock:',num2str(sbl.s_subblock),...
+                    ' Treatment:',num2str(trt.t_treatment)])
+            else
+                sc = NaN(length(trt.score),1);
+                for ob = 1:length(trt.score)
+                    % Add all scorers (v-level)
+                    if ~isempty(trt.score(ob).d_score)
+                        scr = trt.score(ob).d_score;
+                        % Take mean score over scorer
+                        sc(ob) = mean([scr.score_AnneBritt scr.score_Felicia scr.score_Georg scr.score_Lise scr.score_Kirsti]);
+                    else
+                        warning(['Missing data for block:',...
+                            num2str(block(b).b_block),' Subblock:',num2str(sbl.s_subblock),...
+                            ' Treatment:',num2str(trt.t_treatment),' Obstype:',obtype{ob}])
+                    end
+                end
+                dat_ANOVA = [dat_ANOVA ;[dum num2str(nanmean(sc))]];
+                ni=ni+1;
+                %                 if ni==17
+                %                     keyboard
+                %                 end
+            end
+        end
+    end
+end
+
+nrows=size(dat_ANOVA,1);
+str = '%u;%s;%u;%s;%u;%s;%f;%f;%u;%u;%u;%u;%u;%s\n';
+str_h = '%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s;%s\n';
+fid = fopen('score_anova_simple.csv', 'wt');
+fprintf(fid,str_h, dat_ANOVA{1,:});
+for row=2:nrows
+    fprintf(fid,str, dat_ANOVA{row,:});
+end
+fclose(fid)
