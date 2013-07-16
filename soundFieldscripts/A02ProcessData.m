@@ -214,44 +214,47 @@ for run_i = 1:length(runs)
         'b' 'b' 'b' 'b' 'b' 'b' 'b' 'b' ...
         'r' 'g'};
     for hydrophone = 1:size(spl, 2)
-        plot(freq, spl(:,hydrophone), symbol{hydrophone})
+        h = plot(freq, spl(:,hydrophone), symbol{hydrophone}, 'LineWidth', 2);
+        if hydrophone == 1
+            hh(1) = h;
+        elseif hydrophone == 9
+            hh(2) = h;
+        elseif hydrophone == 17
+            hh(3) = h;
+        else
+            hh(4) = h;
+        end
         hold on
     end
     xlabel('Frequency (Hz)')
     ylabel('received SPL (dB re 1 \muPa)')
     ylim([110 150])
     hold off
-    legend('inner', 'inner', 'inner', 'inner', 'inner', 'inner', 'inner', 'inner', ...
-        'outer', 'outer', 'outer', 'outer', 'outer', 'outer', 'outer', 'outer', ...
-        'inner IMR', 'outer IMR')
+    legend(hh, 'inner', 'outer', 'inner IMR', 'outer IMR')
     grid on
     
-    print('-dpng', '-r300', fullfile(resultsdir, ['A02Processdata_f_v_SPL' run_name]))
+    print('-dpng', '-r300', fullfile(resultsdir, ['A02Processdata_f_v_SPL_' run_name]))
     
     % plot of depth verses SPL for each frequency
     clf
-    symbol = {'-' ':' '.-' '<-' '>-' '*-' '^-' 'v-' ...
-        'o-' 's-' 'p-'};
+    colours = [166, 206, 227; 31, 120, 180; 178, 223, 138; 51, 160, 44; 251, 154, 153; 227, 26, 28; 253, 191, 111; 255, 127, 0; 202, 178, 214; 106, 61, 154; 255, 255, 153]/255;
     for f = 1:size(spl, 1) % loop over frequencies
-        if f <= 8 % inner array
-            colour = 'k';
-        else
-            colour = 'r';
-        end
-        plot(depths(1:16,2), spl(f,1:16), [symbol{f} colour])
+        h(f) = plot(depths(1:8,2), spl(f,1:8), '-', 'color', colours(f,:), 'LineWidth', 2);
         hold on
+        plot(depths(9:16,2), spl(f,9:16), '*-', 'color', colours(f,:), 'LineWidth', 2)
     end
     xlabel('Depth (m)')
     ylabel('received SPL (dB re 1 \muPa)')
     ylim([110 150])
     hold off
-    for i = 1:size()
-    legend('inner', 'inner', 'inner', 'inner', 'inner', 'inner', 'inner', 'inner', ...
-        'outer', 'outer', 'outer', 'outer', 'outer', 'outer', 'outer', 'outer', ...
-        'inner IMR', 'outer IMR')
+    
+    for i = 1:size(spl, 1)
+        legend_text{i} = [num2str(freq(i)) ' Hz'];
+    end
+    legend(h, legend_text)
     grid on
     
-    print('-dpng', '-r300', fullfile(resultsdir, ['A02Processdata_d_v_SPL' run_name]))
+    print('-dpng', '-r300', fullfile(resultsdir, ['A02Processdata_d_v_SPL_' run_name]))
 
 end
 
