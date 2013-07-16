@@ -58,7 +58,6 @@ if numgrps>0
 end    
 
 for i=1:numgrps % For each channel group
-    
     %Get channel group name property
     grpnamelenIn = 0;
     [err,dummyVar,grpnamelen] = calllib(libname,'DDC_GetChannelGroupStringPropertyLength',grps(i),DDC_CHANNELGROUP_NAME,grpnamelenIn);
@@ -92,6 +91,7 @@ for i=1:numgrps % For each channel group
     end
     
     channames=cell(1,numchans);
+    chanvals = [];
     
     for j = 1:numchans %For each channel in the channel group
         %Get channel name property
@@ -123,9 +123,12 @@ for i=1:numgrps % For each channel group
 			%Initialize an array to hold the desired number of values
             pvals=libpointer('doublePtr',zeros(1,numvals));
             [err,vals] = calllib(libname,'DDC_GetDataValues',chans(j),0,numvals,pvals);
-            setdatatype(vals,'doublePtr',1,numvals);
-            %Add channel values to a matrix. 
-            chanvals(:,j) = (vals.Value); 
+
+            if numvals > 0
+                setdatatype(vals,'doublePtr',1,numvals);
+                %Add channel values to a matrix.
+                chanvals(:,j) = (vals.Value);
+            end
             
             % Start time
             yearIn = 0;
@@ -158,18 +161,23 @@ for i=1:numgrps % For each channel group
             disp(type)
         end
     end
+    chanvals = single(chanvals);
+    if ~isempty(chanvals)
+        chanvals = chanvals(:,channelsToExport);
+    end
+    
+    channames = {channames(channelsToExport)};
+
+    data(i) = struct('fileName', Data_Path, 'chanNames', channames, ...
+        'values', chanvals, 'start_time', start_timestamp(channelsToExport), ...
+        'sample_rate', sample_rate(channelsToExport));
+
 end
 
 if nargin < 3
     channelsToExport = [1:23];
 end
 
-chanvals = single(chanvals);
-channames = channames{channelsToExport};
-
-data = struct('fileName', Data_Path, 'chanNames', channames, ...
-    'values', chanvals(:,channelsToExport), 'start_time', start_timestamp(channelsToExport), ...
-    'sample_rate', sample_rate(channelsToExport));
 disp(['Saving: ' saveName])
 save(saveFileName, 'data')
 
