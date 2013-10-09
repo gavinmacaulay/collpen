@@ -6,6 +6,11 @@ names(dat)
 
 # Fix data
 
+#ind<-(dat$b_groupsize=="large group in M09")
+#dat$b_groupsize[ind]="large group"
+#dat$b_groupsize[!ind]="small group"
+
+
 # Checking data
 table(dat$b_block)
 table(dat$b_groupsize)
@@ -53,8 +58,27 @@ sd(T2$v_score)
 T2_aov <- aov(T2$v_score ~ T2$t_SL + T2$t_F1 + T2$t_rt + T2$b_groupsize)
 summary(T2_aov)
 
-T2_glm <- glm(T2$v_score ~ T2$t_SL + T2$t_F1 + T2$t_rt)
+# Figure 1
+pdf("Tones_figure1.pdf",width = 3, height = 7)
+par(mfrow=c(4,1),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4, .8, .4), bty ="l")
+boxplot(T2$v_score ~ T2$t_SL,xlab=expression(paste("SL (dB re 1",mu,"Pa)")),ylab="Score")
+mtext("(a)",side=3,line=0,adj=0)
+
+boxplot(T2$v_score ~ T2$t_F1,xlab="F (Hz)",ylab="Score")
+mtext("(b)",side=3,line=0,adj=0)
+
+boxplot(T2$v_score ~ T2$t_rt,xlab="Rise Time (ms)",ylab="Score")
+mtext("(c)",side=3,line=0,adj=0)
+
+boxplot(T2$v_score ~ T2$b_groupsize,,xlab="Groupsize",ylab="Score",axes=F)
+axis(1,at=c(0,1,2,3),labels=c("","Large","Small",""))
+axis(2)
+mtext("(d)",side=3,line=0,adj=0)
+dev.off()
+
+T2_glm <- glm(T2$v_score ~ T2$t_SL + T2$t_F1 + T2$t_rt+ T2$b_groupsize)
 summary(T2_glm)
+
 
 #
 # Vessel

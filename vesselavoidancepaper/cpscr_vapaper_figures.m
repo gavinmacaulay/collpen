@@ -1,5 +1,4 @@
-%% This script plot the figures for the tone paper.
-
+%% This script plot the figures for the VA paper.
 
 par.datadir = '\\callisto\collpen\AustevollExp\data\HERRINGexp';
 par.reposdir = 'C:\repositories\CollPen_mercurial\matlabtoolbox';
@@ -7,7 +6,7 @@ par.reposdir = 'C:\repositories\CollPen_mercurial\matlabtoolbox';
 file = fullfile(par.datadir,'CollPenAustevollLog.xls');
 block = cp_GetExpPar(file);
 
-% Pick 3 examples.
+% Pick 3 examples
 %F=160, SL=175, RT=18  : 22-2-12
 %F=320, SL=165, RT=31  : 23-1-3
 %F=500, SL=155, RT=250 : 27-4-11
@@ -111,15 +110,6 @@ save DAT DAT
 %% Export files to R/plot figures
 clear
 load DAT
-
-% Export data for R
-
-
-
-save TonesFigure1 ctd1V ctd2V ctd3V ctd4V ctd5V ctd1N ctd2N ctd3N dpt1V dpt2V dpt1N
-
-
-%%
 close all
 figure(1)
 clf
@@ -135,10 +125,9 @@ ylabel('SPL (dB re 1\mu Pa)')
 xlabel('time (s)')
 
 % Data for R
-fig111=[DAT{1,1}.x(ind{1}) 20*log10(DAT{1,1}.nexus1(ind{1})];
-fig112=[DAT{1,2}.x(ind{2}) 20*log10(DAT{1,2}.nexus1(ind{2})];
-fig113=[DAT{1,3}.x(ind{3}) 20*log10(DAT{1,3}.nexus1(ind{3})];
-
+fig11=[DAT{1,1}.x(ind{1}); 20*log10(DAT{1,1}.nexus1(ind{1}))];
+fig12=[DAT{1,2}.x(ind{2}); 20*log10(DAT{1,2}.nexus1(ind{2}))];
+fig13=[DAT{1,3}.x(ind{3}); 20*log10(DAT{1,3}.nexus1(ind{3}))];
 
 % Figure 1(b)
 subplot(132)
@@ -160,9 +149,9 @@ plot(DAT{2,1}.x(ind{1})*1000,(DAT{2,1}.nexus2(ind{1})),'k',...
 ylabel('Pressure (Pa)')
 xlabel('time (ms)')
 
-fig121=[DAT{1,1}.x(ind{1}) 20*log10(DAT{1,1}.nexus1(ind{1})];
-fig122=[DAT{1,2}.x(ind{2}) 20*log10(DAT{1,2}.nexus1(ind{2})];
-fig123=[DAT{1,3}.x(ind{3}) 20*log10(DAT{1,3}.nexus1(ind{3})];
+fig21=[DAT{2,1}.x(ind{1})*1000; DAT{2,1}.nexus2(ind{1})'];
+fig22=[DAT{2,2}.x(ind{2})*1000; DAT{2,2}.nexus2(ind{2})'];
+fig23=[DAT{2,3}.x(ind{3})*1000; DAT{2,3}.nexus2(ind{3})'];
 
 
 % Figure 1(c)
@@ -173,4 +162,12 @@ plot(DAT{3,1}.x,10*log10(DAT{3,1}.nexus2),...
 xlim([100 600])
 xlabel('Frequency (Hz)')
 ylabel('Power spectral density (dB re 1\mu Pa Hz^{-1})')
+
+ind= DAT{3,1}.x<600 & DAT{3,1}.x>100;
+fig31=[DAT{3,1}.x(ind)'; 10*log10(DAT{3,1}.nexus2(ind))'];
+fig32=[DAT{3,2}.x(ind)'; 10*log10(DAT{3,2}.nexus2(ind))'];
+fig33=[DAT{3,3}.x(ind)'; 10*log10(DAT{3,3}.nexus2(ind))'];
+
+save Figure1 fig11 fig12 fig13 fig21 fig22 fig23 fig31 fig32 fig33
+
 
