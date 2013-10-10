@@ -3,6 +3,8 @@ function VA=cp_ProcessEchosounderdata(blockn,block,par)
 % This is the block, subblock, treatment vector. If the vecotr is shorter,
 %
 % Parameters for picking the right data
+%
+% VA = [blockn subblock treatment sv_pass sv_ref m_pass m_ref]
 
 % block(blockn).subblock(subblockn).treatment(treatmentn)
 N = length(block(blockn).subblock);
