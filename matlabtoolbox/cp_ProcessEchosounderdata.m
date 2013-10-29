@@ -1,14 +1,17 @@
-function VA=cp_ProcessEchosounderdata(blockn,block,par)
+function [VA1,VA2]=cp_ProcessEchosounderdata(blockn,block,par)
 
 % This is the block, subblock, treatment vector. If the vecotr is shorter,
 %
 % Parameters for picking the right data
-%
-% VA = [blockn subblock treatment sv_pass sv_ref m_pass m_ref]
+% Channel 1:
+% VA1 = [blockn subblock treatment sv_pass sv_ref m_pass m_ref]
+% Channel 2:
+% VA2 = [blockn subblock treatment sv_pass sv_ref m_pass m_ref]
 
 % block(blockn).subblock(subblockn).treatment(treatmentn)
 N = length(block(blockn).subblock);
-VA=[];
+VA1=[];
+VA2=[];
 % read in the raw data (this happens once per block)
 dataPath=fullfile(par.datadir,['block',num2str(blockn)],'echosounder');
 [ek60]=cpsrReadEK60(dataPath,par);
@@ -41,7 +44,10 @@ for j=1:N
             end
             
             VAsub=cpsrPlotEK60(ek60,d,par,pl,block,blockn,j,l);
-            VA = [VA;[blockn j l VAsub.sv_pass VAsub.sv_ref VAsub.m_pass VAsub.m_ref]];
+            VA1 = [VA1;[blockn j l VAsub(1).sv_pass VAsub(1).sv_ref VAsub(1).m_pass VAsub(1).m_ref]];
+            if length(par.ek60.channelsToProcess)==2
+            VA2 = [VA2;[blockn j l VAsub(2).sv_pass VAsub(2).sv_ref VAsub(2).m_pass VAsub(2).m_ref]];
+            end
          catch err
              disp([d.hdr,' failed'])
          end
@@ -88,8 +94,12 @@ for i=1:size(fileList);
     %  convert power to sv
     rawData = readEKRaw_Power2Sv(rawData, calParms);
     
-    % loop through the pings
-    for chan=par.ek60.channelsWanted;
+    % loop through the pings (If there are less than wanted channels):
+    dum = par.ek60.channelsWanted;
+    if length(dum)> length(rawData.pings)
+        dum=1;
+    end
+    for chan=dum
         if i==1
             a=fieldnames(rawData.pings);  % get names in structure
             b=fieldnames(rawData.config);  % get names in structure
@@ -157,8 +167,7 @@ eventStart=d.starttime;
 eventEnd=d.stoptime;
 
 % for each channel of interest, process the data
-warning('Hack')
-for i=2%1:length(par.ek60.channelsToProcess);
+for i=1:length(par.ek60.channelsToProcess);
     ch=par.ek60.channelsToProcess(i);
     % covert times of interest into indices
     % piece of interest
@@ -212,19 +221,19 @@ for i=2%1:length(par.ek60.channelsToProcess);
             ind_pass = time > par.ek60.passTimeKW(1)   & time < par.ek60.passTimeKW(2);
         end
         
-        if (strcmp(type,'vessel')||strcmp(type,'orca'))&i==2 %Only do this for channel 2
-            VA.sv_pass = mean(meansv(ind_pass));
-            VA.sv_ref  = mean(meansv(ind_ref));
-            VA.m_pass = mean(medRange(ind_pass));
-            VA.m_ref  = mean(medRange(ind_ref));
+        if (strcmp(type,'vessel')||strcmp(type,'orca'))%&i==2 %Only do this for channel 2
+            VA(i).sv_pass = mean(meansv(ind_pass));
+            VA(i).sv_ref  = mean(meansv(ind_ref));
+            VA(i).m_pass = mean(medRange(ind_pass));
+            VA(i).m_ref  = mean(medRange(ind_ref));
             plVA = true;
             
         else
             plVA = false;
-            VA.sv_pass = NaN;
-            VA.sv_ref  = NaN;
-            VA.m_pass = NaN;
-            VA.m_ref  = NaN;
+            VA(i).sv_pass = NaN;
+            VA(i).sv_ref  = NaN;
+            VA(i).m_pass = NaN;
+            VA(i).m_ref  = NaN;
         end
         
         % plot figure 1
