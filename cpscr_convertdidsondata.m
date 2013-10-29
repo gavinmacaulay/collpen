@@ -42,7 +42,57 @@ rootDataDir = '\\callisto\collpen\AustevollExp\data';
 % cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block33\didson'),'T')
 % cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block34\didson'),'T')
 % cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block35\didson'),'T')
-cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block36\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block36\didson'),'T')
+
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block37\didson'),'T')
+
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block38\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block39\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block40\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block41\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block42\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block43\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block44\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block45\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block46\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block47\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block48\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block49\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block50\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block51\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block52\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block53\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block54\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block55\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block56\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block57\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block58\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block59\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block60\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block61\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block62\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block63\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block64\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block65\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block66\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block67\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block68\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block69\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block70\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block71\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block72\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block73\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block74\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block75\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block76\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block77\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block78\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block79\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block80\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block81\didson'),'T')
+% cp_ConvertDidsonToMat(fullfile(rootDataDir, 'HERRINGexp\block82\didson'),'T')
+
+
 
 %% The HERRINGexp - creating the avi per treatment
 clc
@@ -60,8 +110,31 @@ block = cp_GetExpPar(par.parfile);
 %17:36
 
 % Functions to convert Didson data to mat and avi files
-for i=34%34:36%17:36
+for i=37%37:82
     cp_ProcessDidsondata(block(i).b_block,block,par);
+end
+
+%% Calculate school parameters (This is Lars' part)
+
+% Data directory
+par.datadir = '\\callisto\collpen\AustevollExp\data\HERRINGexp';
+par.parfile ='\\callisto\collpen\AustevollExp\data\HERRINGexp\CollPenAustevollLog.xls';
+
+% Parameters and metadata
+block = cp_GetExpPar(par.parfile);
+
+%par.didson.preTrialTime = 8/(24*3600) ;% time in days to plot data before and after the trial
+
+% The time lag before during/exposure for VA data
+par.preRefTimeVA = ([-152 -88]+21)/(24*3600);% time in seconds to define the reference window for vessel avoidance (adjusted for the difference bewtween start time and max pressure, i.e +21s)
+par.passTimeVA   = ([-3 3]+21)/(24*3600);% time in seconds to define the reference window for VA pb
+par.preRefTimeKW = ([-152 -88])/(24*3600);% time in seconds to define the reference window for killer whale pb
+par.passTimeKW   = ([0 60])/(24*3600);% time in seconds to define the reference window for killer whale pb
+par.preRefTimeWB = ([0 30])/(24*3600);% time in seconds to define the reference window for the 2013 experiment. Note that this is different from the 2012 experiment
+
+% Functions to extract school parameters
+for i=37:82%34:36%17:36
+    cp_ProcessDidsonSchoolParameters(block(i).b_block,block,par);
 end
 
 %% The HERRINGcort
