@@ -34,8 +34,6 @@ par.ek60.passTimeKW   = [0 60];% time in seconds to define the reference window 
 par.exampleVA = [21,1];
 par.exampleKW = [21,4];
 
-
-
 % Parameters and metadata
 file = fullfile(par.datadir,'\CollPenAustevollLog.xls');
 block = cp_GetExpPar(file);
@@ -49,15 +47,27 @@ block = cp_GetExpPar(file);
 %into a subdirectory named malformed in block 30
 %HerringExp-D20120710-T075240.raw
 %HerringExp-D20120710-T044626.raw
-clc
-VA=[];
-for i=18:36
+%clc
+VA1=[];
+VA2=[];
+for i=[18:78 80:83]
     disp(['Block ',num2str(i)])
-    VAsub=cp_ProcessEchosounderdata(block(i).b_block,block,par);
-    VA = [VA;VAsub];
-    save VA VA
+    if i>36
+        par.ek60.channelsToProcess=1;
+    else
+        par.ek60.channelsToProcess=[1 2];
+    end
+    [VA1sub,VA2sub]=cp_ProcessEchosounderdata(block(i).b_block,block,par);
+    VA1 = [VA1;VA1sub];
+    if length(par.ek60.channelsToProcess)==2
+        VA2 = [VA2;VA2sub];
+    end
+    save VA VA1 VA2
 end
-xlswrite('VA.xls',VA)
-VA2 = VA(~isnan(VA(:,4)),:);
-xlswrite('VAnonan.xls',VA2)
+xlswrite('VA1.xls',VA1)
+xlswrite('VA2.xls',VA2)
+VA1nonan = VA1(~isnan(VA1(:,4)),:);
+VA2nonan = VA2(~isnan(VA2(:,4)),:);
+xlswrite('VA1nonan.xls',VA2nonan)
+xlswrite('VA2nonan.xls',VA2nonan)
 
