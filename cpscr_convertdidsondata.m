@@ -95,6 +95,7 @@ rootDataDir = '\\callisto\collpen\AustevollExp\data';
 
 
 %% The HERRINGexp - creating the avi per treatment
+clear
 clc
 % Data directory
 %par.datadir = 'G:\collpen\AustevollExp\data\HERRINGexp';
@@ -110,8 +111,10 @@ block = cp_GetExpPar(par.parfile);
 %17:36
 
 % Functions to convert Didson data to mat and avi files
-for i=37%37:82
+for i=17:82
+    try
     cp_ProcessDidsondata(block(i).b_block,block,par);
+    end
 end
 
 %% Calculate school parameters (This is Lars' part)
@@ -133,9 +136,12 @@ par.passTimeKW   = ([0 60])/(24*3600);% time in seconds to define the reference 
 par.preRefTimeWB = ([0 30])/(24*3600);% time in seconds to define the reference window for the 2013 experiment. Note that this is different from the 2012 experiment
 
 % Functions to extract school parameters
-for i=37:82%34:36%17:36
+for i=48:82%48:82%17:82
+    try
     cp_ProcessDidsonSchoolParameters(block(i).b_block,block,par);
+    end
 end
+
 
 %% The HERRINGcort
 

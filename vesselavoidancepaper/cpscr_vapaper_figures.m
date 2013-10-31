@@ -15,19 +15,19 @@ block = cp_GetExpPar(file);
 %21	1	3	block21_1_3
 
 % Figure 1(a)
-F{1,1}=[21 1 1];
-F{1,2}=[21 1 2];
-F{1,3}=[21 1 3];
+F{1,1}=[24 1 1];
+F{1,2}=[24 1 2];
+F{1,3}=[24 1 3];
 
 % Figure 1(b)
-F{2,1}=[21 1 1];
-F{2,2}=[21 1 2];
-F{2,3}=[21 1 3];
+F{2,1}=[24 1 1];
+F{2,2}=[24 1 2];
+F{2,3}=[24 1 3];
 
 % Figure 1(c)
-F{3,1}=[21 1 1];
-F{3,2}=[21 1 2];
-F{3,3}=[21 1 3];
+F{3,1}=[24 1 1];
+F{3,2}=[24 1 2];
+F{3,3}=[24 1 3];
 
 par.avgtime = 0.1;%s
 par.p_ref = 1e-6; % [Pa]
@@ -92,12 +92,16 @@ for i=1:3
                     ind = t>18 & t<25;
                     
                     % Welch Frequency Spectrum (needs to calculated around max pressure!)
-                    h = spectrum.periodogram;
-                    Hpsd1 = psd(h,double(nexus.ch1.press(ind)).*1e6,'Fs',par.Fs);
-                    Hpsd2 = psd(h,double(nexus.ch2.press(ind)).*1e6,'Fs',par.Fs);
-                    DAT{i,j}.x      = Hpsd1.Frequencies;
-                    DAT{i,j}.nexus1 = Hpsd1.Data;
-                    DAT{i,j}.nexus2 = Hpsd2.Data;
+%                     h = spectrum.periodogram;
+%                     Hpsd1 = psd(h,double(nexus.ch1.press(ind)).*1e6,'Fs',par.Fs);
+%                     Hpsd2 = psd(h,double(nexus.ch2.press(ind)).*1e6,'Fs',par.Fs);
+% %                     
+                    [Hpsd1_1,f] = pwelch(double(nexus.ch1.press(ind)).*1e6,[],[],[],par.Fs);
+                    [Hpsd2_2,f] = pwelch(double(nexus.ch2.press(ind)).*1e6,[],[],[],par.Fs);
+                    
+                    DAT{i,j}.x      = f;%Hpsd1.Frequencies;
+                    DAT{i,j}.nexus1 = Hpsd1_1;%Hpsd1.Data;
+                    DAT{i,j}.nexus2 = Hpsd2_2;%Hpsd2.Data;
             end
             clear nexus
         else
@@ -107,7 +111,11 @@ for i=1:3
 end
 save DATva DAT
 
-%% Export files to R/plot figures
+% Export files to R/plot figures
+
+% The outer B&K hydrophone (the one close to the caruso) is connected to
+% channel 2 on the Nexus, and split to channel 18 on the NTNU sampler  
+
 clear
 load DATva
 close all
@@ -118,16 +126,16 @@ subplot(131)
 for i=1:3
     ind{i}= DAT{1,i}.x>-inf & DAT{1,i}.x<inf;
 end
-plot(DAT{1,1}.x(ind{1}),20*log10(DAT{1,1}.nexus1(ind{1})),...
-    DAT{1,2}.x(ind{2}),20*log10(DAT{1,2}.nexus1(ind{2})),...
-    DAT{1,3}.x(ind{3}),20*log10(DAT{1,3}.nexus1(ind{3})))
+plot(DAT{1,1}.x(ind{1}),20*log10(DAT{1,1}.nexus2(ind{1})),...
+    DAT{1,2}.x(ind{2}),20*log10(DAT{1,2}.nexus2(ind{2})),...
+    DAT{1,3}.x(ind{3}),20*log10(DAT{1,3}.nexus2(ind{3})))
 ylabel('SPL (dB re 1\mu Pa)')
 xlabel('time (s)')
 
 % Data for R
-fig11=[DAT{1,1}.x(ind{1}); 20*log10(DAT{1,1}.nexus1(ind{1}))];
-fig12=[DAT{1,2}.x(ind{2}); 20*log10(DAT{1,2}.nexus1(ind{2}))];
-fig13=[DAT{1,3}.x(ind{3}); 20*log10(DAT{1,3}.nexus1(ind{3}))];
+fig11=[DAT{1,1}.x(ind{1}); 20*log10(DAT{1,1}.nexus2(ind{1}))];
+fig12=[DAT{1,2}.x(ind{2}); 20*log10(DAT{1,2}.nexus2(ind{2}))];
+fig13=[DAT{1,3}.x(ind{3}); 20*log10(DAT{1,3}.nexus2(ind{3}))];
 
 % Figure 1(b)
 subplot(132)
@@ -143,9 +151,9 @@ end
 %     ind{i}= DAT{2,i}.x>-inf & DAT{2,i}.x<inf;
 % end
 
-plot(DAT{2,1}.x(ind{1})*1000,(DAT{2,1}.nexus2(ind{1})),'k',...
-    DAT{2,2}.x(ind{2})*1000,(DAT{2,2}.nexus2(ind{2})),'b',...
-    DAT{2,3}.x(ind{3})*1000,(DAT{2,3}.nexus2(ind{3})),'r')
+plot(DAT{2,1}.x(ind{1})*1000,(DAT{2,1}.nexus2(ind{1})),...
+    DAT{2,2}.x(ind{2})*1000,(DAT{2,2}.nexus2(ind{2})),...
+    DAT{2,3}.x(ind{3})*1000,(DAT{2,3}.nexus2(ind{3})))
 ylabel('Pressure (Pa)')
 xlabel('time (ms)')
 
