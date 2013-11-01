@@ -111,13 +111,13 @@ block = cp_GetExpPar(par.parfile);
 %17:36
 
 % Functions to convert Didson data to mat and avi files
-for i=17:82
+for i=37%:82%17:82
     try
     cp_ProcessDidsondata(block(i).b_block,block,par);
     end
 end
 
-%% Calculate school parameters (This is Lars' part)
+%% Calculate school parameters (This generates the NULL and TREATMENT for vessel, orca and w/b net)
 
 % Data directory
 par.datadir = '\\callisto\collpen\AustevollExp\data\HERRINGexp';
