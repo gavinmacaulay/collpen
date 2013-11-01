@@ -32,6 +32,46 @@ F{3,3}=[24 1 3];
 par.avgtime = 0.1;%s
 par.p_ref = 1e-6; % [Pa]
 
+
+% % Equiripple Bandpass filter designed using the FIRPM function.
+% 
+% % All frequency values are in Hz.
+% Fs = 10000;  % Sampling Frequency
+% 
+% Fstop1 = 40;                % First Stopband Frequency
+% Fpass1 = 100;               % First Passband Frequency
+% Fpass2 = 1000;              % Second Passband Frequency
+% Fstop2 = 2000;              % Second Stopband Frequency
+% Dstop1 = 0.000177827941;    % First Stopband Attenuation
+% Dpass  = 0.00057564620966;  % Passband Ripple
+% Dstop2 = 0.000177827941;    % Second Stopband Attenuation
+% dens   = 20;                % Density Factor
+% 
+% % Calculate the order from the parameters using FIRPMORD.
+% [N, Fo, Ao, W] = firpmord([Fstop1 Fpass1 Fpass2 Fstop2]/(Fs/2), [0 1 ...
+%                           0], [Dstop1 Dpass Dstop2]);
+% 
+% % Calculate the coefficients using the FIRPM function.
+% b  = firpm(N, Fo, Ao, W, {dens});
+% Hd = dfilt.dffir(b);
+
+Fs = 10000;  % Sampling Frequency
+
+Fpass = 1000;            % Passband Frequency
+Fstop = 1100;            % Stopband Frequency
+Dpass = 0.057501127785;  % Passband Ripple
+Dstop = 0.0001;          % Stopband Attenuation
+dens  = 20;              % Density Factor
+
+% Calculate the order from the parameters using FIRPMORD.
+[N, Fo, Ao, W] = firpmord([Fpass, Fstop]/(Fs/2), [1 0], [Dpass, Dstop]);
+
+% Calculate the coefficients using the FIRPM function.
+b  = firpm(N, Fo, Ao, W, {dens});
+Hd = dfilt.dffir(b);
+
+
+
 for i=1:3
     for j=1:3
         disp(['i:',num2str(i),'/3 j:',num2str(j),'/3'])
@@ -48,8 +88,10 @@ for i=1:3
             par.Fs=data.sample_rate(nexus1);
             par.start_time=data.start_time(nexus1);
             par.avg_bin=floor(par.Fs*par.avgtime);  % average into 1/10 second  bins
-            nexus.ch1.press= data.values(:,nexus1).*block(F{i,j}(1)).b_nexus1sens;  % pressure in Pa
-            nexus.ch2.press= data.values(:,nexus2).*block(F{i,j}(1)).b_nexus2sens;  % pressure in Pa
+            
+            % Low Pass Filter the data
+            nexus.ch1.press= filter(Hd,data.values(:,nexus1).*block(F{i,j}(1)).b_nexus1sens);  % pressure in Pa
+            nexus.ch2.press= filter(Hd,data.values(:,nexus2).*block(F{i,j}(1)).b_nexus2sens);  % pressure in Pa
             % Release memory
             clear data
             
@@ -133,9 +175,13 @@ ylabel('SPL (dB re 1\mu Pa)')
 xlabel('time (s)')
 
 % Data for R
-fig11=[DAT{1,1}.x(ind{1}); 20*log10(DAT{1,1}.nexus2(ind{1}))];
-fig12=[DAT{1,2}.x(ind{2}); 20*log10(DAT{1,2}.nexus2(ind{2}))];
-fig13=[DAT{1,3}.x(ind{3}); 20*log10(DAT{1,3}.nexus2(ind{3}))];
+fig11_1=[DAT{1,1}.x(ind{1}); 20*log10(DAT{1,1}.nexus1(ind{1}))];
+fig12_1=[DAT{1,2}.x(ind{2}); 20*log10(DAT{1,2}.nexus1(ind{2}))];
+fig13_1=[DAT{1,3}.x(ind{3}); 20*log10(DAT{1,3}.nexus1(ind{3}))];
+
+fig11_2=[DAT{1,1}.x(ind{1}); 20*log10(DAT{1,1}.nexus2(ind{1}))];
+fig12_2=[DAT{1,2}.x(ind{2}); 20*log10(DAT{1,2}.nexus2(ind{2}))];
+fig13_2=[DAT{1,3}.x(ind{3}); 20*log10(DAT{1,3}.nexus2(ind{3}))];
 
 % Figure 1(b)
 subplot(132)
@@ -157,9 +203,12 @@ plot(DAT{2,1}.x(ind{1})*1000,(DAT{2,1}.nexus2(ind{1})),...
 ylabel('Pressure (Pa)')
 xlabel('time (ms)')
 
-fig21=[DAT{2,1}.x(ind{1})*1000; DAT{2,1}.nexus2(ind{1})'];
-fig22=[DAT{2,2}.x(ind{2})*1000; DAT{2,2}.nexus2(ind{2})'];
-fig23=[DAT{2,3}.x(ind{3})*1000; DAT{2,3}.nexus2(ind{3})'];
+fig21_1=[DAT{2,1}.x(ind{1})*1000; DAT{2,1}.nexus1(ind{1})'];
+fig22_1=[DAT{2,2}.x(ind{2})*1000; DAT{2,2}.nexus1(ind{2})'];
+fig23_1=[DAT{2,3}.x(ind{3})*1000; DAT{2,3}.nexus1(ind{3})'];
+fig21_2=[DAT{2,1}.x(ind{1})*1000; DAT{2,1}.nexus2(ind{1})'];
+fig22_2=[DAT{2,2}.x(ind{2})*1000; DAT{2,2}.nexus2(ind{2})'];
+fig23_2=[DAT{2,3}.x(ind{3})*1000; DAT{2,3}.nexus2(ind{3})'];
 
 % Figure 1(c)
 subplot(133)
@@ -171,11 +220,14 @@ xlabel('Frequency (Hz)')
 ylabel('Power spectral density (dB re 1\mu Pa Hz^{-1})')
 
 ind= DAT{3,1}.x<1000 & DAT{3,1}.x>10;
-fig31=[DAT{3,1}.x(ind)'; 10*log10(DAT{3,1}.nexus2(ind))'];
-fig32=[DAT{3,2}.x(ind)'; 10*log10(DAT{3,2}.nexus2(ind))'];
-fig33=[DAT{3,3}.x(ind)'; 10*log10(DAT{3,3}.nexus2(ind))'];
+fig31_1=[DAT{3,1}.x(ind)'; 10*log10(DAT{3,1}.nexus1(ind))'];
+fig32_1=[DAT{3,2}.x(ind)'; 10*log10(DAT{3,2}.nexus1(ind))'];
+fig33_1=[DAT{3,3}.x(ind)'; 10*log10(DAT{3,3}.nexus1(ind))'];
+fig31_2=[DAT{3,1}.x(ind)'; 10*log10(DAT{3,1}.nexus2(ind))'];
+fig32_2=[DAT{3,2}.x(ind)'; 10*log10(DAT{3,2}.nexus2(ind))'];
+fig33_2=[DAT{3,3}.x(ind)'; 10*log10(DAT{3,3}.nexus2(ind))'];
 
-save Figure1 fig11 fig12 fig13 fig21 fig22 fig23 fig31 fig32 fig33
+save Figure1 fig11_1 fig12_1 fig13_1 fig21_1 fig22_1 fig23_1 fig31_1 fig32_1 fig33_1 fig11_2 fig12_2 fig13_2 fig21_2 fig22_2 fig23_2 fig31_2 fig32_2 fig33_2
 
 %% Prepare VA data
 
