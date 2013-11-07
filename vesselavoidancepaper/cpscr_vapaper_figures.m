@@ -248,7 +248,7 @@ N=1;
 %b_block;b_groupsize;s_subblock;s_treatmenttype;t_treatment;t_treatmenttype;t_start_time_mt;t_stop_time_mt;t_F1;t_F2;t_SL;t_duration;t_rt;v_score
 %17;large group in M09;1;tones;1;tones_F1500_F2160_SL175_dur2000_rt250;735055.384456;735055.384525;500;160;175;2000;250;1.7
 
-str='%u;%*s;%u;%*s;%u;%*s;%*f;%*f;%*u;%*u;%*u;%*u;%*u;%f\n'
+str='%u;%*s;%u;%*s;%u;%*s;%*f;%*f;%*u;%*u;%*u;%*u;%*u;%f\n';
 
 
 fid=fopen('C:/repositories/CollPen_mercurial/score_anova_simple.csv','rt')
@@ -256,6 +256,7 @@ getl(fid)
 scr = freadf(fid,str);
 fid=fclose(fid)
 
+%%
 VAvessel={'Block','Sub block','Treatment','sv_0','sv','m_0','m','Score','Type','Group size'};
 % Desse manglar:
 %27 3 2
@@ -306,3 +307,48 @@ xlswrite('VAvessel.xls',VAvessel)
 
 save VAvessel VAvessel
 
+%%
+
+for b=21:35
+    for sb=1:length(block(b).subblock)
+        if strcmp(block(b).subblock(sb).s_treatmenttype,'orca')
+            for trn=1:length(block(b).subblock(sb).treatment)
+                % Match with va data
+                switch block(b).subblock(sb).treatment(trn).t_treatmenttype
+                    case 'GOS_upscaled'
+                        tr = 'GOSup';
+                    case 'GOS_unfiltered'
+                        tr = 'GOS';
+                    case 'JH_unfiltered'
+                        tr = 'JH';
+                end
+                gs='NaN';
+                switch block(b).b_groupsize
+                    case 'large group in M09'
+                        gs='L';
+                    case 'small group in M09'
+                        gs='S';
+                end
+                ind=VA(:,1)==b & VA(:,2)==sb & VA(:,3)==trn;
+                indsc=scr(:,1)==b & scr(:,3)==sb & scr(:,5)==trn;
+                if sum(ind)>0
+                    vas = num2cell(VA(ind,:));% groupsize tr
+                else
+                    vas = num2cell([b sb trn NaN NaN NaN NaN]);% groupsize tr
+                end
+                
+                if sum(indsc)>0
+                    scrs = num2cell(scr(indsc,14));% groupsize tr
+                else
+                    scrs = num2cell(NaN);% groupsize tr
+                end
+                
+                VAvessel=[VAvessel;[vas scrs tr gs]];
+            end
+        end
+    end
+end
+disp(VAvessel)
+xlswrite('VAorca.xls',VAvessel)
+
+save VAorca VAorca
