@@ -17,7 +17,7 @@ function = PIV_bgimage(filedir,file,par)
 % (c) Lars Helge Stien
 %
 
-file = fullfile(filedir,file);
+file = fullfile(filedir,[file,'.avi']);
 
 % and so on
 
