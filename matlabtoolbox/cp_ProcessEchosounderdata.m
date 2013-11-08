@@ -20,7 +20,7 @@ dataPath=fullfile(par.datadir,['block',num2str(blockn)],'echosounder');
 for j=1:N
     % Loop over treatment
     for l = 1:length(block(blockn).subblock(j).treatment)
-       try
+        try
             hdr = fullfile(par.datadir,'figures',['echosounder_block',num2str(block(blockn).b_block),'_sub',num2str(block(blockn).subblock(j).s_subblock),'_']);
             d.starttime = block(blockn).subblock(j).treatment(l).t_start_time_mt;
             d.stoptime = block(blockn).subblock(j).treatment(l).t_stop_time_mt;
@@ -43,14 +43,24 @@ for j=1:N
                 pl=false;
             end
             
-            VAsub=cpsrPlotEK60(ek60,d,par,pl,block,blockn,j,l);
-            VA1 = [VA1;[blockn j l VAsub(1).sv_pass VAsub(1).sv_ref VAsub(1).m_pass VAsub(1).m_ref]];
-            if length(par.ek60.channelsToProcess)==2
-            VA2 = [VA2;[blockn j l VAsub(2).sv_pass VAsub(2).sv_ref VAsub(2).m_pass VAsub(2).m_ref]];
+            if strcmp(block(blockn).subblock(j).s_treatmenttype,'vessel')
+                disp('vessel')
+            elseif strcmp(block(blockn).subblock(j).s_treatmenttype,'orca')
+                disp('orca')
             end
-         catch err
-             disp([d.hdr,' failed'])
-         end
+            
+            
+            VAsub=cpsrPlotEK60(ek60,d,par,pl,block,blockn,j,l);
+            
+            if strcmp(block(blockn).subblock(j).s_treatmenttype,'vessel')|| strcmp(block(blockn).subblock(j).s_treatmenttype,'orca')
+                VA1 = [VA1;[blockn j l VAsub(1).sv_pass VAsub(1).sv_ref VAsub(1).m_pass VAsub(1).m_ref]];
+                if length(par.ek60.channelsToProcess)==2
+                    VA2 = [VA2;[blockn j l VAsub(2).sv_pass VAsub(2).sv_ref VAsub(2).m_pass VAsub(2).m_ref]];
+                end
+            end
+        catch err
+            disp([d.hdr,' failed'])
+        end
     end
 end
 
@@ -168,50 +178,65 @@ eventEnd=d.stoptime;
 
 % for each channel of interest, process the data
 for i=1:length(par.ek60.channelsToProcess);
+    % The channel to process
     ch=par.ek60.channelsToProcess(i);
-    % covert times of interest into indices
-    % piece of interest
-    [index.ping]=( ((ek60.pings(ch).time>eventStart-par.ek60.preTrialTime))...
-        &((ek60.pings(ch).time<eventEnd+par.ek60.preTrialTime)) ) ;
-    index.ping=find(index.ping==1);  % index into data of interest to plot
-    
-    index.labels=[ min(find(ek60.pings(ch).time>eventStart))  min(find(ek60.pings(ch).time>eventEnd))]; % indicies for vertical axis labels based on start and stop times of the event
-    %
-    
+
+    % Header information
     fname=[d.str,'_channel_', num2str(ch)]; % string for naming
     fname_anon=[d.str_anon,'_channel_', num2str(ch)]; % string for naming
+        
+    %
+    % Data indices
+    %
     
+    % convert times of interest into indices
+    [index.ping]=( ((ek60.pings(ch).time>eventStart-par.ek60.preTrialTime))...
+        &((ek60.pings(ch).time<eventEnd+par.ek60.preTrialTime)) ) ;
+    % index into data of interest to plot
+    index.ping=find(index.ping==1);
+    % indicies for vertical axis labels based on start and stop times of the event
+    index.labels=[ min(find(ek60.pings(ch).time>eventStart))  min(find(ek60.pings(ch).time>eventEnd))]; 
     % range index for data anlysis and display
-    index.analyze=find(ek60.pings(ch).range >=par.ek60.AnalyzeRange(ch,1) & ek60.pings(ch).range<=par.ek60.AnalyzeRange(ch,2) );
     index.disp=find(ek60.pings(ch).range >=par.ek60.displayRange(ch,1) & ek60.pings(ch).range <=par.ek60.displayRange(ch,2) );
     
-    stime=(ek60.pings(ch).time(index.labels(1))); % start time
+    % Range for ch 1:
+    range{1} = (ek60.pings(ch).range(index.disp));
+    % Depth for ch 2:
+    range{2} = par.ek60.transdepth-range{1};
     
-    % Calculate some statistics for plotting;
-    % now compute sv (i.e. linear units m^2/m^3)
+    index.analyze=find(range{i} >=par.ek60.AnalyzeRange(ch,1) & range{i}<=par.ek60.AnalyzeRange(ch,2) );
+    
+    % sv (i.e. linear units m^2/m^3)
     sv=10.^(ek60.pings(ch).Sv(index.analyze,index.ping)/10);
     meansv=(mean(sv,1));
     
-    % compute the median depth
+    % compute the median range/depth
     for k=1:size(sv,2)
         temp= cumsum(sv(:,k));
         temp=temp./max(temp);  % cumulative sum normalized to 1
         ind=min(find(temp>0.5)); % median depth
-        medRange(k)=ek60.pings(ch).range(index.analyze(ind));
+        medRange{1}(k)=ek60.pings(ch).range(index.analyze(ind));
     end
+    medRange{2} = par.ek60.transdepth - medRange{1};
     
+    stime=(ek60.pings(ch).time(index.labels(1))); % start time
+    time = (ek60.pings(ch).time(index.ping)-stime)*3600*24;
+        
     if size(sv,2)>par.ek60.minPings;
         % apply a running mean to compute sv should probably ultimatley use a
         % better windowing scheme...
-        meansvSmoothed=filter(ones(1,par.ek60.smoothWindow)/par.ek60.smoothWindow,1,meansv);
-        medRangeSmoothed=filter(ones(1,par.ek60.smoothWindow)/par.ek60.smoothWindow,1,medRange);
-        % smoothing winow has edge effects so generate index for data not to plot
-        ind=par.ek60.smoothWindow:length(meansvSmoothed);
         
-        time = (ek60.pings(ch).time(index.ping)-stime)*3600*24;
+        
+        meansvSmoothed=filter(ones(1,par.ek60.smoothWindow)/par.ek60.smoothWindow,1,meansv);
+        medRangeSmoothed=filter(ones(1,par.ek60.smoothWindow)/par.ek60.smoothWindow,1,medRange{i});
+        % smoothing window has edge effects so generate index for data not to plot
+        ind=par.ek60.smoothWindow:length(meansvSmoothed);
+        meansvSmoothed = meansvSmoothed(ind);
+        medRangeSmoothed = medRangeSmoothed(ind);
+        time_smooth = time(ind-round(par.ek60.smoothWindow*.5));
         
         % Calculate the VA coefficient and median depth changes
-        %if 
+        %if
         type = block(blockn).subblock(subblockn).s_treatmenttype;
         if strcmp(type,'vessel')
             ind_ref  = time > par.ek60.preRefTimeVA(1) & time < par.ek60.preRefTimeVA(2);
@@ -221,11 +246,11 @@ for i=1:length(par.ek60.channelsToProcess);
             ind_pass = time > par.ek60.passTimeKW(1)   & time < par.ek60.passTimeKW(2);
         end
         
-        if (strcmp(type,'vessel')||strcmp(type,'orca'))%&i==2 %Only do this for channel 2
+        if (strcmp(type,'vessel')||strcmp(type,'orca'))
             VA(i).sv_pass = mean(meansv(ind_pass));
             VA(i).sv_ref  = mean(meansv(ind_ref));
-            VA(i).m_pass = mean(medRange(ind_pass));
-            VA(i).m_ref  = mean(medRange(ind_ref));
+            VA(i).m_pass = mean(medRange{i}(ind_pass));
+            VA(i).m_ref  = mean(medRange{i}(ind_ref));
             plVA = true;
             
         else
@@ -240,49 +265,61 @@ for i=1:length(par.ek60.channelsToProcess);
         
         scrsz = get(0,'ScreenSize');
         figure('Position',scrsz)
+        
+
+        %
+        % Echogram
+        %
+        
         subplot(4,1,1:3)
-        dum = par.ek60.transdepth-(ek60.pings(ch).range(index.disp));
-        if pl && i==2
-            imagesc(time,dum,(ek60.pings(ch).Sv(index.disp,index.ping)))
+        
+        imagesc(time,range{i},(ek60.pings(ch).Sv(index.disp,index.ping)))
+        if i==2
             axis ij  %changes frame of reference to the axis
             ylabel('Depth (m)')
         else
-            imagesc(time,(ek60.pings(ch).range(index.disp)),(ek60.pings(ch).Sv(index.disp,index.ping)))
             axis xy  %changes frame of reference to the axis
             ylabel('Range (m)')
         end
+        
         hold on
-        h1=plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,medRangeSmoothed(ind),'k','linewidth',2); % plot median range of backscatter 50% percentile in analysis window
-        for j=1:length(index.labels); % plot vertical marks for start/stop
+        h1=plot(time_smooth,medRangeSmoothed,'w','linewidth',2); % plot median range of backscatter 50% percentile in analysis window
+        % plot vertical marks for start/stop
+        for j=1:length(index.labels);
             h2(j)=plot([(ek60.pings(ch).time(index.labels(j))-stime)*3600*24 (ek60.pings(ch).time(index.labels(j))-stime)*3600*24],...
                 [par.ek60.displayRange(ch,1),par.ek60.displayRange(ch,2)],'w','linewidth',1.5);
         end
+        % plot horizontal lines for integration range
+        plot(time([1 end]),range{i}(index.analyze([end end])),  'Color',[.99 .99 .99],'linewidth',1.5)
+        plot(time([1 end]),range{i}(index.analyze([1 1])),  'Color',[.99 .99 .99],'linewidth',1.5)
+
+        % Plot VA mean depths
         if plVA
-            plot(time([min(find(ind_pass)) max(find(ind_pass))]),[VA.m_pass VA.m_pass],'Color',[.99 .99 .99],'linewidth',1.5)
-            plot(time([min(find(ind_ref))  max(find(ind_ref)) ]),[VA.m_ref  VA.m_ref ],'Color',[.99 .99 .99],'linewidth',1.5)
+            plot(time([min(find(ind_pass)) max(find(ind_pass))]),[VA(i).m_pass VA(i).m_pass],'Color',[.99 .99 .99],'linewidth',1.5)
+            plot(time([min(find(ind_ref))  max(find(ind_ref)) ]),[VA(i).m_ref  VA(i).m_ref ],'Color',[.99 .99 .99],'linewidth',1.5)
         end
         
         caxis(par.ek60.displayThreshold)
         colorbar('location','SouthOutside')
-        % axis([min(index.ping) max(index.ping) par.ek60.displayRange(ch,:)])
-        
-        %datetick('keeplimits')
         
         h3=title(fname,'interpreter', 'none');
         
-        % now generate an SV time series
-        subplot(4,1,4)
-        plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,10*log10(meansv(ind)),'k');
-        hold on
-        plot((ek60.pings(ch).time(index.ping(ind))-stime)*3600*24,10*log10(meansvSmoothed(ind)),'.-');
-        xlabel('Time relative to stimulus start (sec)')
-        ylabel('Sv (m ^{-1})','interpreter','Tex')
-        if plVA
-            plot(time([min(find(ind_pass)) max(find(ind_pass))]),10*log10([VA.sv_pass VA.sv_pass]),'Color',[.4 .4 .4],'linewidth',1.5)
-            plot(time([min(find(ind_ref)) max(find(ind_ref))]),10*log10([VA.sv_ref VA.sv_ref]),'Color',[.4 .4 .4],'linewidth',1.5)
-        end
-        axis tight
+        %
+        % SV time series subplot
+        %
         
+        subplot(4,1,4)
+        plot((ek60.pings(ch).time(index.ping)-stime)*3600*24,10*log10(meansv),'k');
+        hold on
+        plot(time_smooth,10*log10(meansvSmoothed),'b','linewidth',1.5);
+        xlabel('Time relative to stimulus start (sec)')
+        ylabel('Sv (dB re 1 m ^{-1})','interpreter','Tex')
+        if plVA
+            plot(time([min(find(ind_pass)) max(find(ind_pass))]),10*log10([VA(i).sv_pass VA(i).sv_pass]),'Color',[1 0 0],'linewidth',1.5)
+            plot(time([min(find(ind_ref)) max(find(ind_ref))]),10*log10([VA(i).sv_ref VA(i).sv_ref]),'Color',[1 0 0],'linewidth',1.5)
+        end
+        
+        axis tight
         eval(['print ',fname,' -r200',' -dpng'])
         delete(h3)
         eval(['print ',fname_anon,' -r200',' -dpng'])
@@ -295,7 +332,7 @@ for i=1:length(par.ek60.channelsToProcess);
             %delete(h3)
             print('-dpng','-r800',fullfile(par.datadir,'figures','Guillaume_Figure1'))
         end
-        close
+        close all
     end
 end
 
