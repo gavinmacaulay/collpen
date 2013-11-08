@@ -229,6 +229,7 @@ fig33_2=[DAT{3,3}.x(ind)'; 10*log10(DAT{3,3}.nexus2(ind))'];
 
 save Figure1 fig11_1 fig12_1 fig13_1 fig21_1 fig22_1 fig23_1 fig31_1 fig32_1 fig33_1 fig11_2 fig12_2 fig13_2 fig21_2 fig22_2 fig23_2 fig31_2 fig32_2 fig33_2
 
+VA1 = load(fullfile('C:\repositories\CollPen_mercurial\','VA1.mat'));
 %% Prepare VA data
 
 clear
@@ -240,115 +241,62 @@ block = cp_GetExpPar(file);
 
 load(fullfile('C:\repositories\CollPen_mercurial\','VA.mat'));
 
+%%
+
 % Fit block informaion and va data
 N=1;
-%%
 
-% Les inn manuell scoring
-%b_block;b_groupsize;s_subblock;s_treatmenttype;t_treatment;t_treatmenttype;t_start_time_mt;t_stop_time_mt;t_F1;t_F2;t_SL;t_duration;t_rt;v_score
-%17;large group in M09;1;tones;1;tones_F1500_F2160_SL175_dur2000_rt250;735055.384456;735055.384525;500;160;175;2000;250;1.7
-
-str='%u;%*s;%u;%*s;%u;%*s;%*f;%*f;%*u;%*u;%*u;%*u;%*u;%f\n';
-
-
-fid=fopen('C:/repositories/CollPen_mercurial/score_anova_simple.csv','rt')
-getl(fid)
-scr = freadf(fid,str);
-fid=fclose(fid)
-
-%%
-VAvessel={'Block','Sub block','Treatment','sv_0','sv','m_0','m','Score','Type','Group size'};
 % Desse manglar:
 %27 3 2
 %27 3 3
 %33 4 1
 
-for b=21:35
-    for sb=1:length(block(b).subblock)
-        if strcmp(block(b).subblock(sb).s_treatmenttype,'vessel')
-            for trn=1:length(block(b).subblock(sb).treatment)
-                % Match with va data
-                switch block(b).subblock(sb).treatment(trn).t_treatmenttype
-                    case 'GOS_upscaled'
-                        tr = 'GOSup';
-                    case 'GOS_unfiltered'
-                        tr = 'GOS';
-                    case 'JH_unfiltered'
-                        tr = 'JH';
-                end
-                gs='NaN';
-                switch block(b).b_groupsize
-                    case 'large group in M09'
-                        gs='L';
-                    case 'small group in M09'
-                        gs='S';
-                end
-                ind=VA(:,1)==b & VA(:,2)==sb & VA(:,3)==trn;
-                indsc=scr(:,1)==b & scr(:,3)==sb & scr(:,5)==trn;
-                if sum(ind)>0
-                    vas = num2cell(VA(ind,:));% groupsize tr
-                else
-                    vas = num2cell([b sb trn NaN NaN NaN NaN]);% groupsize tr
-                end
-                
-                if sum(indsc)>0
-                    scrs = num2cell(scr(indsc,14));% groupsize tr
-                else
+% Several of the horizontal blocks are invalid due to net pen wall
+% interactions
+
+%# 20,21,22,23,27,28,29,30,31,32,33,34 
+blocks{1} = [24:26 35];
+% The vertical ones are ok
+blocks{2} = 21:35;
+
+for ch=1:2
+    eval(['VA=VA',num2str(ch),';']);
+    VAvessel={'block','subblock','treatment','sv_0','sv','m_0','m','score','type','groupsize'};
+    for b=blocks{ch}
+        for sb=1:length(block(b).subblock)
+            if strcmp(block(b).subblock(sb).s_treatmenttype,'vessel')
+                for trn=1:length(block(b).subblock(sb).treatment)
+                    % Match with va data
+                    switch block(b).subblock(sb).treatment(trn).t_treatmenttype
+                        case 'GOS_upscaled'
+                            tr = 'GOSup';
+                        case 'GOS_unfiltered'
+                            tr = 'GOS';
+                        case 'JH_unfiltered'
+                            tr = 'JH';
+                    end
+                    gs='NaN';
+                    switch block(b).b_groupsize
+                        case 'large group in M09'
+                            gs='L';
+                        case 'small group in M09'
+                            gs='S';
+                    end
+                    ind=VA(:,1)==b & VA(:,2)==sb & VA(:,3)==trn;
+                    if sum(ind)>0
+                        vas = num2cell(VA(ind,:));% groupsize tr
+                    else
+                        vas = num2cell([b sb trn NaN NaN NaN NaN]);% groupsize tr
+                    end
                     scrs = num2cell(NaN);% groupsize tr
+                    VAvessel=[VAvessel;[vas scrs tr gs]];
                 end
-                
-                VAvessel=[VAvessel;[vas scrs tr gs]];
             end
         end
     end
+    disp(VAvessel)
+    % Remove NaN's
+    xlswrite(['VAvessel_ch',num2str(ch),'.xls'],VAvessel)
 end
-disp(VAvessel)
-xlswrite('VAvessel.xls',VAvessel)
 
-save VAvessel VAvessel
 
-%%
-
-for b=21:35
-    for sb=1:length(block(b).subblock)
-        if strcmp(block(b).subblock(sb).s_treatmenttype,'orca')
-            for trn=1:length(block(b).subblock(sb).treatment)
-                % Match with va data
-                switch block(b).subblock(sb).treatment(trn).t_treatmenttype
-                    case 'GOS_upscaled'
-                        tr = 'GOSup';
-                    case 'GOS_unfiltered'
-                        tr = 'GOS';
-                    case 'JH_unfiltered'
-                        tr = 'JH';
-                end
-                gs='NaN';
-                switch block(b).b_groupsize
-                    case 'large group in M09'
-                        gs='L';
-                    case 'small group in M09'
-                        gs='S';
-                end
-                ind=VA(:,1)==b & VA(:,2)==sb & VA(:,3)==trn;
-                indsc=scr(:,1)==b & scr(:,3)==sb & scr(:,5)==trn;
-                if sum(ind)>0
-                    vas = num2cell(VA(ind,:));% groupsize tr
-                else
-                    vas = num2cell([b sb trn NaN NaN NaN NaN]);% groupsize tr
-                end
-                
-                if sum(indsc)>0
-                    scrs = num2cell(scr(indsc,14));% groupsize tr
-                else
-                    scrs = num2cell(NaN);% groupsize tr
-                end
-                
-                VAvessel=[VAvessel;[vas scrs tr gs]];
-            end
-        end
-    end
-end
-disp(VAvessel)
-xlswrite('VAorca.xls',VAvessel)
-
-save VAorca VAorca
