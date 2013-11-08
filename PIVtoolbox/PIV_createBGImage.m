@@ -18,7 +18,15 @@ function [image, filepathbg] = PIV_createBGImage(folder, avifilename, parstr)
     
     % default parstr
     dparstr = struct('showmsg',0,'Nframes',500,'perc',30,'write',0,'useold',0);
-    tmpfilepathbg = strrep([folder '\' avifilename],'.avi','_BG.bmp');
+   
+    % Datafolder
+    datafolder = [folder '\PIVdata'];
+    if ~(exist(datafolder,'dir')==7)
+        dispMsg(parstr.showmsg,['[PIV_getRawPIVvectors]: Creating data folder, ' datafolder]);
+        mkdir(datafolder);
+    end
+    tmpfilepathbg = strrep([datafolder '\' avifilename],'.avi','_BG.bmp');
+    
     
     % Setting return to empty
     image=[];
