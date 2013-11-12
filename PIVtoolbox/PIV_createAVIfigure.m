@@ -1,12 +1,12 @@
-function savepath = PIV_createAVIfigure(folder, avifilename, xs, ys, us, vs, snrs, pkhs, is, parstr)
+function savepath = PIV_createAVIfigure(folder, avifilename, xs, ys, us, vs, w, pkhs, is, parstr)
     
     % Testing input
     if nargin==9 
-       [folder, avifilename, xs, ys, us, vs, snrs, pkhs, is, parstr] = checkingArguments(folder, avifilename, xs, ys, us, vs, snrs, pkhs, is, parstr);
+       [folder, avifilename, xs, ys, us, vs, w, pkhs, is, parstr] = checkingArguments(folder, avifilename, xs, ys, us, vs, w, pkhs, is, parstr);
     elseif nargin==10
-       [folder, avifilename, xs, ys, us, vs, snrs, pkhs, is, parstr] = checkingArguments(folder, avifilename, xs, ys, us, vs, snrs, pkhs, is, parstr);
+       [folder, avifilename, xs, ys, us, vs, w, pkhs, is, parstr] = checkingArguments(folder, avifilename, xs, ys, us, vs, w, pkhs, is, parstr);
     else
-       [folder, avifilename, xs, ys, us, vs, snrs, pkhs, is, parstr] = checkingArguments();
+       [folder, avifilename, xs, ys, us, vs, w, pkhs, is, parstr] = checkingArguments();
        dispMsg(parstr.showmsg,'[PIV_createAVIfigure]: End');
        return;
     end
@@ -46,7 +46,9 @@ function savepath = PIV_createAVIfigure(folder, avifilename, xs, ys, us, vs, snr
             u = us(:,:,i); v = vs(:,:,i);
 
             %Arrow plot
-            quiver(x,y,u,v,'-k'); title('PIV');
+            ni =~isnan(u)&~isnan(v);
+            quiver(x(ni),y(ni),u(ni),v(ni),'-k');
+%            quiver(x,y,u,v,'-k'); title('PIV');
             hold on
             axis([1 info.Width 1 info.Height]);
             set(gca,'YDir','reverse')
@@ -54,17 +56,21 @@ function savepath = PIV_createAVIfigure(folder, avifilename, xs, ys, us, vs, snr
             Ap       = F.cdata;
             [a b c] = size(Ap);
             
-            % snrs
-            imagesc(x(1,:),y(:,1),snrs(:,:,i),[0 3]); title('snrs');
-            quiver(x,y,u,v,'-k');
+            % w
+            imagesc(x(1,:),y(:,1),w(:,:,i),[0 1]); title('w');
+            ni =~isnan(u)&~isnan(v);
+            quiver(x(ni),y(ni),u(ni),v(ni),'-k');
+            
+            axis tight
+            
             F       = getframe(fig);
             Sp       = F.cdata;
             
-            % pkhs
-            imagesc(x(1,:),y(:,1),pkhs(:,:,i),[0 1]); title('pkhs');
-            quiver(x,y,u,v,'-k');
-            F       = getframe(fig);
-            Pp       = F.cdata;
+%             % pkhs
+%             imagesc(x(1,:),y(:,1),pkhs(:,:,i),[0 1]); title('pkhs');
+%             quiver(x,y,u,v,'-k');
+%             F       = getframe(fig);
+%             Pp       = F.cdata;
             
             hold off
             
@@ -74,13 +80,15 @@ function savepath = PIV_createAVIfigure(folder, avifilename, xs, ys, us, vs, snr
             I       = imresize(RGB(:,:,1),[2*327 2*195]);
             
             % Combining figures
-            FI          = uint8(ones(a,3*b,3)*204);
+%            FI          = uint8(ones(a,3*b,3)*204);
+            FI          = uint8(ones(a,2*b,3)*204);
             FI(1:a,1:b,:) = uint8(Sp);
             FI(60:60+2*327-1,b+60:b+60+2*195-1,1)= I;
             FI(60:60+2*327-1,b+60:b+60+2*195-1,2)= I;
             FI(60:60+2*327-1,b+60:b+60+2*195-1,3)= I;
-            FI(1:a,2*b:3*b-1,:) = uint8(Pp);
+%             FI(1:a,2*b:3*b-1,:) = uint8(Pp);
             aviobj      = addframe(aviobj,FI);
+            imagesc(FI)
             warning on;
         end
     catch exception
@@ -120,7 +128,7 @@ function [folder, avifilename, xs, ys, us, vs, snrs, pkhs, is, parstr] = checkin
         disp(fieldnames(dparstr))
         return;
     else % nargin ==10
-        if sum(strcmp('showmsg',fieldnames(parstr)))==1
+        if sum(strcmp('showmsg',fieldnames(parstr)))==1 %use "isfield" instead???
             dparstr.showmsg = parstr.showmsg;
         end
         if sum(strcmp('id',fieldnames(parstr)))==1
