@@ -30,7 +30,8 @@ function [xs ys fus fvs snrs pkhs is] = PIV_filterPIVvectors(xs, ys, us, vs, snr
     end
    
     
-    % Averaging over time
+    % Averaging over time (Nils Olav: It is better not to use a square
+    % filter, creates a lot of side lobes!
     if parstr.timeaverage
         dispMsg(parstr.showmsg,'[PIV_filterPIVvectors]: ..Averaging PIVs over time');
         as = parstr.timeaverage;
@@ -39,7 +40,7 @@ function [xs ys fus fvs snrs pkhs is] = PIV_filterPIVvectors(xs, ys, us, vs, snr
         fvs=filter(SE,1,fvs,[],3);
     end
     
-    % median filter per frame
+    % median filter per frame (NOH: Why use median filetering? Skew distribution?)
     if parstr.localmedian
         dispMsg(parstr.showmsg,'[PIV_filterPIVvectors]: ..Median filtering each PIV frame');
         for i=1:n
@@ -48,16 +49,16 @@ function [xs ys fus fvs snrs pkhs is] = PIV_filterPIVvectors(xs, ys, us, vs, snr
         end
     end
     
-    % Thresholding fish based on backgroundimage
-    if ~isempty(parstr.backgroundimage)
-        Bimage  = parstr.backgroundimage;
-        Bvalues = double(Bimage(ys(:,1,1),xs(1,:,1)));
-        for i=1:n
-            Ts              = (is(:,:,i)-Bvalues)>10;
-            fus(:,:,i)      = fus(:,:,i).*Ts;
-            fvs(:,:,i)      = fvs(:,:,i).*Ts;
-        end
-    end
+%     % Thresholding fish based on backgroundimage
+%     if ~isempty(parstr.backgroundimage)
+%         Bimage  = parstr.backgroundimage;
+%         Bvalues = double(Bimage(ys(:,1,1),xs(1,:,1)));
+%         for i=1:n
+%             Ts              = (is(:,:,i)-Bvalues)>parstr.threshold;% This is a parameer!!!!
+%             fus(:,:,i)      = fus(:,:,i).*Ts;
+%             fvs(:,:,i)      = fvs(:,:,i).*Ts;
+%         end
+%     end
     
     
     
@@ -102,6 +103,10 @@ function [xs, ys, us, vs, snrs, pkhs, is, parstr]=checkingArguments(xs, ys, us, 
         if sum(strcmp('backgroundimage',fieldnames(parstr)))==1
             dparstr.backgroundimage = parstr.backgroundimage;
         end
+        if sum(strcmp('threshold',fieldnames(parstr)))==1
+            dparstr.threshold = parstr.threshold;
+        end
+
         parstr = dparstr;
     end
     
