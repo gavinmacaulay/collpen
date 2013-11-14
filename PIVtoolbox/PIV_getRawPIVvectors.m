@@ -121,8 +121,10 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
     dispMsg(parstr.showmsg,['[PIV_getRawPIVvectors]:..Performing PIV-analysis of all frames']); c=0;
     RGB2    = read(movieobj, 1);
     I2      = RGB2(:,:,1);
+    H       = fspecial('average', winsize);
     for i=1:1:n
         I1  = I2;
+        If  = imfilter(I1,H); % Lars: So that is is based on average in window, change done 14.11.2013
 
         % Loading frames
         RGB2    = read(movieobj, i+1);
@@ -139,7 +141,7 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
             [T,xs(:,:,i),ys(:,:,i),us(:,:,i),vs(:,:,i),snrs(:,:,i),pkhs(:,:,i)] = evalc('matpivCP(I1,I2,winsize,dt,olap,param)');
             tmpx=xs(1,:,i);
             tmpy=ys(:,1,i);
-            is(:,:,i)=I1(tmpy(:),tmpx(:));
+            is(:,:,i)=If(tmpy(:),tmpx(:));
         catch exception
             warning(['[PIV_getRawPIVvectors]: Error in matpiv for frames ' num2str(i) ' and ' num2str(i+1)]);
             disp(exception.message);
