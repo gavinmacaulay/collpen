@@ -100,7 +100,7 @@ for i=1:size(d.files);
             colormap bone;%(bluebar);
             set(gca,'Clim',[30,200]); %set bottom and top of color map
             set(fd,'EraseMode','none','CDataMapping','scaled');
-            h=text(50,25,'Pre exposure','color',[1 1 1]);
+            %h=text(50,25,'Pre exposure','color',[1 1 1]);
         else % If the plot have been made, update it
             if framenumber==1 % If this is the first frame in a new file
                 data = make_first_image(data,4,400); %make the first image array
@@ -115,11 +115,11 @@ for i=1:size(d.files);
             % Apply border color
             switch border
                 case 1
-                    h=text(50,25,'Pre exposure','color',[1 1 1]);
+                    %h=text(50,25,'Pre exposure','color',[1 1 1]);
                 case 2
-                    h=text(50,25,'EXPOSURE','color',[1 1 1]);
+                    %h=text(50,25,'EXPOSURE','color',[1 1 1]);
                 case 3
-                    h=text(50,25,'Post exposure','color',[1 1 1]);
+                    %h=text(50,25,'Post exposure','color',[1 1 1]);
             end
             set(fd,'CData',data.image);
         end
