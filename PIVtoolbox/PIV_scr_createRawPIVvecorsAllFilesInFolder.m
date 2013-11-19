@@ -10,7 +10,7 @@ parstrpiv32 = struct('showmsg',1,'winsize',32,'olap',0.75,'write',1,'useold',1);
 parstrpiv16 = struct('showmsg',1,'winsize',16,'olap',0.75,'write',1,'useold',1);  
 
 totaltime = 0;
-for i=1:numoffiles
+for i=240:numoffiles
     tic
     disp(['Analysing file num ' num2str(i) ' of ' num2str(numoffiles)]);
     filepath = [folder '\' files(i).name];

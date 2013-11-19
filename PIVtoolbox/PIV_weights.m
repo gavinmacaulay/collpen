@@ -3,7 +3,7 @@ function w=PIV_weights(snrs,pkhs,is,par)
 % function w=PIV_weights(snrs,pkhs,is,par)
 %
 % The PIV analysis works well when clear translations and with high SNR.
-% When no fish are seen in the image, the PIV should be remoived. However,
+% When no fish are seen in the image, the PIV should be remo ved. However,
 % instead of using a hard threshold for detecting single individual fish,
 % we calucate a weight based on the image strength.
 % Instead of hard-thresholding the PIV estimates, we creates weights for

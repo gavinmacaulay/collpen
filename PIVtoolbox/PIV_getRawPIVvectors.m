@@ -124,8 +124,10 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
     H       = fspecial('average', winsize);
     for i=1:1:n
         I1  = I2;
+        warning off
         If  = imfilter(I1,H); % Lars: So that is is based on average in window, change done 14.11.2013
-
+        warning on
+        
         % Loading frames
         RGB2    = read(movieobj, i+1);
         I2=RGB2(:,:,1);
