@@ -1,0 +1,45 @@
+This is BibTeX, Version 0.99c (Web2C 7.4.5)
+The top-level auxiliary file: MatPIVtut.aux
+The style file: plainnat.bst
+Database file #1: /home/raid/fdl/jks36/biblio_felles.bib
+You've used 10 entries,
+            2633 wiz_defined-function locations,
+            656 strings with 6433 characters,
+and the built_in function-call counts, 4579 in all, are:
+= -- 425
+> -- 257
+< -- 6
++ -- 93
+- -- 81
+* -- 346
+:= -- 784
+add.period$ -- 31
+call.type$ -- 10
+change.case$ -- 64
+chr.to.int$ -- 10
+cite$ -- 10
+duplicate$ -- 201
+empty$ -- 344
+format.name$ -- 101
+if$ -- 928
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 11
+newline$ -- 56
+num.names$ -- 42
+pop$ -- 101
+preamble$ -- 1
+purify$ -- 56
+quote$ -- 0
+skip$ -- 147
+stack$ -- 0
+substring$ -- 188
+swap$ -- 10
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 100
+warning$ -- 0
+while$ -- 40
+width$ -- 0
+write$ -- 134
