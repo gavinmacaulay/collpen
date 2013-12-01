@@ -63,20 +63,9 @@ dev.off()
 file <- 'C:/repositories/CollPen_mercurial/score_anova_simple.csv'
 dat<-read.table(file,sep = ";",header = TRUE)
 names(dat)
-
 library(nlme)
-
-# Checking data
-table(dat$b_block)
-table(dat$b_groupsize)
-table(dat$s_subblock)
-table(dat$s_treatmenttype)
-table(dat$t_treatment)
-table(dat$v_score)
-
 # Vessel noise data only
 T2<-dat[(dat$s_treatmenttype=='vessel'),]
-
 T2_aov <- aov(T2$v_score ~ T2$t_treatmenttype + T2$b_groupsize)
 summary(T2_aov)
 
@@ -99,7 +88,6 @@ summary(VA_lme)
 TukeyHSD(VA_aov,ordered=T)
 
 # Depth difference
-
 DP <- (dat$m_0 - dat$m)
 DP_aov <- aov(DP ~ dat$type + dat$groupsize)
 summary(DP_aov)
@@ -109,23 +97,36 @@ summary(DP_aov)
 #
 
 va <- loadWorkbook("VAvessel_ch1.xls", create = F)
-dat<-readWorksheet(va,sheet="Sheet1", startRow = 0, endRow = 0, startCol = 0, endCol = 0)
+dath<-readWorksheet(va,sheet="Sheet1", startRow = 0, endRow = 0, startCol = 0, endCol = 0)
 
 # VA ratios (vertical echo sounder)
-VA <- log(dat$sv/dat$sv_0)
-VA_aov <- aov(VA ~ factor(dat$type) + factor(dat$groupsize) + factor(dat$type)*factor(dat$groupsize))
+VA <- log(dath$sv/dath$sv_0)
+VA_aov <- aov(VA ~ factor(dath$type) + factor(dath$groupsize) + factor(dath$type)*factor(dath$groupsize))
 summary(VA_aov)
 
 # Depth difference
-DP <- (dat$m_0 - dat$m)
-DP_aov <- aov(DP ~ dat$type + dat$groupsize)
+DP <- (dath$m_0 - dath$m)
+DP_aov <- aov(DP ~ dath$type + dath$groupsize)
 summary(DP_aov)
 
+#
+# Didson information
+#
+
+didf <- loadWorkbook("Dvessel.xls", create = F)
+did<-readWorksheet(didf,sheet="Sheet1", startRow = 0, endRow = 0, startCol = 0, endCol = 0)
+
+# Speed differene
+dspeed <- did$speed-did$speed_0
+speed_aov <- aov(dspeed ~ factor(did$type) + factor(did$groupsize) + factor(did$type)*factor(did$groupsize))
+summary(speed_aov)
+
+# CAV difference
+dcav <- (did$cav - did$cav_0)
+cav_aov <- aov(dcav ~ did$type + did$groupsize)
+summary(cav_aov)
 
 
-#
-# Didson school parameters (to come)
-#
 
 #
 # Figure 3: Plotting
@@ -134,20 +135,34 @@ summary(DP_aov)
 fw2 <- 0.0393701*90*2
 fh2 <- 0.0393701*80*2
 pdf("figure3.pdf",width = fw2, height = fh2)
-par(mfrow=c(3,1),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
+par(mfrow=c(4,2),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
 #boxplot(T2$v_score ~ as.integer(T2$t_treatmenttype) + T2$b_groupsize,ylab="Score",names=c("GOS","GOSup","JH"))
 boxplot(T2$v_score ~ as.integer(T2$t_treatmenttype) + T2$b_groupsize,ylab="Score ( )",names=F)
 mtext("(a)",side=3,line=0,adj=0)
+
 boxplot(DP ~ dat$type + dat$groupsize,ylab="Depth change (m)",names=F)
 mtext("(b)",side=3,line=0,adj=0)
-boxplot(VA ~ dat$type + dat$groupsize,ylab="log[VA] ( )")
+boxplot(VA ~ dat$type + dat$groupsize,ylab="log[VA vert] ( )")
 mtext("(c)",side=3,line=0,adj=0)
+
+
+boxplot(DP ~ dath$type + dath$groupsize,ylab="Range change (m)",names=F)
+mtext("(d)",side=3,line=0,adj=0)
+boxplot(VA ~ dath$type + dath$groupsize,ylab="log[VA hor]( )")
+mtext("(e)",side=3,line=0,adj=0)
+
+boxplot(dspeed ~ did$type + did$groupsize,ylab="Speed( )")
+mtext("(f)",side=3,line=0,adj=0)
+boxplot(dcav ~ did$type + did$groupsize,ylab="CAV ( )")
+mtext("(g)",side=3,line=0,adj=0)
+
+
 dev.off()
 
 
 #############################################
 #                                           #
-#        Figure 3: The Didson response data #
+#        OBSOLETE                           #
 #                                           #
 #############################################
 

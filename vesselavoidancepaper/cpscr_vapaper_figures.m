@@ -241,6 +241,8 @@ block = cp_GetExpPar(file);
 
 load(fullfile('C:\repositories\CollPen_mercurial\','VA.mat'));
 
+[D,T,R]=xlsread('C:\repositories\CollPen_mercurial\vesselavoidancepaper\didson_stationary_sorted.xls');
+
 %%
 
 % Fit block informaion and va data
@@ -300,3 +302,55 @@ for ch=1:2
 end
 
 
+%% reformat the Didson data
+
+blocks = 21:35;
+Dvessel = {'block','subblock','treatment','cav_0','cav','speed_0','speed','type','groupsize'};
+
+for b = blocks
+    for sb = 1:length(block(b).subblock)
+        if strcmp(block(b).subblock(sb).s_treatmenttype,'vessel')
+            for trn=1:length(block(b).subblock(sb).treatment)
+                % Match with va data
+                switch block(b).subblock(sb).treatment(trn).t_treatmenttype
+                    case 'GOS_upscaled'
+                        tr = 'GOSup';
+                    case 'GOS_unfiltered'
+                        tr = 'GOS';
+                    case 'JH_unfiltered'
+                        tr = 'JH';
+                end
+                gs='NaN';
+                switch block(b).b_groupsize
+                    case 'large group in M09'
+                        gs='L';
+                    case 'small group in M09'
+                        gs='S';
+                end
+                % Pick Didson data
+                cav   = NaN;
+                speed = NaN;
+                cav_0 = NaN;
+                speed_0=NaN;
+                for i=1:size(R,1)
+                    if R{i,4}==b & R{i,5}==sb & R{i,6}==trn
+                        if strcmp(R(i,2),'TREAT')
+                            cav   = R{i,8};
+                            speed = R{i,7}; 
+                        elseif strcmp(R(i,2),'NULL')
+                            cav_0   = R{i,8};
+                            speed_0 = R{i,7};
+                        end
+                    end
+                end
+                sub = {b sb trn cav_0 cav speed_0 speed tr gs};
+                % Dvessel = {'block','subblock','treatment','cav_0','cav',
+                % 'speed_0','speed','score','type','groupsize'} 
+                Dvessel=[Dvessel;sub];
+            end
+        end
+    end
+end
+disp(Dvessel)
+% Remove NaN's
+xlswrite(['Dvessel.xls'],Dvessel)
