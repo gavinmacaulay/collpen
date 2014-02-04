@@ -38,11 +38,22 @@ for j=1:N
             
             % Plot figure for Guillauem #1 paper.
             if (block(blockn).b_block==30) && (block(blockn).subblock(j).s_subblock==3) && (block(blockn).subblock(j).treatment(l).t_treatment == 2)
-                pl=true;
+                pl(1)=true;
             else
-                pl=false;
+                pl(1)=false;
             end
-            
+            % Plot figure for Guillauem #2 paper.
+            if (block(blockn).b_block==26) && (block(blockn).subblock(j).s_subblock==2) && (block(blockn).subblock(j).treatment(l).t_treatment == 2)
+                pl(2)=true;
+            else
+                pl(2)=false;
+            end
+            if (block(blockn).b_block==26) && (block(blockn).subblock(j).s_subblock==2) && (block(blockn).subblock(j).treatment(l).t_treatment == 3)
+                pl(3)=true;
+            else
+                pl(3)=false;
+            end
+  
             if strcmp(block(blockn).subblock(j).s_treatmenttype,'vessel')
                 disp('vessel')
             elseif strcmp(block(blockn).subblock(j).s_treatmenttype,'orca')
@@ -290,8 +301,8 @@ for i=1:length(par.ek60.channelsToProcess);
                 [par.ek60.displayRange(ch,1),par.ek60.displayRange(ch,2)],'w','linewidth',1.5);
         end
         % plot horizontal lines for integration range
-        plot(time([1 end]),range{i}(index.analyze([end end])),  'Color',[.99 .99 .99],'linewidth',1.5)
-        plot(time([1 end]),range{i}(index.analyze([1 1])),  'Color',[.99 .99 .99],'linewidth',1.5)
+        h4(1)=plot(time([1 end]),range{i}(index.analyze([end end])),  'Color',[.99 .99 .99],'linewidth',1.5)
+        h4(2)=plot(time([1 end]),range{i}(index.analyze([1 1])),  'Color',[.99 .99 .99],'linewidth',1.5)
 
         % Plot VA mean depths
         if plVA
@@ -325,12 +336,15 @@ for i=1:length(par.ek60.channelsToProcess);
         eval(['print ',fname_anon,' -r200',' -dpng'])
         
         % Plot Guillaumes figure
-        if pl && i==2
-            % Delete depth and vertical lines
-            delete(h1)
-            delete(h2)
-            %delete(h3)
-            print('-dpng','-r800',fullfile(par.datadir,'figures','Guillaume_Figure1'))
+        gstr = {'pone_Figure1','jfb_Figure1a','jfb_Figure1a'};
+        for g=1:3
+            if pl(g)
+                % Delete depth and vertical lines
+                delete(h1)
+                delete(h2)
+                delete(h4)
+                print('-dpng','-r800',[fname,'_',gstr{g}])
+            end
         end
         close all
     end
