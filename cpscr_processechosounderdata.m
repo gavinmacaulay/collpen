@@ -92,3 +92,12 @@ VA2nonan = VA2(~isnan(VA2(:,4)),:);
 xlswrite('VA1nonan.xls',VA2nonan)
 xlswrite('VA2nonan.xls',VA2nonan)
 
+
+%% Write figures for Guillaume
+
+for i=26%[26 30]
+    disp(['Block ',num2str(i)])
+    par.ek60.channelsToProcess=[1 2];
+    [~,~]=cp_ProcessEchosounderdata(block(i).b_block,block,par);
+end
+
