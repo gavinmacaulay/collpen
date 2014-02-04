@@ -263,7 +263,7 @@ blocks{2} = 21:35;
 
 for ch=1:2
     eval(['VA=VA',num2str(ch),';']);
-    VAvessel={'block','subblock','treatment','sv_0','sv','m_0','m','score','type','groupsize'};
+    VAvessel={'block','subblock','treatment','sv','sv_0','m','m_0','score','type','groupsize'};
     for b=blocks{ch}
         for sb=1:length(block(b).subblock)
             if strcmp(block(b).subblock(sb).s_treatmenttype,'vessel')
