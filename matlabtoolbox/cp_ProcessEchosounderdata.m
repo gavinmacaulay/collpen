@@ -106,11 +106,23 @@ for i=1:size(fileList);
     
     % generate a cal file  (again assumes that no changes in calibration
     % parameters ocurred !
+%     if par.ek60.useCalParFile==0;
+%         calParms       = readEKRaw_GetCalParms(header, rawData);
+%     elseif par.ek60.useCalParFile==1;
+%         calParms = readEKRaw_ReadXMLParms(par.ek60.calFileName); %  extract calibration parameters from xml cal file
+%     end
+    
     if par.ek60.useCalParFile==0;
         calParms       = readEKRaw_GetCalParms(header, rawData);
     elseif par.ek60.useCalParFile==1;
-        calParms = readEKRaw_ReadXMLParms(par.ek60.calFileName); %  extract calibration parameters from xml cal file
+        pl=[round(rawData.pings(1,1).pulselength(1)*1e6) round(rawData.pings(1,2).pulselength(1)*1e6)]; % round these values as not integers
+        calParms = readEKRaw_ReadXMLParms(par.ek60.calfile_128ms); %  extract calibration parameters from xml cal file
+    elseif (sum(pl==[256 256])==2);  % both channels 256ms
+        calParms = readEKRaw_ReadXMLParms(par.ek60.calfile_256ms);
+    else
+        'Error ! calibration data not available at this pulse length'
     end
+
     
     %  convert power to sv
     rawData = readEKRaw_Power2Sv(rawData, calParms);
