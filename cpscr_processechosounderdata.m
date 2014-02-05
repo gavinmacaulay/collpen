@@ -15,9 +15,14 @@ par.datadir='\\callisto\collpen\AustevollExp\data\HERRINGexp';
 par.reposdir ='C:\repositories\CollPen_mercurial';
 % used by rawreading function - cpsrReadEK60
 par.ek60.timeZoneOffset=2;  % Time offset using +2 as data timestamps are utc and we are +2 (check this if timestamps look strange)
-par.ek60.useCalParFile=0;  % 1 means use a file after calibration, 2 is just use whatever is in raw data for uncalibrated calcs
-par.ek60.calFileName='';   % name of EK60 calibration file to use if par =1
 par.ek60.channelsWanted=[1 2]; %channels wanted
+
+par.ek60.useCalParFile=1;  % set to 1 to use the calibration values
+% add names of calibration files
+par.ek60.calfile_128ms=fullfile(par.datadir,'CalParms_Collpen_128msPL.xml');
+par.ek60.calfile_256ms=fullfile(par.datadir,'CalParms_Collpen_256msPL.xml');
+
+
 
 % used by plotting function - cpsrPlotEK60
 par.ek60.displayThreshold=[-70 -34] ; % display threshold for plotting
@@ -95,7 +100,7 @@ xlswrite('VA2nonan.xls',VA2nonan)
 
 %% Write figures for Guillaume
 
-for i=26%[26 30]
+for i=[26 30]
     disp(['Block ',num2str(i)])
     par.ek60.channelsToProcess=[1 2];
     [~,~]=cp_ProcessEchosounderdata(block(i).b_block,block,par);
