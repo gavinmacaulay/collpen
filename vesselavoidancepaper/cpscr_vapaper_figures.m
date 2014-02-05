@@ -14,6 +14,10 @@ block = cp_GetExpPar(file);
 %21	1	2	block21_1_2
 %21	1	3	block21_1_3
 
+%1=GOS
+%2=GOSup
+%3=JH
+
 % Figure 1(a)
 F{1,1}=[24 1 1];
 F{1,2}=[24 1 2];
@@ -70,7 +74,9 @@ dens  = 20;              % Density Factor
 b  = firpm(N, Fo, Ao, W, {dens});
 Hd = dfilt.dffir(b);
 
-
+% Time definition of NULL and TREAT for vessel avoidance
+par.ek60.preRefTimeVA = ([-152 -88]+21);% time in seconds to define the reference window for vessel avoidance (adjusted for the difference bewtween start time and max pressure, i.e +21s)
+par.ek60.passTimeVA   = [-3 3]+21;%
 
 for i=1:3
     for j=1:3
@@ -227,9 +233,22 @@ fig31_2=[DAT{3,1}.x(ind)'; 10*log10(DAT{3,1}.nexus2(ind))'];
 fig32_2=[DAT{3,2}.x(ind)'; 10*log10(DAT{3,2}.nexus2(ind))'];
 fig33_2=[DAT{3,3}.x(ind)'; 10*log10(DAT{3,3}.nexus2(ind))'];
 
+% Cacluate the mean SPL prior to and during passage:
+p={'a','b','c'};
+for j=1:3
+    ind  = ((DAT{1,j}.x > par.ek60.passTimeVA(1)   & DAT{1,j}.x < par.ek60.passTimeVA(2)));
+    %plot(DAT{1,j}.x(ind),DAT{1,j}.nexus1(ind))
+    disp(['Nexus 1 panel ',p{j},': ',num2str(20*log10(mean(DAT{1,j}.nexus1(ind))),4),'dB'])
+    disp(['Nexus 2 panel ',p{j},': ',num2str(20*log10(mean(DAT{1,j}.nexus2(ind))),4),'dB'])
+    
+end
+%
+10^((171.1-136)/20)
+
+
 save Figure1 fig11_1 fig12_1 fig13_1 fig21_1 fig22_1 fig23_1 fig31_1 fig32_1 fig33_1 fig11_2 fig12_2 fig13_2 fig21_2 fig22_2 fig23_2 fig31_2 fig32_2 fig33_2
 
-VA1 = load(fullfile('C:\repositories\CollPen_mercurial\','VA1.mat'));
+%VA1 = load(fullfile('C:\repositories\CollPen_mercurial\','VA1.mat'));
 %% Prepare VA data
 
 clear

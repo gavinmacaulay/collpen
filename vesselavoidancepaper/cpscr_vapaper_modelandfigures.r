@@ -80,10 +80,21 @@ dat<-readWorksheet(va,sheet="Sheet1", startRow = 0, endRow = 0, startCol = 0, en
 
 # VA ratios (vertical echo sounder)
 VAv <- log(dat$sv/dat$sv_0)
+VAvl <- (dat$sv/dat$sv_0)
+
 VA_aov <- aov(VAv ~ factor(dat$type) + factor(dat$groupsize) + factor(dat$type)*factor(dat$groupsize))
 summary(VA_aov)
 bartlett.test(VAv ~ factor(dat$type) + factor(dat$groupsize)+ factor(dat$type)*factor(dat$groupsize))
 TukeyHSD(VA_aov,ordered=T)
+
+VA_bx <- boxplot(VAv ~ factor(dat$type) + factor(dat$groupsize))
+VA_bx$stats <- exp(VA_bx$stats)
+VA_bx$out <- exp(VA_bx$out)
+VA_bx$conf <- exp(VA_bx$conf)
+
+mean(VAvl[!is.na(VAvl)])
+# t-test in log domain
+t.test(VAv)
 
 # Depth difference
 DPv <- (dat$m_0 - dat$m)
@@ -148,7 +159,7 @@ pdf("figure3.pdf",width = fw2, height = fh2)
 par(mfrow=c(3,1),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
 boxplot(T2$v_score ~ as.integer(T2$t_treatmenttype) + T2$b_groupsize,ylab="Score",names=F)
 mtext("(a)",side=3,line=0,adj=0)
-boxplot(VAv ~ dat$type + dat$groupsize,ylab="log(VA)",names=F)
+boxplot(VAvl ~ dat$type + dat$groupsize,ylab="VA",names=F)
 mtext("(b)",side=3,line=0,adj=0)
 boxplot(DPv ~ dat$type + dat$groupsize,ylab="Vertical change (m)")
 mtext("(c)",side=3,line=0,adj=0)
