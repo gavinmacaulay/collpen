@@ -103,6 +103,10 @@ summary(DP_aov)
 bartlett.test(DPv ~ factor(dat$type) + factor(dat$groupsize) + factor(dat$type)*factor(dat$groupsize))
 TukeyHSD(DP_aov,ordered=T)
 
+DP_bx <- boxplot(DPv ~ factor(dat$type) + factor(dat$groupsize))
+mean(DPv[!is.na(DPv)])
+t.test(DPv)
+
 #
 # Horizontal echo sounder
 #
