@@ -22,6 +22,8 @@ depths = [1 9; ...
           17 5; ...
           18 5];
 
+path(path, '../matlabtoolbox')
+      
 %%
 % cal_factor has units of Pa/V, converting from voltage [V] recorded
 % by the system to pressure at the hydrophone [Pa].
@@ -161,7 +163,7 @@ avg2
 % run number and start sample number of the played sounds
 % runs 1, 2, and 3 all had clipping on the inner array
 % runs 
-% 11 is a noise recording
+% 11 is a noise recording. The start sample number is hence arbituary.
 % 12 to 14 were low freq trials with higher power
 % 16 had feeding occuring (pellet noise)
 
@@ -172,11 +174,24 @@ run_info = [4 307105 % poor SNR at lowest freq
             8 682716 
             9 322629
            10 425310 
-           15 2058200];
+           11 100000
+           15 2058200]; % only 6 repeats, not 15 like the rest
 
 % and reformat into something more useful
 runs = run_info(:,1)';
 start_sample = run_info(:,2);
+
+Fs = 10e3;
+nfft = 1024;
+freq = [80 150 225 300 400 600 750 900 1000 1250 1500];
+% calibration factors for each hydrophone (18 in total)
+cal_factor = [115.3534*ones(1,8)/10 115.3534*ones(1,8)/10 115.3534 37.6232];
+    
+disp('Making filters')
+clear Hd
+for i = 1:length(freq)
+    Hd(i) = cp_bandpass_filter(freq(i), Fs);
+end
 
 for run_i = 1:length(runs)
 
@@ -185,11 +200,13 @@ for run_i = 1:length(runs)
     disp(['Processing ' run_name])
     
     load(fullfile(datadir, run_name))
-    nfft = 1024;
-    Fs = 10e3;
-    cal_factor = [115.3534*ones(1,8)/10 115.3534*ones(1,8)/10 115.3534 37.6232];
-    freq = [80 150 225 300 400 600 750 900 1000 1250 1500];
+
     % extract data
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % this code only extracts one of the repeats. It should be changed to
+    % extract all of them and take an average value. This will allow the
+    % plotting of the variability (with a nice shaded region:))
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
     spl = [];
     for hydrophone = 1:18
         sig = data.values(:,hydrophone);
@@ -197,13 +214,14 @@ for run_i = 1:length(runs)
             start_i = start_sample(run_i) + 5000 + 50000*(i-1);
             stop_i = start_i + 30000;
             s = sig(start_i:stop_i);
+            % Filter for the frequency we are expected to see
+            s = filter(Hd(i).Numerator, 1, s);
+
             %plot(s)
             %pause
-            spec = fft(s, nfft);
-            f = Fs/2*linspace(0,1,nfft/2+1);
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            % Need to filter this to just get the frequency of interest
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            %spec = fft(s, nfft);
+            %f = Fs/2*linspace(0,1,nfft/2+1);
+            
             spl(i,hydrophone) = 20*log10(rms(s) * cal_factor(hydrophone) * 1e6);
         end
     end
@@ -228,9 +246,11 @@ for run_i = 1:length(runs)
     end
     xlabel('Frequency (Hz)')
     ylabel('received SPL (dB re 1 \muPa)')
-    ylim([110 150])
+    if runs(run_i) ~= 11
+        ylim([90 150])
+    end
     hold off
-    legend(hh, 'inner', 'outer', 'inner IMR', 'outer IMR')
+    legend(hh, 'Channels 1-8', 'Channels 9-16', 'Channel 17', 'Channel 18')
     grid on
     
     print('-dpng', '-r300', fullfile(resultsdir, ['A02Processdata_f_v_SPL_' run_name]))
@@ -245,7 +265,9 @@ for run_i = 1:length(runs)
     end
     xlabel('Depth (m)')
     ylabel('received SPL (dB re 1 \muPa)')
-    ylim([110 150])
+    if runs(run_i) ~= 11
+        ylim([90 150])
+    end
     hold off
     
     for i = 1:size(spl, 1)
