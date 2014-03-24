@@ -17,7 +17,7 @@
 clear
 
 rootDataDir = '\\callisto\collpen\AustevollExp\data\';
-channelsToExport = [17 18];
+channelsToExport = 1:18;
 
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block1\hydrophones'))
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block2\hydrophones'))
@@ -38,19 +38,22 @@ channelsToExport = [17 18];
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block18\hydrophones'),channelsToExport)%FAILED
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block19\hydrophones'))% File 9 FAILED!!!
 %cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block20\hydrophones'))% OK!
-%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block21\hydrophones'))%  File 13 21_3_2 Failed
-%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block22\hydrophones'))% File 17 Warning: 22_3_3.tdms failed 
-%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block23\hydrophones'))% 
-%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block24\hydrophones'))% Warning: 24_3_2.tdms failed 
-%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block25\hydrophones'))% Warning: 25_1_1.tdms failed Warning: 25_4_1.tdms failed 
-%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block26\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
 
-%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block27\hydrophones'))%FAILED 
-%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block28\hydrophones'))% Warning: 28_3_1.tdms failed ok tom 17
-
-cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block32\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
-
-%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block34\hydrophones'))% Warning: 26_1_1.tdms failed , Warning: 26_1_2.tdms failed 
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block21\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block22\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block23\hydrophones'),channelsToExport) 
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block24\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block25\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block26\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block27\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block28\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block29\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block30\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block31\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block32\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block33\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block34\hydrophones'),channelsToExport)
+%cp_ConvertTDMSDirToMat(fullfile(rootDataDir, 'HERRINGexp\block35\hydrophones'),channelsToExport)
 
 %% The HERRINGcort
 
