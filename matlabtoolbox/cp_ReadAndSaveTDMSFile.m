@@ -33,6 +33,7 @@ fileIn = 0;
 [err,dummyVar,dummyVar,file]=calllib(libname,'DDC_OpenFileEx', ...
     fullfile(dataDir, Data_Path),'',1,fileIn);
 
+data_i = 1;
 
 %Read and display file name property
 filenamelenIn = 0;
@@ -168,9 +169,14 @@ for i=1:numgrps % For each channel group
     
     channames = {channames(channelsToExport)};
 
-    data(i) = struct('fileName', Data_Path, 'chanNames', channames, ...
-        'values', chanvals, 'start_time', start_timestamp(channelsToExport), ...
-        'sample_rate', sample_rate(channelsToExport));
+    % sometimes a group contains no data. The code above doesn't generate a
+    % start_timestamp vector in that case, so skip those groups.
+    if exist('start_timestamp', 'var')
+        data(data_i) = struct('fileName', Data_Path, 'chanNames', channames, ...
+            'values', chanvals, 'start_time', start_timestamp(channelsToExport), ...
+            'sample_rate', sample_rate(channelsToExport));
+        data_i = data_i + 1;
+    end
 
 end
 
