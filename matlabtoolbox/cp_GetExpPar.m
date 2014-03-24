@@ -144,13 +144,13 @@ for i=1:s(1)-1
         passing(i).t_start_time_mt = datenum(passing(i).t_start_time,'dd.mm.yyyy HH:MM:SS');
     catch
         passing(i).t_start_time_mt = NaN;
-        warning('t_start_time did not convert')
+        warning(['t_start_time did not convert for ' num2str(num(i,1)) '_' num2str(num(i,2)) '_' num2str(num(i,3))])
     end
     try
         passing(i).t_stop_time_mt = datenum(passing(i).t_stop_time,'dd.mm.yyyy HH:MM:SS');
     catch
         passing(i).t_stop_time_mt = NaN;
-        warning('t_stop_time did not convert')
+        warning(['t_stop_time did not convert for ' num2str(num(i,1)) '_' num2str(num(i,2)) '_' num2str(num(i,3))])
     end
     try
         passing(i).t_start_hydrophonePC_mt = datenum(passing(i).t_start_hydrophonePC,'dd.mm.yyyy HH:MM:SS');
