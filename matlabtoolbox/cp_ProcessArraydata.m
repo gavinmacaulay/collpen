@@ -47,15 +47,32 @@ for f=1:length(files)
             ' (treatment is ' block(a(1)).subblock(a(2)).treatment(a(3)).t_treatmenttype ')'])
         
         clear press press_rms_avg time ind_start ind_end
-        
+               
         load(file)
-        press = zeros(16, size(data.values,1));
+        
+        % if data is a vector we need to choose one (or merge them). At the
+        % moment we'll take the last one and display a note to this effect
+
+        data_i = 1;
+        if length(data) > 1
+            data_i = length(data);
+            disp(' The "data" structure has a length > 1. ')
+            for i = 1:length(data)
+                disp(['  Row ' num2str(i) ' starts at ' ...
+                    datestr(data(i).start_time(1)) ' and has ' ...
+                    num2str(size(data(i).values,1)) ' samples (' ...
+                    num2str(size(data(i).values,1) / data(i).sample_rate(1)) ') s.'])
+            end
+            disp(['   Using row ' num2str(data_i)])
+        end
+        
+        press = zeros(16, size(data(data_i).values,1));
         
         for chan = 1:16
-            par.Fs = data.sample_rate(chan);
-            par.start_time = data.start_time(chan);
+            par.Fs = data(data_i).sample_rate(chan);
+            par.start_time = data(data_i).start_time(chan);
             par.avg_bin = floor(par.Fs*par.avgtime);  % average into 1/10 second  bins
-            press(chan,:) = data.values(:,chan).*block(blockn).b_nexus1sens;  % pressure in Pa
+            press(chan,:) = data(data_i).values(:,chan).*block(blockn).b_nexus1sens;  % XXXXXXXXXXX pressure in Pa
 
             % compute RMS pressure by averaging
             for i = 1:floor(length(press(chan,:))/par.avg_bin)-1
