@@ -43,8 +43,9 @@ for f=1:length(files)
     
     % only interested in vessel treatments for now.
     if strcmp(block(a(1)).subblock(subblock).s_treatmenttype,'vessel')
+        treatment = block(a(1)).subblock(a(2)).treatment(a(3)).t_treatmenttype;
         disp(['Processing file: ' files(f).name ...
-            ' (treatment is ' block(a(1)).subblock(a(2)).treatment(a(3)).t_treatmenttype ')'])
+            ' (treatment is ' treatment ')'])
         
         clear press press_rms_avg time ind_start ind_end
                
@@ -97,7 +98,7 @@ for f=1:length(files)
         exChan = 1;
         figure(1)
         spectrogram(double(press(exChan,:)).*1e6,par.Nwindow,par.Noverlap,par.Nfft,par.Fs,'yaxis');
-        title([hdr,'_psd_chan' num2str(exChan)], 'Interpreter', 'none')
+        title([hdr,'_psd_chan' num2str(exChan) ': ' treatment], 'Interpreter', 'none')
         colorbar
         xlabel('Time (s)')
         print('-dpng','-r200',fullfile(par.figdir,[hdr,'_psd_chan' num2str(exChan) '.png']))
@@ -107,7 +108,7 @@ for f=1:length(files)
         plot((1:length(press(exChan,:)))./(par.Fs), press(exChan,:))
         xlabel('Time (s)')
         ylabel('Pressure (Pa)')
-        title([hdr,'_chan' num2str(exChan) '_pressure'],'Interpreter','none')
+        title([hdr,'_chan' num2str(exChan) '_pressure: ' treatment],'Interpreter','none')
         print('-dpng','-r200',fullfile(par.figdir,[hdr,'_chan' num2str(exChan) '_pressure.png']))
         
         % plot SPL
@@ -116,12 +117,29 @@ for f=1:length(files)
 
         xlabel('Time (s)')
         ylabel('SPL dB re 1 \mu Pa')
-        title([hdr,'_SPL'],'Interpreter','none')
+        title([hdr,'_SPL: ' treatment],'Interpreter','none')
         print('-dpng','-r200',fullfile(par.figdir,[hdr,'_SPL.png']))
         
         % plot of SPL for all hydrophones in array, arranged to show
         % variation with depth
+        %%
+        figure(4)
+        %dd = [press_rms_avg(1:8,:) press_rms_avg(9:16,:)];
+        dd = 20*log10([press_rms_avg(1:8,:) press_rms_avg(9:16,:)]/par.p_ref);
+        timeAxis = [time time(end)+time];
         
+        %imagesc(timeAxis, array.depth(1:8), dd)
+        %xlabel('Time (s)')
+        %ylabel('Depth (m)')
+        %colorbar
+        
+        waterfall(timeAxis, array.depth(1:8), dd)
+        xlabel('Time (s)')
+        ylabel('Depth (m)')
+        zlabel('SPL dB re 1 \muPa')
+        
+        title([treatment])
+        print('-dpng', '-r200', fullfile(par.figdir, [hdr, '_array.png']))
         
     end
 end
