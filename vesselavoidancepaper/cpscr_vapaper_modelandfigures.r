@@ -50,14 +50,16 @@ mtext("(i)",side=3,line=0,adj=0)
 
 dev.off()
 
+
+
 #####################################
 #                                   #
-#        Figure 4: The responses    #
+#        Collate the data set       #
 #                                   #
 #####################################
 
 #
-# Manual scoring data set
+# Manual scoring set
 #
 
 file <- 'C:/repositories/CollPen_mercurial/score_anova_simple.csv'
@@ -71,16 +73,11 @@ T2<-T2[(T2$b_block>20),]
 # Day number
 T2$day<-floor(T2$t_start_time_mt) - min(floor(T2$t_start_time_mt))+1
 
-
-T3 <- data.frame(block=T2$b_block, subblock=T2$s_subblock,treatment=T2$t_treatment, type=factor(T2$t_treatmenttype, label=c("GOS","GOSup","JH")), 
-                 groupsize=factor(T2$b_groupsize, label=c("L","S")),day=T2$day,score=T2$v_score)
-
-
-T2_aov <- aov(T2$v_score ~ factor(T2$t_treatmenttype) + factor(T2$b_groupsize) + factor(T2$t_treatmenttype)*factor(T2$b_groupsize))
-summary(T2_aov)
+scoredata <- data.frame(block=T2$b_block, subblock=T2$s_subblock,treatment=T2$t_treatment,day=T2$day, vessel=factor(T2$t_treatmenttype, label=c("GOS","GOSup","JH")), 
+                 groupsize=factor(T2$b_groupsize, label=c("L","S")),score=T2$v_score)
 
 #
-# Echo sounder data VA/DP analysis
+# VA and dd
 #
 
 library(XLConnect)
@@ -89,58 +86,103 @@ va <- loadWorkbook("VAvessel_ch2.xls", create = F)
 dat<-readWorksheet(va,sheet="Sheet1", startRow = 0, endRow = 0, startCol = 0, endCol = 0)
 
 # VA ratios (vertical echo sounder)
-VAv <- log(dat$sv/dat$sv_0)
-VAvl <- (dat$sv/dat$sv_0)
+VA_log <- log(dat$sv/dat$sv_0)
+VA <- (dat$sv/dat$sv_0)
 
-VA_aov <- aov(VAv ~ factor(dat$type) + factor(dat$groupsize) + factor(dat$type)*factor(dat$groupsize)+factor(dat$block))
-summary(VA_aov)
-bartlett.test(VAv ~ factor(dat$type) + factor(dat$groupsize)+ factor(dat$type)*factor(dat$groupsize)+factor(dat$block))
-TukeyHSD(VA_aov,ordered=T)
+dd <- (dat$m_0 - dat$m)
 
-VA_bx <- boxplot(VAv ~ factor(dat$type) + factor(dat$groupsize))
-VA_bx$stats <- exp(VA_bx$stats)
-VA_bx$out <- exp(VA_bx$out)
-VA_bx$conf <- exp(VA_bx$conf)
-
-mean(VAvl[!is.na(VAvl)])
-# t-test in log domain
-t.test(VAv)
-
-# Depth difference
-DPv <- (dat$m_0 - dat$m)
-DP_aov <- aov(DPv ~ factor(dat$type) + factor(dat$groupsize) + factor(dat$type)*factor(dat$groupsize)+factor(dat$block))
-summary(DP_aov)
-bartlett.test(DPv ~ factor(dat$type) + factor(dat$groupsize) + factor(dat$type)*factor(dat$groupsize)+factor(dat$block))
-TukeyHSD(DP_aov,ordered=T)
-
-DP_bx <- boxplot(DPv ~ factor(dat$type) + factor(dat$groupsize))
-mean(DPv[!is.na(DPv)])
-t.test(DPv)
+# Collate the EKdata and get rid of the score (NaNs)
+EKdata<-data.frame(c(dat[!(names(dat) %in% c("score","type","groupsize"))],data.frame(VA_log = VA_log,vessel=factor(dat$type, label=c("GOS","GOSup","JH")), 
+                 groupsize=factor(dat$groupsize, label=c("L","S")),VA = VA,dd = dd)))
 
 #
 # Didson information (large group only)
 #
 
-didf <- loadWorkbook("Dvessel.xls", create = F)
-did<-readWorksheet(didf,sheet="Sheet1", startRow = 0, endRow = 0, startCol = 0, endCol = 0)
-
-# Pick only large school size
-did<-did[(did$groupsize=='L'),]
-
-dspeed <- (did$speed-did$speed_0)
-DS_aov <- aov(dspeed ~  factor(did$type) + factor(did$block))
-summary(DS_aov)
-boxplot(dspeed ~ factor(did$type))
-
-# CAV difference
-dcav <- (did$cav - did$cav_0)
-cav_aov <- aov(dcav ~ factor(did$type) + factor(did$block))
-summary(cav_aov)
-boxplot(dcav ~ factor(did$type))
+#didf <- loadWorkbook("Dvessel.xls", create = F)
+#did<-readWorksheet(didf,sheet="Sheet1", startRow = 0, endRow = 0, startCol = 0, endCol = 0)
+#
+## Pick only large school size
+#did<-did[(did$groupsize=='L'),]
+#ds <- (did$speed-did$speed_0)
+#dc <- (did$cav-did$cav_0)
+#didsondata <- data.frame(c(did,data.frame(ds=ds,dc=dc)))
+#
 
 #
-# Figure 3: Plotting
+# Create the data frame
 #
+
+
+# merge two data frames by ID and Country
+SD <- merge(scoredata,EKdata,by=c("block","subblock","treatment","groupsize","vessel"),all.x=T,all.y=T)
+#total2 <- merge(total,T3,by=c("block","subblock","treatment","groupsize","type"),all.x=F,all.y=T)
+SD["block"] <- SD["block"]-20
+
+# Write to Excel file
+wb <- loadWorkbook("SuppData.xlsx", create = TRUE)
+createSheet(wb, name = "SuppData")
+writeWorksheet(wb, SD, sheet = "SuppData")
+saveWorkbook(wb)
+
+
+
+#####################################
+#                                   #
+#         The responses             #
+#                                   #
+#####################################
+
+# Read data
+library(XLConnect)
+didf <- loadWorkbook("SuppData.xlsx", create = F)
+SD<-readWorksheet(didf,sheet="SuppData", startRow = 0, endRow = 0, startCol = 0, endCol = 0)
+
+#
+# The scoring team
+#
+
+T2_aov <- aov(SD$score ~ factor(SD$vessel) + factor(SD$groupsize) + factor(SD$vessel)*factor(SD$groupsize)+factor(SD$block))
+summary(T2_aov)
+
+"boxplot(SD$score ~ factor(SD$block))
+
+
+#
+# Echosounder VA analysis
+#
+
+# What is the mean response and is the VA significantly different from 1 (or different from 0 in log domain)
+# Mean response
+mean(SD$VA[!is.na(SD$VA)])
+# t-test in log domain
+t.test(SD$VA_log)
+
+# VA (vessel avoidance) ANOVA
+VA_aov <- aov(SD$VA_log ~ factor(SD$vessel) + factor(SD$groupsize) + factor(SD$vessel)*factor(SD$groupsize)+factor(SD$block))
+summary(VA_aov)
+bartlett.test(SD$VA_log ~ factor(SD$vessel) + factor(SD$groupsize) + factor(SD$vessel)*factor(SD$groupsize)+factor(SD$block))
+TukeyHSD(VA_aov,ordered=T)
+
+#
+# Echosounder dd analysis
+#
+
+# What is the mean response and is the dd significantly different from 0?
+mean(SD$dd[!is.na(SD$dd)])
+t.test(SD$dd)
+
+# dd (depth difference) ANOVA
+dd_aov <- aov(SD$dd ~ factor(SD$vessel) + factor(SD$groupsize) + factor(SD$vessel)*factor(SD$groupsize)+factor(SD$block))
+summary(dd_aov)
+bartlett.test(SD$dd ~ factor(SD$vessel) + factor(SD$groupsize) + factor(SD$vessel)*factor(SD$groupsize)+factor(SD$block))
+TukeyHSD(dd_aov,ordered=T)
+
+##############################
+#                            #
+#         Figure 4           #
+#                            #
+##############################
 
 library(ggplot2)
 require(gridExtra)
@@ -148,14 +190,8 @@ require(gridExtra)
 fw2 <- 0.0393701*90*1.2
 fh2 <- 0.0393701*80*2
 pdf("figure4.pdf",width = fw2, height = fh2)
-#par(mfrow=c(3,1),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
-#boxplot(T2$v_score ~ as.integer(T2$t_treatmenttype) + T2$b_groupsize,ylab="Score",names=F)
 
-Score <- data.frame(vessel=factor(as.integer(T2$t_treatmenttype), label=c("GOS","GOSup","JH")), 
-                 groupsize=factor(T2$b_groupsize, label=c("Large","Small")),
-                 Score=T2$v_score)
-
-p1<-ggplot(aes(y=Score, x = vessel, fill = groupsize),data=Score) +
+p1<-ggplot(aes(y=score, x = vessel, fill = groupsize),data=SD) +
      geom_boxplot(aes(colour = factor(groupsize),ylab="Score"),colour='black') + 
      xlab("") +
      ylab("Score") +
@@ -167,11 +203,8 @@ p1<-ggplot(aes(y=Score, x = vessel, fill = groupsize),data=Score) +
         panel.border = theme_blank())+
         geom_vline(xintercept = 0)
         
-VA <- data.frame(vessel=factor(dat$type, label=c("GOS","GOSup","JH")), 
-                 groupsize=factor(dat$groupsize, label=c("Large","Small")),
-                 VAvl=VAvl)
 
-p2<- ggplot(aes(y=VAvl, x = vessel, fill = groupsize),data=VA) +
+p2<- ggplot(aes(y=VA, x = vessel, fill = groupsize),data=SD) +
      geom_boxplot(aes(colour = factor(groupsize)),colour='black') + 
      xlab(" ") +
      ylab("VA") +
@@ -183,11 +216,7 @@ p2<- ggplot(aes(y=VAvl, x = vessel, fill = groupsize),data=VA) +
         panel.border = theme_blank())+
         geom_vline(xintercept = 0)
 
-VertChange <- data.frame(vessel=factor(dat$type, label=c("GOS","GOSup","JH")), 
-                 groupsize=factor(dat$groupsize, label=c("Large","Small")),
-                 DPv=DPv)
-
-p3<-ggplot(aes(y=DPv, x = vessel, fill = groupsize),data=VertChange) +
+p3<-ggplot(aes(y=dd, x = vessel, fill = groupsize),data=SD) +
      geom_boxplot(aes(colour = factor(groupsize)),colour='black') + 
      ylab("Vertical change (m)") +
      scale_fill_manual('groupsize', values = c('Large' = 'grey90', 'Small' = 'grey50'))  +
@@ -201,31 +230,4 @@ p3<-ggplot(aes(y=DPv, x = vessel, fill = groupsize),data=VertChange) +
 grid.arrange(p1, p2, p3)
 
 dev.off()
-
-
-# Create merged data set
-
-!(names(dat) %in% "score")
-
-# merge two data frames by ID and Country
-total <- merge(dat[!(names(dat) %in% "score")],did,by=c("block","subblock","treatment","groupsize","type"),all.x=T,all.y=T)
-total2 <- merge(total,T3,by=c("block","subblock","treatment","groupsize","type"),all.x=F,all.y=T)
-
-total2["block"] <- total2["block"]-20
-
-# Add day to the data.
-
-# Load workbook (create if not existing)
-wb <- loadWorkbook("SuppData.xlsx", create = TRUE)
-
-# Create a worksheet called 'CO2'
-createSheet(wb, name = "SuppData")
-
-# Write built-in data set 'CO2' to the worksheet created above;
-# offset from the top left corner and with default header = TRUE
-writeWorksheet(wb, total2, sheet = "SuppData")
-
-# Save workbook (this actually writes the file to disk)
-saveWorkbook(wb)
-
 
