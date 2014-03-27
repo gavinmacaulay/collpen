@@ -82,6 +82,9 @@ function cp_ProcessArraydata(blockn,block,par)
                     press_rms_avg(chan, i)= (mean(temp.^2))^.5;
                     time(i) = ((mean([ind_start(i) ind_end(i)])))./(par.Fs);
                 end
+                
+                % PSD
+                [psd(chan).psd, psd(chan).f] = pwelch(press(chan,:).*1e6, 1000, 500, 1000, par.Fs);
             end
             clear data
             
@@ -140,7 +143,11 @@ function cp_ProcessArraydata(blockn,block,par)
             clf
             
             for i = 1:size(press_rms_avg, 1)
-                plot(time, spl(i,:), 'color', colours(rem(i-1,8)+1,:))
+                if i < 9
+                    plot(time, spl(i,:), 'color', colours(rem(i-1,8)+1,:))
+                else
+                    plot(time, spl(i,:), 'color', colours(rem(i-1,8)+1,:), 'LineWidth',2)
+                end
                 legend_label{i} = [num2str(array.depth(i)) ' m'];
                 hold on
             end
@@ -167,6 +174,39 @@ function cp_ProcessArraydata(blockn,block,par)
             if par.export_plot
                 print('-dpng', '-r200', fullfile(par.figdir, [hdr, '_array.png']))
             end
+            
+            % PSD
+            figure(5)
+            clf
+            legend_label = [];
+            subplot1(2,1)
+            for i = 1:8
+                j = find(psd(i).f < 1.1e3);
+                subplot1(1)
+                plot(psd(i).f(j), 10*log10(psd(i).psd(j)), 'LineWidth', 2, 'color', colours(i,:))
+                xlim([0 1000])
+                ylim([70 115])
+                legend_label{i} = [num2str(array.depth(i)) ' m'];
+                hold on
+                
+                subplot1(2)
+                j = find(psd(i).f < 1.1e3);
+                plot(psd(i+8).f(j), 10*log10(psd(i+8).psd(j)), 'LineWidth', 2, 'color', colours(i,:))
+                xlim([0 1000])
+                ylim([70 115])
+                hold on
+            end
+            subplot1(1)
+            title(treatment, 'Interpreter', 'none')
+            textLoc('Near', 'NorthWest');
+            legend(legend_label)
+
+            subplot1(2)
+            textLoc('Far', 'NorthWest');
+            
+            if par.export_plot
+                print('-dpng', '-r200', fullfile(par.figdir, [hdr, '_psd.png']))
+            end            
             
         end
     end
