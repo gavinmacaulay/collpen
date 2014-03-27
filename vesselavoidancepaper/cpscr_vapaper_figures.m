@@ -144,8 +144,8 @@ for i=1:3
 %                     Hpsd1 = psd(h,double(nexus.ch1.press(ind)).*1e6,'Fs',par.Fs);
 %                     Hpsd2 = psd(h,double(nexus.ch2.press(ind)).*1e6,'Fs',par.Fs);
 % %                     
-                    [Hpsd1_1,f] = pwelch(double(nexus.ch1.press(ind)).*1e6,[],[],[],par.Fs);
-                    [Hpsd2_2,f] = pwelch(double(nexus.ch2.press(ind)).*1e6,[],[],[],par.Fs);
+                    [Hpsd1_1,f] = pwelch(double(nexus.ch1.press(ind)).*1e6,1000,500,500,par.Fs);
+                    [Hpsd2_2,f] = pwelch(double(nexus.ch2.press(ind)).*1e6,1000,500,500,par.Fs);
                     
                     DAT{i,j}.x      = f;%Hpsd1.Frequencies;
                     DAT{i,j}.nexus1 = Hpsd1_1;%Hpsd1.Data;
