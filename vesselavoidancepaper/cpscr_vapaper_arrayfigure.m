@@ -35,7 +35,7 @@ function cpscr_vapaper_arrayfigure
     %%
     figure(1)
     clf
-    subplot(1,3,1)
+    subplot(3,1,1)
     
     for f = 1:length(files)
         
@@ -76,11 +76,13 @@ function cpscr_vapaper_arrayfigure
             Hd = dfilt.dffir(b);
             
             % and two other bandpass filters
+            lowBandLimits = [100 150];
+            highBandLimits = [300 500];
             lowBand = designfilt('bandpassfir', 'FilterOrder', 200, ...
-                'CutoffFrequency1', 50, 'CutoffFrequency2', 200, ...
+                'CutoffFrequency1', lowBandLimits(1), 'CutoffFrequency2', lowBandLimits(2), ...
                 'SampleRate', Fs);
             highBand = designfilt('bandpassfir', 'FilterOrder', 200, ...
-                'CutoffFrequency1', 300, 'CutoffFrequency2', 500, ...
+                'CutoffFrequency1', highBandLimits(1), 'CutoffFrequency2', highBandLimits(2), ...
                 'SampleRate', Fs);
 
             for chan = 1:16
@@ -118,51 +120,43 @@ function cpscr_vapaper_arrayfigure
                 end
                 
                 psd_i = t >= (peak-3) & t <= (peak+3); % 6 seconds around the peak
-                psd_i = t >= (peak-300) & t <= (peak+300);
+                %psd_i = t >= (peak-300) & t <= (peak+300);
+                
                 
                 % want the SPL in two frequency bands: a low one and a
                 % high one  
                 pressLowBand(chan,:) = filter(lowBand, press(chan, psd_i));
                 pressHighBand(chan,:) = filter(highBand, press(chan, psd_i));
-                % and compute RMS pressure by averaging
-                for i = 1:floor(length(pressLowBand(chan,:))/par.avg_bin)-1
-                    ind_start(i) = ((i-1) *(par.avg_bin)) + 1;
-                    ind_end(i)   = ((i)   *(par.avg_bin));
-                    % compute rms via a homebrew function by taking rms of small section
-                    tempLow = pressLowBand(chan,ind_start(i):ind_end(i));% - mean(pressLowBand(chan,ind_start(i):ind_end(i))); %  % these are de-trended as per Nils Olav's suggestion
-                    rmsLowBand(chan, i)= (mean(tempLow.^2))^.5;
-                    
-                    tempHigh = pressHighBand(chan,ind_start(i):ind_end(i));% - mean(pressHighBand(chan,ind_start(i):ind_end(i))); %  % these are de-trended as per Nils Olav's suggestion
-                    rmsHighBand(chan, i)= (mean(tempHigh.^2))^.5;
-                    
-                    rmsTime(i) = ((mean([ind_start(i) ind_end(i)])))./(par.Fs);
-                end
+                
+                [psdLow(chan,:), psdLowf] = pwelch(pressLowBand(chan,:).*1e6, 3000, 1000, 3000, par.Fs);
+                [psdHigh(chan,:), psdHighf] = pwelch(pressHighBand(chan,:).*1e6, 3000, 1000, 3000, par.Fs);
+                [psdFull(chan,:), psdFullf] = pwelch(press(chan,psd_i).*1e6, 3000, 1000, 3000, par.Fs);
+                
+                psdLow(chan, psdLowf  < lowBandLimits(1)  | psdLowf  > lowBandLimits(2))  = NaN;
+                psdHigh(chan,psdHighf < highBandLimits(1) | psdHighf > highBandLimits(2)) = NaN;
+                psdFull(chan,psdFullf > Fpass) = NaN;
             end
             clear data
-
-            splFull = 20*log10(press_rms_avg/par.p_ref);
-            splLow  = 20*log10(rmsLowBand   /par.p_ref);
-            splHigh = 20*log10(rmsHighBand  /par.p_ref);
             
             % Plot of SPL binned by depth for both arrays
-            subplot(1,3,subplotPosition)
-            shallowNear = array.depth <= 5 & (array.loc == 'n')';
-            shallowFar  = array.depth <= 5 & (array.loc == 'f')';
-            deepNear    = array.depth >  5 & (array.loc == 'n')';
-            deepFar     = array.depth >  5 & (array.loc == 'f')';
+            subplot(3,1,subplotPosition)
+            shallowNear = array.depth <= 3 & (array.loc == 'n')';
+            %shallowFar  = array.depth <= 4 & (array.loc == 'f')';
+            deepNear    = array.depth >= 8 & (array.loc == 'n')';
+            %deepFar     = array.depth >= 7 & (array.loc == 'f')';
             
-            t = splFull(shallowNear,:);
+            t = psdFull(shallowNear,:);
             shallowNearFull = t(:);
-            t = splLow(shallowNear,:);
+            t = psdLow(shallowNear,:);
             shallowNearLow = t(:);
-            t = splHigh(shallowNear,:);
+            t = psdHigh(shallowNear,:);
             shallowNearHigh = t(:);
             
-            t = splFull(deepNear,:);
+            t = psdFull(deepNear,:);
             deepNearFull = t(:);
-            t = splLow(deepNear,:);
+            t = psdLow(deepNear,:);
             deepNearLow = t(:);
-            t = splHigh(deepNear,:);
+            t = psdHigh(deepNear,:);
             deepNearHigh = t(:);
             
             x = nan(length(shallowNearFull),6); % 6 SPL's to show
@@ -170,15 +164,28 @@ function cpscr_vapaper_arrayfigure
             x(1:length(deepNearLow),2) = deepNearLow;
             x(1:length(shallowNearHigh),3) = shallowNearHigh;
             x(1:length(deepNearHigh),4) = deepNearHigh;
-            x(:,5) = shallowNearFull;
-            x(:,6) = deepNearFull;
+            x(1:length(shallowNearFull),5) = shallowNearFull;
+            x(1:length(deepNearFull),6) = deepNearFull;
             
-            boxplot(x, {'<5m, <200Hz' '>5m, <200Hz' '<5m, >200Hz' '>5m >200Hz' '<5m' '>5m'})
-
+            x = 10*log10(x);
             
-            if par.export_plot
-                print('-dpng', '-r200', [hdr, '_FigureBoxplots.png'])
-            end
+            categories = {'<=3m, 100-150Hz' '>=8m, 100-150Hz' '<=3m, 300-500Hz' '>=8m, 300-500Hz' '<=3m <1kHz' '>=8m, <1kHz'};
+            
+            boxplot(x, categories)
+            title(treatment, 'Interpreter','None')
+            
+            % for export later on to R
+            DAT(subplotPosition).x = x;
+            DAT(subplotPosition).treatment = treatment;
+            DAT(subplotPosition).categories = categories;
         end
     end
+    % export the data to R to plot the manuscript version of the
+    % figure
+    save Figure4 DAT
+
+    if par.export_plot
+        export_fig('-dpng', '-r200', 'Figure4.png')
+    end
+
 end
