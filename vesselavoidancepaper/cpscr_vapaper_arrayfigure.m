@@ -1,5 +1,6 @@
 function cpscr_vapaper_arrayfigure
     
+    %%
     % Data directory
     par.datadir = '\\callisto\collpen\AustevollExp\data\HERRINGexp';
     par.reposdir = '.\matlabtoolbox';
@@ -27,10 +28,16 @@ function cpscr_vapaper_arrayfigure
     
     array = struct('channel', 1:16, ...
         'depth', [9 8 7 6 5 4 3 2 9 8 7 6 5 4 3 2], ... % [m]
-        'array', [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2]);
+        'array', [1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2], ...
+        'loc', ['f'; 'f'; 'f'; 'f'; 'f'; 'f'; 'f'; 'f'; ...
+        'n'; 'n'; 'n'; 'n'; 'n'; 'n'; 'n'; 'n' ]); % near or far
     
     %%
-    for f=1:length(files)
+    figure(1)
+    clf
+    subplot(1,3,1)
+    
+    for f = 1:length(files)
         
         file =  fullfile(par.datadir, 'block28', 'hydrophones', files(f).name);
         hdr = ['array_',files(f).name(1:end-4)];
@@ -46,7 +53,8 @@ function cpscr_vapaper_arrayfigure
             disp(['Processing file: ' files(f).name ...
                 ' (treatment is ' treatment ')'])
             
-            clear press press_rms_avg time ind_start ind_end
+            clear press press_rms_avg time ind_start ind_end pressLowBand pressHighBand
+            clear rmsLowBand rmsHighBand
             
             load(file)
             
@@ -66,6 +74,14 @@ function cpscr_vapaper_arrayfigure
             % Calculate the coefficients using the FIRPM function.
             b  = firpm(N, Fo, Ao, W, {dens});
             Hd = dfilt.dffir(b);
+            
+            % and two other filters
+            lowBand = designfilt('bandpassfir', 'FilterOrder', 200, ...
+                'CutoffFrequency1', 50, 'cutoffFrequency2', 200, ...
+                'SampleRate', Fs);
+            highBand = designfilt('bandpassfir', 'FilterOrder', 200, ...
+                'CutoffFrequency1', 300, 'cutoffFrequency2', 500, ...
+                'SampleRate', Fs);
 
             for chan = 1:16
                 par.Fs = data.sample_rate(chan);
@@ -85,73 +101,80 @@ function cpscr_vapaper_arrayfigure
                     time(i) = ((mean([ind_start(i) ind_end(i)])))./(par.Fs);
                 end
                 
-                % select the peak region of each signal for use in the PSD
+                % select the peak region of each signal for use later on
                 t = (1:length(press(chan,:)))/par.Fs;
                 if strcmp(treatment, 'GOS_upscaled')
-                    psd_i = t>37 & t<=47;
+                    peak = 42; % [s]
+                    subplotPosition = 2;
                 elseif strcmp(treatment, 'GOS_unfiltered')
-                    psd_i = t>20 & t<=30;
+                    peak = 25; % [s]
+                    subplotPosition = 1;
                 elseif strcmp(treatment, 'JH_unfiltered')
-                    psd_i = t>21 & t<=31;
+                    peak = 26; % [s]
+                    subplotPosition = 3;
                 else
                     error('Unknown treatment')
                 end
-
-                [psd(chan).psd, psd(chan).f] = pwelch(press(chan,psd_i).*1e6, 1000, 500, 1000, par.Fs);
+                
+                psd_i = t >= (peak-3) & t <= (peak+3); % 6 seconds around the peak
+                
+                % want the peak SPL in two frequency bands: a low one and a
+                % high one  
+                pressLowBand(chan,:) = filter(lowBand, press(chan, psd_i));
+                pressHighBand(chan,:) = filter(highBand, press(chan, psd_i));
+                % and compute RMS pressure by averaging
+                for i = 1:floor(length(pressLowBand(chan,:))/par.avg_bin)-1
+                    ind_start(i)=((i-1)*(par.avg_bin))+1;
+                    ind_end(i)=((i)*(par.avg_bin));
+                    % compute rms via a homebrew function by taking rms of small section
+                    tempLow = pressLowBand(chan,ind_start(i):ind_end(i));% - mean(pressLowBand(chan,ind_start(i):ind_end(i))); %  % these are de-trended as per Nils Olav's suggestion
+                    rmsLowBand(chan, i)= (mean(tempLow.^2))^.5;
+                    tempHigh = pressHighBand(chan,ind_start(i):ind_end(i));% - mean(pressHighBand(chan,ind_start(i):ind_end(i))); %  % these are de-trended as per Nils Olav's suggestion
+                    rmsHighBand(chan, i)= (mean(tempHigh.^2))^.5;
+                    
+                    rmsTime(i) = ((mean([ind_start(i) ind_end(i)])))./(par.Fs);
+                end
             end
             clear data
 
-            spl = 20*log10(press_rms_avg/par.p_ref);
+            splFull = 20*log10(press_rms_avg/par.p_ref);
+            splLow = 20*log10(rmsLowBand/par.p_ref);
+            splHigh = 20*log10(rmsHighBand/par.p_ref);
             
             % Plot of SPL as a function of depth for both arrays
-            figure(1)
-            clf
+            subplot(1,3,subplotPosition)
+            shallowNear = array.depth <= 5 & (array.loc == 'n')';
+            shallowFar  = array.depth <= 5 & (array.loc == 'f')';
+            deepNear    = array.depth >  5 & (array.loc == 'n')';
+            deepFar     = array.depth >  5 & (array.loc == 'f')';
             
-            % should use an average around the max, not just the max
-            peak_spl = max(spl, [], 2);
-            plot(peak_spl(2:8), array.depth(2:8),'LineWidth', 2, 'color',[.6 .6 .6])
-            hold on
-            plot(peak_spl(9:16), array.depth(9:16),'LineWidth', 2, 'color', 'k')
+            t = splFull(shallowNear,:);
+            shallowNearFull = t(:);
+            t = splLow(shallowNear,:);
+            shallowNearLow = t(:);
+            t = splHigh(shallowNear,:);
+            shallowNearHigh = t(:);
+            
+            t = splFull(deepNear,:);
+            deepNearFull = t(:);
+            t = splLow(deepNear,:);
+            deepNearLow = t(:);
+            t = splHigh(deepNear,:);
+            deepNearHigh = t(:);
+            
+            x = nan(length(shallowNearFull),6);
+            x(1:length(shallowNearLow),1) = shallowNearLow;
+            x(1:length(deepNearLow),2) = deepNearLow;
+            x(1:length(shallowNearHigh),3) = shallowNearHigh;
+            x(1:length(deepNearHigh),4) = deepNearHigh;
+            x(:,5) = shallowNearFull;
+            x(:,6) = deepNearFull;
+            
+            boxplot(x, {'<5m, <200Hz' '>5m, <200Hz' '<5m, >200Hz' '>5m >200Hz' '<5m' '>5m'})
 
-            xlabel('SPL (dB re 1\muPa)')
-            ylabel('Depth (m)')
-            set(gca,'Ydir','reverse')
-            legend('Far','Close')
             
-            title(treatment, 'Interpreter', 'none')
             if par.export_plot
-                print('-dpng', '-r200', [hdr, '_SPLwithDepth.png'])
-            end
-            
-            % Plot of PSD at selected frequencies as a function of depth
-            % for both arrays
-            figure(2)
-            clf
-
-            % should use frequency bands, not selected freqs
-            for j = 1:16
-                [~, psd_i] = min(abs(psd(j).f - 150));
-                psd_at_150(j) = psd(j).psd(psd_i);
-                
-                [~, psd_i] = min(abs(psd(j).f - 350));
-                psd_at_350(j) = psd(j).psd(psd_i);
-
-            end
-
-            plot(10*log10(psd_at_150(2:8)), array.depth(2:8),   'LineStyle', '-', 'LineWidth', 2, 'color', [.6 .6 .6])
-            hold on
-            plot(10*log10(psd_at_150(9:16)), array.depth(9:16), 'LineStyle', '-', 'LineWidth', 2, 'color', 'k')
-            plot(10*log10(psd_at_350(2:8)), array.depth(2:8),   'LineStyle', ':', 'LineWidth', 2, 'color', [.6 .6 .6])
-            plot(10*log10(psd_at_350(9:16)), array.depth(9:16), 'LineStyle', ':', 'LineWidth', 2, 'color', 'k')
-            
-            xlabel('PSD (dB re 1\muPa^2Hz^{-1})')
-            ylabel('Depth(m)')
-            set(gca,'Ydir','reverse')
-            legend('Far, 150Hz','Close, 150Hz', 'Far 350Hz','Close 350Hz')
-            
-            title(treatment, 'Interpreter', 'none')
-            if par.export_plot
-                print('-dpng', '-r200', [hdr, '_SPDwithDepth.png'])
+                print('-dpng', '-r200', [hdr, '_FigureBoxplots.png'])
             end
         end
     end
