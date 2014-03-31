@@ -185,7 +185,8 @@ function cpscr_vapaper_arrayfigure
     save Figure4 DAT
 
     if par.export_plot
-        export_fig('-dpng', '-r200', 'Figure4.png')
+        set(gcf,'color','w')
+        export_fig('-png', '-r200', 'Figure4.png')
     end
 
 end
