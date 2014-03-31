@@ -39,24 +39,24 @@ function cpscr_vapaper_arrayfigure
     
     for f = 1:length(files)
         
-        file =  fullfile(par.datadir, 'block28', 'hydrophones', files(f).name);
-        hdr = ['array_',files(f).name(1:end-4)];
-        
         % What kind of subblock/treatment is this?
         [a,~] = sscanf(files(f).name(1:end-4),'%u_%u_%u');
         subblock  = a(2);
-        treatment = a(3);
         
         % only interested in the three vessel treatments.
-        if strcmp(block(a(1)).subblock(subblock).s_treatmenttype,'vessel')
-            treatment = block(a(1)).subblock(a(2)).treatment(a(3)).t_treatmenttype;
+        if strcmp(block(a(1)).subblock(subblock).s_treatmenttype, 'vessel')
+            
+            treatment = block(a(1)).subblock(subblock).treatment(a(3)).t_treatmenttype;
+            
             disp(['Processing file: ' files(f).name ...
                 ' (treatment is ' treatment ')'])
             
             clear press press_rms_avg time ind_start ind_end pressLowBand pressHighBand
             clear rmsLowBand rmsHighBand
+
+            hdr = ['array_',files(f).name(1:end-4)];
             
-            load(file)
+            load(fullfile(par.datadir, 'block28', 'hydrophones', files(f).name))
             
             press = zeros(16, size(data.values,1));
             
@@ -68,19 +68,19 @@ function cpscr_vapaper_arrayfigure
             Dstop = 0.0001;          % Stopband Attenuation
             dens  = 20;              % Density Factor
     
-            % Calculate the order from the parameters using FIRPMORD.
+            % Calculate the required filter order.
             [N, Fo, Ao, W] = firpmord([Fpass, Fstop]/(Fs/2), [1 0], [Dpass, Dstop]);
     
-            % Calculate the coefficients using the FIRPM function.
+            % Calculate the filter coefficients
             b  = firpm(N, Fo, Ao, W, {dens});
             Hd = dfilt.dffir(b);
             
-            % and two other filters
+            % and two other bandpass filters
             lowBand = designfilt('bandpassfir', 'FilterOrder', 200, ...
-                'CutoffFrequency1', 50, 'cutoffFrequency2', 200, ...
+                'CutoffFrequency1', 50, 'CutoffFrequency2', 200, ...
                 'SampleRate', Fs);
             highBand = designfilt('bandpassfir', 'FilterOrder', 200, ...
-                'CutoffFrequency1', 300, 'cutoffFrequency2', 500, ...
+                'CutoffFrequency1', 300, 'CutoffFrequency2', 500, ...
                 'SampleRate', Fs);
 
             for chan = 1:16
@@ -91,17 +91,18 @@ function cpscr_vapaper_arrayfigure
                 % lowpass filter the data
                 press(chan,:) = filter(Hd, press(chan,:));
                 
-                % compute RMS pressure by averaging
+                % compute RMS pressure by averaging of the hydrophone data
                 for i = 1:floor(length(press(chan,:))/par.avg_bin)-1
-                    ind_start(i)=((i-1)*(par.avg_bin))+1;
-                    ind_end(i)=((i)*(par.avg_bin));
+                    ind_start(i) = ((i-1) * (par.avg_bin)) + 1;
+                    ind_end(i)   = ((i)   * (par.avg_bin));
                     % compute rms via a homebrew function by taking rms of small section
                     temp = press(chan,ind_start(i):ind_end(i)) - mean(press(chan,ind_start(i):ind_end(i))); %  % these are de-trended as per Nils Olav's suggestion
                     press_rms_avg(chan, i)= (mean(temp.^2))^.5;
                     time(i) = ((mean([ind_start(i) ind_end(i)])))./(par.Fs);
                 end
                 
-                % select the peak region of each signal for use later on
+                % select the peak region of each signal to use in selecting
+                % the part of the signal of most interest.
                 t = (1:length(press(chan,:)))/par.Fs;
                 if strcmp(treatment, 'GOS_upscaled')
                     peak = 42; % [s]
@@ -117,18 +118,20 @@ function cpscr_vapaper_arrayfigure
                 end
                 
                 psd_i = t >= (peak-3) & t <= (peak+3); % 6 seconds around the peak
+                psd_i = t >= (peak-300) & t <= (peak+300);
                 
-                % want the peak SPL in two frequency bands: a low one and a
+                % want the SPL in two frequency bands: a low one and a
                 % high one  
                 pressLowBand(chan,:) = filter(lowBand, press(chan, psd_i));
                 pressHighBand(chan,:) = filter(highBand, press(chan, psd_i));
                 % and compute RMS pressure by averaging
                 for i = 1:floor(length(pressLowBand(chan,:))/par.avg_bin)-1
-                    ind_start(i)=((i-1)*(par.avg_bin))+1;
-                    ind_end(i)=((i)*(par.avg_bin));
+                    ind_start(i) = ((i-1) *(par.avg_bin)) + 1;
+                    ind_end(i)   = ((i)   *(par.avg_bin));
                     % compute rms via a homebrew function by taking rms of small section
                     tempLow = pressLowBand(chan,ind_start(i):ind_end(i));% - mean(pressLowBand(chan,ind_start(i):ind_end(i))); %  % these are de-trended as per Nils Olav's suggestion
                     rmsLowBand(chan, i)= (mean(tempLow.^2))^.5;
+                    
                     tempHigh = pressHighBand(chan,ind_start(i):ind_end(i));% - mean(pressHighBand(chan,ind_start(i):ind_end(i))); %  % these are de-trended as per Nils Olav's suggestion
                     rmsHighBand(chan, i)= (mean(tempHigh.^2))^.5;
                     
@@ -138,10 +141,10 @@ function cpscr_vapaper_arrayfigure
             clear data
 
             splFull = 20*log10(press_rms_avg/par.p_ref);
-            splLow = 20*log10(rmsLowBand/par.p_ref);
-            splHigh = 20*log10(rmsHighBand/par.p_ref);
+            splLow  = 20*log10(rmsLowBand   /par.p_ref);
+            splHigh = 20*log10(rmsHighBand  /par.p_ref);
             
-            % Plot of SPL as a function of depth for both arrays
+            % Plot of SPL binned by depth for both arrays
             subplot(1,3,subplotPosition)
             shallowNear = array.depth <= 5 & (array.loc == 'n')';
             shallowFar  = array.depth <= 5 & (array.loc == 'f')';
@@ -162,7 +165,7 @@ function cpscr_vapaper_arrayfigure
             t = splHigh(deepNear,:);
             deepNearHigh = t(:);
             
-            x = nan(length(shallowNearFull),6);
+            x = nan(length(shallowNearFull),6); % 6 SPL's to show
             x(1:length(shallowNearLow),1) = shallowNearLow;
             x(1:length(deepNearLow),2) = deepNearLow;
             x(1:length(shallowNearHigh),3) = shallowNearHigh;
