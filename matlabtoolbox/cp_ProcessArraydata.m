@@ -185,7 +185,7 @@ function cp_ProcessArraydata(blockn,block,par)
                 subplot1(1)
                 plot(psd(i).f(j), 10*log10(psd(i).psd(j)), 'LineWidth', 2, 'color', colours(i,:))
                 xlim([0 1000])
-                ylim([70 115])
+                ylim([65 115])
                 legend_label{i} = [num2str(array.depth(i)) ' m'];
                 hold on
                 
@@ -193,16 +193,19 @@ function cp_ProcessArraydata(blockn,block,par)
                 j = find(psd(i).f < 1.1e3);
                 plot(psd(i+8).f(j), 10*log10(psd(i+8).psd(j)), 'LineWidth', 2, 'color', colours(i,:))
                 xlim([0 1000])
-                ylim([70 115])
+                ylim([64 115])
                 hold on
             end
             subplot1(1)
             title(treatment, 'Interpreter', 'none')
             textLoc('Near', 'NorthWest');
             legend(legend_label)
+            ylabel('PSD (dB re 1\muPa^2Hz^{-1})')
 
             subplot1(2)
             textLoc('Far', 'NorthWest');
+            xlabel('Frequency (kHz)')
+            ylabel('PSD (dB re 1\muPa^2Hz^{-1})')
             
             if par.export_plot
                 print('-dpng', '-r200', fullfile(par.figdir, [hdr, '_psd.png']))
