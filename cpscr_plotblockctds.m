@@ -13,7 +13,8 @@ for i = blocks
             ctd = txt2struct(fullfile(path, d(j).name), 'skiplines', 3, 'delimiter', '\t');
             
             k = find(ctd.Press > 0.5);
-            plot(ctd.SVel(k), ctd.Press(k), 'k')
+            %plot(ctd.SVel(k), ctd.Press(k), 'k')
+            plot(ctd.Density(k)+1000, ctd.Press(k), 'k')
             hold on
         end
     else
@@ -29,3 +30,18 @@ title('CTD casts for blocks 21 to 35')
 
 set(gcf,'color', 'w')
 export_fig('-pdf', fullfile(dataDir, 'figures\array\CTD_block21-35'))
+
+%% 
+% Export data for block 28 for use in a COMSOL model
+
+dataDir = '\\callisto\collpen\AustevollExp\data\HERRINGexp';
+
+path = fullfile(dataDir, 'block28', 'ctd');
+d = dir(fullfile(dataDir, 'block28', 'ctd', '*eng.txt'));
+ctd = txt2struct(fullfile(path, d(1).name), 'skiplines', 3, 'delimiter', '\t');
+% just use the upcast
+i = 274:331; % from inspection
+depth_bin = 1:40;
+ctd.ss = interp1(ctd.Press(i), ctd.SVel(i), depth_bin);
+ctd.rho = interp1(ctd.Press(i), ctd.Density(i), depth_bin) + 1000;
+num2str([depth_bin' ctd.ss' ctd.rho'], '%d %.1f %.1f\n')
