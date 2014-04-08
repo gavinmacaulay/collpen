@@ -101,7 +101,8 @@ p2<- ggplot(aes(y=VA, x = vessel, fill = groupsize),data=SD) +
 
 p3<-ggplot(aes(y=dd, x = vessel, fill = groupsize),data=SD) +
      geom_boxplot(aes(colour = factor(groupsize)),colour='black') + 
-     ylab("Vertical change (m)") +
+      xlab(" ") +
+      ylab("Vertical change (m)") +
      scale_fill_manual('groupsize', values = c('Large' = 'grey90', 'Small' = 'grey50'))  +
      theme_bw() +
      opts(axis.line = theme_segment(colour = "black"),

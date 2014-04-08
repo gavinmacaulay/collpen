@@ -125,3 +125,15 @@ createSheet(wb, name = "SuppData")
 writeWorksheet(wb, SD, sheet = "SuppData")
 saveWorkbook(wb)
 
+#####################################
+#                                   #
+# Figure 4     #
+#                                   #
+#####################################
+
+dat4 <- readMat("Figure4.mat")
+
+
+
+
+
