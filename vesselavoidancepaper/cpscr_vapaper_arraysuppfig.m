@@ -98,6 +98,7 @@ for f=1:length(files)
 
         
         for chan = 1:16
+            
             Fs = data(data_i).sample_rate(chan);
 
             [N, Fo, Ao, W] = firpmord([Fpass, Fstop]/(Fs/2), [1 0], [Dpass, Dstop]);
@@ -166,19 +167,47 @@ for f=1:length(files)
         textLoc('Far', 'NorthWest');
         xlabel('Frequency (kHz)')
         ylabel('PSD (dB re 1\muPa^2Hz^{-1})')
-        
         % data to export to make figures in R
-        DAT(subplotPosition).psd = psd.psd;
-        DAT(subplotPosition).f = psd.f;
-        DAT(subplotPosition).depths = array.depth;
-        DAT(subplotPosition).array = array.array;
-        DAT(subplotPosition).treatment = treatment;
         
+        ind = psd(1).f<1000;
+        DAT(subplotPosition,1).psd=[];
+        DAT(subplotPosition,2).psd=[];
+        for k=1:8
+            DAT(subplotPosition,1).psd = [DAT(subplotPosition,1).psd; psd(k).psd(ind,:)'];
+            DAT(subplotPosition,2).psd = [DAT(subplotPosition,2).psd; psd(k+8).psd(ind,:)'];
+        end
+        DAT(subplotPosition,1).f = psd(k).f(ind);
+        DAT(subplotPosition,2).f = psd(k).f(ind);
+        
+        DAT(subplotPosition,1).depths = array.depth(1:8);
+        DAT(subplotPosition,2).depths = array.depth(9:16);
+        
+        DAT(subplotPosition,1).array = array.array(1:8);
+        DAT(subplotPosition,2).array = array.array(9:16);
+        
+        DAT(subplotPosition,1).treatment = treatment;
+        DAT(subplotPosition,2).treatment = treatment;
+         
         if par.export_plot
             print('-dpng', '-r200', [treatment, '_psd.png'])
         end
         
     end
-    save SuppFigX DAT
+    save Figure4 DAT
 end
 
+%%
+
+% clear
+load Figure4
+
+for i=1:3
+    for j=1:2
+        txt = ['fig',num2str(i),num2str(j),'= [transpose(DAT(',num2str(i),',',num2str(j),').f); 10*log10(DAT(',num2str(i),',',num2str(j),').psd)];'];
+        disp(txt)
+        eval(txt)
+        
+    end
+end
+
+save Figure4 fig11 fig12 fig21 fig22 fig31 fig32
