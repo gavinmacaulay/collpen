@@ -34,7 +34,7 @@ par.calibration = [ones(1,16)*11.53 1 1]; % [Pa/V]
 % on block 28 for the manuscript...
 
 par.export_plot = true;
-for i = 28 %21:35 
+for i = 21:35
     cp_ProcessArraydata(block(i).b_block,block,par);
 end
 
