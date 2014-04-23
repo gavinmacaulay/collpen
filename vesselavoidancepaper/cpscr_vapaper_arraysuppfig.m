@@ -98,6 +98,7 @@ for f=1:length(files)
 
         
         for chan = 1:16
+            
             Fs = data(data_i).sample_rate(chan);
 
             [N, Fo, Ao, W] = firpmord([Fpass, Fstop]/(Fs/2), [1 0], [Dpass, Dstop]);
@@ -182,7 +183,7 @@ for f=1:length(files)
         ylabel('PSD (dB re 1\muPa^2Hz^{-1})')
         
         % data to export to make figures in R
-        DAT(subplotPosition).treatment = treatment;
+        
         ind = psd(1).f<1000;
         DAT(subplotPosition,1).psd=[];
         DAT(subplotPosition,2).psd=[];
@@ -201,13 +202,17 @@ for f=1:length(files)
         
         DAT(subplotPosition,1).treatment = treatment;
         DAT(subplotPosition,2).treatment = treatment;
+        DAT(subplotPosition,2).array = array.array(9:16);
         
+        DAT(subplotPosition,1).treatment = treatment;
+        DAT(subplotPosition,2).treatment = treatment;
+         
         if par.export_plot
             print('-dpng', '-r200', [treatment, '_psd.png'])
         end
         
     end
-    save Figure4 DAT    
+    save Figure4 DAT
 end
 
 
@@ -256,6 +261,7 @@ DAT(subplotPosition+1,2).psd=[];
 for k=1:8
     DAT(subplotPosition+1,1).psd = [DAT(subplotPosition+1,1).psd; noise(k).psd(ind,:)'];
     DAT(subplotPosition+1,2).psd = [DAT(subplotPosition+1,2).psd; noise(k+8).psd(ind,:)'];
+end
 end
 DAT(subplotPosition+1,1).f = noise(k).f(ind);
 DAT(subplotPosition+1,2).f = noise(k).f(ind);

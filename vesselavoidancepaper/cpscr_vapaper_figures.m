@@ -157,9 +157,9 @@ for i=1:3
         end
     end
 end
-save DATva DAT
+save DATva DAT par
 
-% Export files to R/plot figures
+%% Export files to R/plot figures
 
 % The outer B&K hydrophone (the one close to the caruso) is connected to
 % channel 2 on the Nexus, and split to channel 18 on the NTNU sampler  
