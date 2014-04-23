@@ -106,9 +106,15 @@ for f=1:length(files)
             b  = firpm(N, Fo, Ao, W, {dens});
             Hd = dfilt.dffir(b);
             
+            % and a notch filter to remove some mains hum
+            notch = designfilt('bandstopiir', 'FilterOrder', 2, 'HalfPowerFrequency1', 49, ...
+                'HalfPowerFrequency2', 51, 'DesignMethod', 'butter', 'SampleRate', Fs);
+            
             press(chan,:) = data(data_i).values(:,chan) .* par.calibration(chan);  % pressure in Pa
             % lowpass filter the data
             press(chan,:) = filter(Hd, press(chan,:));
+            % apply the notch filter
+            press(chan,:) = filter(notch, press(chan,:));
             
             if strcmp(treatment, 'GOS_upscaled')
                 peak = 42; % [s]
@@ -128,6 +134,14 @@ for f=1:length(files)
             
             % PSD
             [psd(chan).psd, psd(chan).f] = pwelch(press(chan,psd_i).*1e6, 1000, 500, 1000, Fs);
+            
+            % For one of the treatments, extract noise data for a plot...
+            if strcmp(treatment, 'JH_unfiltered')
+                t = (1:length(press(chan,:)))/Fs;
+                psd_i = t >= 36 & t <= 45; % after playback ends
+            
+                [noise(chan).psd, noise(chan).f] = pwelch(press(chan,psd_i).*1e6, 1000, 500, 1000, Fs);                
+            end
         end
         clear data
         
@@ -179,6 +193,50 @@ for f=1:length(files)
         end
         
     end
-    save SuppFigX DAT
+    save SuppFigX DAT    
 end
 
+% plot the noise data
+figure(1)
+clf
+legend_label = [];
+subplot1(2,1)
+for i = 1:8
+    j = find(noise(i).f < 1.1e3);
+    subplot1(1)
+    plot(noise(i).f(j), 10*log10(noise(i).psd(j)), 'LineWidth', 2, 'color', colours(i,:))
+    xlim([0 1000])
+    %ylim([65 120])
+    legend_label{i} = [num2str(array.depth(i)) ' m'];
+    hold on
+    
+    subplot1(2)
+    j = find(noise(i).f < 1.1e3);
+    plot(noise(i+8).f(j), 10*log10(noise(i+8).psd(j)), 'LineWidth', 2, 'color', colours(i,:))
+    xlim([0 1000])
+    %ylim([64 120])
+    hold on
+end
+subplot1(1)
+title('Noise')
+textLoc('Near', 'NorthWest');
+legend(legend_label)
+ylabel('PSD (dB re 1\muPa^2Hz^{-1})')
+
+subplot1(2)
+textLoc('Far', 'NorthWest');
+xlabel('Frequency (kHz)')
+ylabel('PSD (dB re 1\muPa^2Hz^{-1})')
+
+if par.export_plot
+    print('-dpng', '-r200', 'noise_psd.png')
+end
+        
+% Add in the noise data
+DAT(subplotPosition+1).psd = noise.psd;
+DAT(subplotPosition+1).f = noise.f;
+DAT(subplotPosition+1).depths = array.depth;
+DAT(subplotPosition+1).array = array.array;
+DAT(subplotPosition+1).treatment = 'noise';
+
+save SuppFigX DAT
