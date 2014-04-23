@@ -262,7 +262,7 @@ for k=1:8
     DAT(subplotPosition+1,1).psd = [DAT(subplotPosition+1,1).psd; noise(k).psd(ind,:)'];
     DAT(subplotPosition+1,2).psd = [DAT(subplotPosition+1,2).psd; noise(k+8).psd(ind,:)'];
 end
-end
+
 DAT(subplotPosition+1,1).f = noise(k).f(ind);
 DAT(subplotPosition+1,2).f = noise(k).f(ind);
 
