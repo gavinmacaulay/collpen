@@ -80,13 +80,19 @@ f31 <- data.frame(t = dat$fig31[1,], H1 = dat$fig31[2,], H2 = dat$fig31[3,],
 f32 <- data.frame(t = dat$fig32[1,], H1 = dat$fig32[2,], H2 = dat$fig32[3,],
         H3 = dat$fig32[4,],H4 = dat$fig32[5,],H5 = dat$fig32[6,], 
         H6 = dat$fig32[7,],H7 = dat$fig32[8,],H8 = dat$fig32[9,])
+f41 <- data.frame(t = dat$fig41[1,], H1 = dat$fig41[2,], H2 = dat$fig41[3,],
+        H3 = dat$fig41[4,],H4 = dat$fig41[5,],H5 = dat$fig41[6,], 
+        H6 = dat$fig41[7,],H7 = dat$fig41[8,],H8 = dat$fig41[9,])
+f42 <- data.frame(t = dat$fig42[1,], H1 = dat$fig42[2,], H2 = dat$fig42[3,],
+        H3 = dat$fig42[4,],H4 = dat$fig42[5,],H5 = dat$fig42[6,], 
+        H6 = dat$fig42[7,],H7 = dat$fig42[8,],H8 = dat$fig42[9,])
 
 
 
 #pdf("Figure1.pdf",width = fw1, height = fh1)
 png(filename="Figure4.png",width = fw1/2, height = fh1, units="in",res=700)
 
-par(mfrow=c(3,1),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
+par(mfrow=c(3,2),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
 
 plot(f11$t,f11$H3,type="l",xlab="",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")),ylim=c(60,110),'col'=gray(0.7))
 #lines(f11$t,f11$H3,'col'=gray(.2))
