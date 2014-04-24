@@ -228,7 +228,7 @@ end
 % clear
 load Figure4
 
-for i=1:3
+for i=1:4
     for j=1:2
         txt = ['fig',num2str(i),num2str(j),'= [transpose(DAT(',num2str(i),',',num2str(j),').f); 10*log10(DAT(',num2str(i),',',num2str(j),').psd)];'];
         disp(txt)
@@ -237,4 +237,4 @@ for i=1:3
     end
 end
 
-save Figure4 fig11 fig12 fig21 fig22 fig31 fig32
+save Figure4 fig11 fig12 fig21 fig22 fig31 fig32 fig41 fig42
