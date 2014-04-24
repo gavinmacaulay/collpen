@@ -1,5 +1,6 @@
 setwd('/repositories/CollPen_mercurial/vesselavoidancepaper')
 library(R.matlab)
+library(plotrix)
 
 #####################################
 #                                   #
@@ -57,10 +58,9 @@ dev.off()
 #                                   #
 #####################################
 
-fw1 <- 0.0393701*122
-fh1 <- 0.0393701*130
 
 dat <- readMat("Figure4.mat")
+ctd <- readMat("ctdData.mat")
 
 f11 <- data.frame(t = dat$fig11[1,], H1 = dat$fig11[2,], H2 = dat$fig11[3,],
         H3 = dat$fig11[4,],H4 = dat$fig11[5,],H5 = dat$fig11[6,], 
@@ -87,15 +87,14 @@ f42 <- data.frame(t = dat$fig42[1,], H1 = dat$fig42[2,], H2 = dat$fig42[3,],
         H3 = dat$fig42[4,],H4 = dat$fig42[5,],H5 = dat$fig42[6,], 
         H6 = dat$fig42[7,],H7 = dat$fig42[8,],H8 = dat$fig42[9,])
 
+fw1 <- 0.0393701*122
+fh1 <- 0.0393701*130*4/3
 
+#pdf("Figure4.pdf",width = fw1, height = fh1)
+png(filename="Figure4.png",width = fw1, height = fh1, units="in",res=700)
 
-#pdf("Figure1.pdf",width = fw1, height = fh1)
-png(filename="Figure4.png",width = fw1/2, height = fh1, units="in",res=700)
-
-par(mfrow=c(3,2),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
-
-plot(f11$t,f11$H3,type="l",xlab="",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")),ylim=c(60,110),'col'=gray(0.7))
-#lines(f11$t,f11$H3,'col'=gray(.2))
+par(fig=c(0,0.5,0.625,1),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
+plot(f11$t,f11$H3,type="l",xlab="",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")),ylim=c(65,105),'col'=gray(0.7))
 lines(f11$t,f11$H4,'col'=gray(.75))
 lines(f11$t,f11$H5,'col'=gray(.8))
 lines(f11$t,f11$H6,'col'=gray(.85))
@@ -104,56 +103,47 @@ lines(f11$t,f11$H8,'col'=rgb(1,0,0))
 lines(f11$t,f11$H2,'col'=gray(0))
 mtext("(a)",side=3,line=0,adj=0)
 
-#plot(f12$t,f12$H1,type="l",xlab="",ylab="",ylim=c(60,110),'col'=gray(0))
-#lines(f12$t,f12$H2,'col'=gray(.1))
-#lines(f12$t,f12$H3,'col'=gray(.2))
-#lines(f12$t,f12$H4,'col'=gray(.3))
-#lines(f12$t,f12$H5,'col'=gray(.4))
-#lines(f12$t,f12$H6,'col'=gray(.5))
-#lines(f12$t,f12$H7,'col'=gray(.6))
-#lines(f12$t,f12$H8,'col'=gray(.7))
-#mtext("(b)",side=3,line=0,adj=0)
-#
-plot(f21$t,f21$H3,type="l",xlab="",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")),ylim=c(70,130),'col'=gray(0.7))
-#lines(f21$t,f21$H3,'col'=gray(.2))
+par(fig=c(0.5,1,0.625,1), new=TRUE)
+plot(f21$t,f21$H3,type="l",xlab="",ylab="",ylim=c(70,120),'col'=gray(0.7))
 lines(f21$t,f21$H4,'col'=gray(.75))
 lines(f21$t,f21$H5,'col'=gray(.8))
 lines(f21$t,f21$H6,'col'=gray(.85))
 lines(f21$t,f21$H7,'col'=gray(.9))
 lines(f21$t,f21$H8,'col'=rgb(1,0,0))
 lines(f21$t,f21$H2,'col'=gray(0))
-mtext("(c)",side=3,line=0,adj=0)
+mtext("(b)",side=3,line=0,adj=0)
 
-#plot(f22$t,f22$H1,type="l",xlab="",ylab=" ",ylim=c(70,130),'col'=gray(0))
-#lines(f22$t,f22$H2,'col'=gray(.1))
-#lines(f22$t,f22$H3,'col'=gray(.2))
-#lines(f22$t,f22$H4,'col'=gray(.3))
-#lines(f22$t,f22$H5,'col'=gray(.4))
-#lines(f22$t,f22$H6,'col'=gray(.5))
-#lines(f22$t,f22$H7,'col'=gray(.6))
-#lines(f22$t,f22$H8,'col'=gray(.7))
-#mtext("(d)",side=3,line=0,adj=0)
 
-plot(f31$t,f31$H3,type="l",xlab="frequency (Hz)",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")),ylim=c(70,130),'col'=gray(0.7))
-#lines(f31$t,f31$H3,'col'=gray(.2))
+par(fig=c(0,0.5,0.25,.625), new=TRUE,omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
+plot(f31$t,f31$H3,type="l",xlab="frequency (Hz)",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")),ylim=c(70,120),'col'=gray(0.7))
 lines(f31$t,f31$H4,'col'=gray(.75))
 lines(f31$t,f31$H5,'col'=gray(.8))
 lines(f31$t,f31$H6,'col'=gray(.85))
 lines(f31$t,f31$H7,'col'=gray(.9))
 lines(f31$t,f31$H8,'col'=rgb(1,0,0))
 lines(f31$t,f31$H2,'col'=gray(0))
+mtext("(c)",side=3,line=0,adj=0)
+
+par(fig=c(0.5,1,0.25,.625), new=TRUE,omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
+plot(f41$t,f41$H3,type="l",xlab="frequency (Hz)",ylab="",ylim=c(60,92),'col'=gray(0.7))
+lines(f31$t,f41$H4,'col'=gray(.75))
+lines(f31$t,f41$H5,'col'=gray(.8))
+lines(f31$t,f41$H6,'col'=gray(.85))
+lines(f31$t,f41$H7,'col'=gray(.9))
+lines(f31$t,f41$H8,'col'=rgb(1,0,0))
+lines(f31$t,f41$H2,'col'=gray(0))
+mtext("(d)",side=3,line=0,adj=0)
+
+par(fig=c(0,1,0,.25), new=TRUE,omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
+i<-1
+plot(unlist(ctd$ctdData[i+1]),-unlist(ctd$ctdData[i]),type="l",xlab=expression(paste("sound speed (m",s^-1,")")),
+ylab="depth (m)",'col'=gray(.8),ylim=c(-45,0),xlim=c(1483,1508))
+for(i in  seq(4, 33, by = 3))
+{
+lines(unlist(ctd$ctdData[i+1]),-unlist(ctd$ctdData[i]),'col'=gray(.8))
+}
 mtext("(e)",side=3,line=0,adj=0)
 
-#plot(f32$t,f32$H1,type="l",xlab="frequency (Hz)",ylab=" ",ylim=c(70,130),'col'=gray(0))
-#lines(f32$t,f32$H2,'col'=gray(.1))
-#lines(f32$t,f32$H3,'col'=gray(.2))
-#lines(f32$t,f32$H4,'col'=gray(.3))
-#lines(f32$t,f32$H5,'col'=gray(.4))
-#lines(f32$t,f32$H6,'col'=gray(.5))
-#lines(f32$t,f32$H7,'col'=gray(.6))
-#lines(f32$t,f32$H8,'col'=gray(.7))
-#mtext("(f)",side=3,line=0,adj=0)
-#
 dev.off()
 
 
