@@ -120,12 +120,15 @@ for f=1:length(files)
             if strcmp(treatment, 'GOS_upscaled')
                 peak = 42; % [s]
                 subplotPosition = 2;
+                noise = [1 11];
             elseif strcmp(treatment, 'GOS_unfiltered')
                 peak = 25; % [s]
                 subplotPosition = 1;
+                noise = [36 46];
             elseif strcmp(treatment, 'JH_unfiltered')
                 peak = 26; % [s]
                 subplotPosition = 3;
+                noise = [36 45];
             else
                 error('Unknown treatment')
             end
@@ -136,13 +139,9 @@ for f=1:length(files)
             % PSD
             [psd(chan).psd, psd(chan).f] = pwelch(press(chan,psd_i).*1e6, 1000, 500, 1000, Fs);
             
-            % For one of the treatments, extract noise data for a plot...
-            if strcmp(treatment, 'JH_unfiltered')
-                t = (1:length(press(chan,:)))/Fs;
-                psd_i = t >= 36 & t <= 45; % after playback ends
-            
-                [noise(chan).psd, noise(chan).f] = pwelch(press(chan,psd_i).*1e6, 1000, 500, 1000, Fs);                
-            end
+            psd_i = t >= noise(1) & t <= noise(2); % after playback ends
+            [noisePSD(chan).psd, noisePSD(chan).f] = pwelch(press(chan,psd_i).*1e6, 1000, 500, 1000, Fs);
+
         end
         clear data
         
@@ -151,6 +150,7 @@ for f=1:length(files)
         figure(1)
         clf
         legend_label = [];
+        legend_h = [];
         colours = [215,48,39;244,109,67;253,174,97;254,224,139; ...
             217,239,139;166,217,106;102,189,99;26,152,80]/255;
 
@@ -158,11 +158,13 @@ for f=1:length(files)
         for i = 1:8
             j = find(psd(i).f < 1.1e3);
             subplot1(1)
-            plot(psd(i).f(j), 10*log10(psd(i).psd(j)), 'LineWidth', 2, 'color', colours(i,:))
+            h = plot(psd(i).f(j), 10*log10(psd(i).psd(j)), 'LineWidth', 2, 'color', colours(i,:));
             xlim([0 1000])
             %ylim([65 120])
             legend_label{i} = [num2str(array.depth(i)) ' m'];
+            legend_h(i) = h;
             hold on
+            plot(noisePSD(i).f(j), 10*log10(noisePSD(i).psd(j)), 'LineWidth', 2, 'color', colours(i,:), 'LineStyle', ':')
             
             subplot1(2)
             j = find(psd(i).f < 1.1e3);
@@ -170,11 +172,12 @@ for f=1:length(files)
             xlim([0 1000])
             %ylim([64 120])
             hold on
+            plot(noisePSD(i+8).f(j), 10*log10(noisePSD(i+8).psd(j)), 'LineWidth', 2, 'color', colours(i,:), 'LineStyle', ':')
         end
         subplot1(1)
         title(treatment, 'Interpreter', 'none')
         textLoc('Near', 'NorthWest');
-        legend(legend_label)
+        legend(legend_h, legend_label)
         ylabel('PSD (dB re 1\muPa^2Hz^{-1})')
         
         subplot1(2)
@@ -187,9 +190,14 @@ for f=1:length(files)
         ind = psd(1).f<1000;
         DAT(subplotPosition,1).psd=[];
         DAT(subplotPosition,2).psd=[];
+        DAT(subplotPosition,1).noise=[];
+        DAT(subplotPosition,2).noise=[];
+
         for k=1:8
             DAT(subplotPosition,1).psd = [DAT(subplotPosition,1).psd; psd(k).psd(ind,:)'];
             DAT(subplotPosition,2).psd = [DAT(subplotPosition,2).psd; psd(k+8).psd(ind,:)'];
+            DAT(subplotPosition,1).noise = [DAT(subplotPosition,1).noise; noisePSD(k).psd(ind,:)'];
+            DAT(subplotPosition,2).noise = [DAT(subplotPosition,2).noise; noisePSD(k+8).psd(ind,:)'];
         end
         DAT(subplotPosition,1).f = psd(k).f(ind);
         DAT(subplotPosition,2).f = psd(k).f(ind);
@@ -214,68 +222,6 @@ for f=1:length(files)
     end
     save Figure4 DAT
 end
-
-
-
-% plot the noise data
-figure(1)
-clf
-legend_label = [];
-subplot1(2,1)
-for i = 1:8
-    j = find(noise(i).f < 1.1e3);
-    subplot1(1)
-    plot(noise(i).f(j), 10*log10(noise(i).psd(j)), 'LineWidth', 2, 'color', colours(i,:))
-    xlim([0 1000])
-    %ylim([65 120])
-    legend_label{i} = [num2str(array.depth(i)) ' m'];
-    hold on
-    
-    subplot1(2)
-    j = find(noise(i).f < 1.1e3);
-    plot(noise(i+8).f(j), 10*log10(noise(i+8).psd(j)), 'LineWidth', 2, 'color', colours(i,:))
-    xlim([0 1000])
-    %ylim([64 120])
-    hold on
-end
-subplot1(1)
-title('Noise')
-textLoc('Near', 'NorthWest');
-legend(legend_label)
-ylabel('PSD (dB re 1\muPa^2Hz^{-1})')
-
-subplot1(2)
-textLoc('Far', 'NorthWest');
-xlabel('Frequency (kHz)')
-ylabel('PSD (dB re 1\muPa^2Hz^{-1})')
-
-if par.export_plot
-    print('-dpng', '-r200', 'noise_psd.png')
-end
-        
-% Add in the noise data
-DAT(subplotPosition+1).treatment = 'noise';
-ind = psd(1).f<1000;
-DAT(subplotPosition+1,1).psd=[];
-DAT(subplotPosition+1,2).psd=[];
-for k=1:8
-    DAT(subplotPosition+1,1).psd = [DAT(subplotPosition+1,1).psd; noise(k).psd(ind,:)'];
-    DAT(subplotPosition+1,2).psd = [DAT(subplotPosition+1,2).psd; noise(k+8).psd(ind,:)'];
-end
-
-DAT(subplotPosition+1,1).f = noise(k).f(ind);
-DAT(subplotPosition+1,2).f = noise(k).f(ind);
-
-DAT(subplotPosition+1,1).depths = array.depth(1:8);
-DAT(subplotPosition+1,2).depths = array.depth(9:16);
-
-DAT(subplotPosition+1,1).array = array.array(1:8);
-DAT(subplotPosition+1,2).array = array.array(9:16);
-
-DAT(subplotPosition+1,1).treatment = 'noise';
-DAT(subplotPosition+1,2).treatment = 'noise';
-        
-save Figure4 DAT
 
 %%
 
