@@ -72,7 +72,8 @@ TukeyHSD(dd_aov,ordered=T)
 
 fw2 <- 0.0393701*90*1.2
 fh2 <- 0.0393701*80*2
-pdf("figure5.pdf",width = fw2, height = fh2)
+#pdf("figure5.pdf",width = fw2, height = fh2)
+svg("figure5.svg",width = fw2, height = fh2)
 
 p1<-ggplot(aes(y=score, x = vessel, fill = groupsize),data=SD) +
      geom_boxplot(aes(colour = factor(groupsize),ylab="Score"),colour='black') + 
@@ -85,12 +86,12 @@ p1<-ggplot(aes(y=score, x = vessel, fill = groupsize),data=SD) +
         panel.grid.minor = theme_blank(),
         panel.border = theme_blank())+
         geom_vline(xintercept = 0)
-        
+
 
 p2<- ggplot(aes(y=VA, x = vessel, fill = groupsize),data=SD) +
      geom_boxplot(aes(colour = factor(groupsize)),colour='black') + 
      xlab(" ") +
-     ylab("VA") +
+     ylab(expression(italic(VA))) +
      scale_fill_manual('groupsize', values = c('Large' = 'grey90', 'Small' = 'grey50'))  +
      theme_bw() +
      opts(axis.line = theme_segment(colour = "black"),
@@ -102,7 +103,7 @@ p2<- ggplot(aes(y=VA, x = vessel, fill = groupsize),data=SD) +
 p3<-ggplot(aes(y=dd, x = vessel, fill = groupsize),data=SD) +
      geom_boxplot(aes(colour = factor(groupsize)),colour='black') + 
       xlab(" ") +
-      ylab("Vertical change (m)") +
+      ylab(expression(paste(italic("dd")," (m)"))) +
      scale_fill_manual('groupsize', values = c('Large' = 'grey90', 'Small' = 'grey50'))  +
      theme_bw() +
      opts(axis.line = theme_segment(colour = "black"),
@@ -117,7 +118,8 @@ dev.off()
 
 
 
-pdf("SuppFig1.pdf",width = fw2, height = fh2)
+pdf("Figure6.pdf",width = fw2, height = fh2)
+#png("figure6.png",width = fw2, height = fh2,units="in",res=700)
 
 
 p1<-ggplot(aes(y=score, x=factor(block)),data=SD) +
@@ -135,7 +137,7 @@ p1<-ggplot(aes(y=score, x=factor(block)),data=SD) +
 p2<- ggplot(aes(y=VA, x = factor(block)),data=SD) +
      geom_boxplot(colour='black') + 
      xlab(" ") +
-     ylab("VA") +
+     ylab(expression(italic(VA))) +
      theme_bw() +
      opts(axis.line = theme_segment(colour = "black"),
         panel.grid.major = theme_blank(),
@@ -145,7 +147,7 @@ p2<- ggplot(aes(y=VA, x = factor(block)),data=SD) +
 
 p3 <-ggplot(aes(y=dd, x = factor(block)),data=SD) +
      geom_boxplot(colour='black') + 
-     ylab("Vertical change (m)") +
+     ylab(expression(paste(italic("dd")," (m)")))  +
      xlab("Block #") +
      theme_bw() +
      opts(axis.line = theme_segment(colour = "black"),

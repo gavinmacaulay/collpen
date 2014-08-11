@@ -18,34 +18,33 @@ png(filename="Figure3.png",width = fw1, height = fh1, units="in",res=700)
 
 par(mfrow=c(3,3),omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
 
-plot(dat$fig11.1[1,],dat$fig11.1[2,],'col'=gray(.8),xlim=c(-10,40),ylim=c(100,150),type="l",xlab="time (s)",ylab=expression(paste("SPL (dB re 1",mu,"Pa)")))
+plot(dat$fig11.1[1,],dat$fig11.1[2,],'col'=gray(.8),xlim=c(-10,40),ylim=c(100,150),type="l",xlab="Time (s)",ylab=expression(paste("SPL (dB re 1",mu,"Pa)")))
 lines(dat$fig11.2[1,],dat$fig11.2[2,])
 mtext("(a)",side=3,line=0,adj=0)
-
-plot(dat$fig12.1[1,],dat$fig12.1[2,],'col'=gray(.8),xlim=c(-10,40),ylim=c(100,150),type="l",xlab="time (s)",ylab="")
+plot(dat$fig12.1[1,],dat$fig12.1[2,],'col'=gray(.8),xlim=c(-10,40),ylim=c(100,150),type="l",xlab="Time (s)",ylab="")
 lines(dat$fig12.2[1,],dat$fig12.2[2,])
 mtext("(b)",side=3,line=0,adj=0)
-plot(dat$fig13.1[1,],dat$fig13.1[2,],'col'=gray(.8),xlim=c(-10,40),ylim=c(100,150),type="l",xlab="time (s)",ylab="")
+plot(dat$fig13.1[1,],dat$fig13.1[2,],'col'=gray(.8),xlim=c(-10,40),ylim=c(100,150),type="l",xlab="Time (s)",ylab="")
 mtext("(c)",side=3,line=0,adj=0)
 lines(dat$fig13.2[1,],dat$fig13.2[2,])
 
-plot(dat$fig21.1[1,]/1000,dat$fig21.1[2,],xlim=c(-10,40),ylim=c(-5,5),type="l",xlab="time (ms)",ylab="Pressure (Pa)")
+plot(dat$fig21.1[1,]/1000,dat$fig21.1[2,],xlim=c(-10,40),ylim=c(-5,5),type="l",xlab="Time (ms)",ylab="Pressure (Pa)")
 lines(dat$fig21.2[1,]/1000,dat$fig21.2[2,],'col'=gray(.8))
 mtext("(d)",side=3,line=0,adj=0)
-plot(dat$fig22.2[1,]/1000,dat$fig22.2[2,],xlim=c(-10,40),ylim=c(-50,50),type="l",xlab="time (ms)",ylab="")
+plot(dat$fig22.2[1,]/1000,dat$fig22.2[2,],xlim=c(-10,40),ylim=c(-50,50),type="l",xlab="Time (ms)",ylab="")
 lines(dat$fig22.1[1,]/1000,dat$fig22.1[2,],'col'=gray(.8))
 mtext("(e)",side=3,line=0,adj=0)
-plot(dat$fig23.2[1,]/1000,dat$fig23.2[2,],xlim=c(-10,40),ylim=c(-50,50),type="l",xlab="time (ms)",ylab="")
+plot(dat$fig23.2[1,]/1000,dat$fig23.2[2,],xlim=c(-10,40),ylim=c(-50,50),type="l",xlab="Time (ms)",ylab="")
 lines(dat$fig23.1[1,]/1000,dat$fig23.1[2,],'col'=gray(.8))
 mtext("(f)",side=3,line=0,adj=0)
 
-plot(dat$fig31.1[1,],dat$fig31.1[2,],'col'=gray(.8),xlim=c(0,800),ylim=c(40,140),type="l",xlab="frequency (Hz)",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")))
+plot(dat$fig31.1[1,],dat$fig31.1[2,],'col'=gray(.8),xlim=c(0,800),ylim=c(40,140),type="l",xlab="Frequency (Hz)",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")))
 lines(dat$fig31.2[1,],dat$fig31.2[2,])
 mtext("(g)",side=3,line=0,adj=0)
-plot(dat$fig32.1[1,],dat$fig32.1[2,],'col'=gray(.8),xlim=c(0,800),ylim=c(40,140),type="l",xlab="frequency (Hz)",ylab="")
+plot(dat$fig32.1[1,],dat$fig32.1[2,],'col'=gray(.8),xlim=c(0,800),ylim=c(40,140),type="l",xlab="Frequency (Hz)",ylab="")
 lines(dat$fig32.2[1,],dat$fig32.2[2,])
 mtext("(h)",side=3,line=0,adj=0)
-plot(dat$fig33.1[1,],dat$fig33.1[2,],'col'=gray(.8),xlim=c(0,800),ylim=c(40,140),type="l",xlab="frequency (Hz)",ylab="")
+plot(dat$fig33.1[1,],dat$fig33.1[2,],'col'=gray(.8),xlim=c(0,800),ylim=c(40,140),type="l",xlab="Frequency (Hz)",ylab="")
 lines(dat$fig33.2[1,],dat$fig33.2[2,])
 mtext("(i)",side=3,line=0,adj=0)
 
@@ -115,7 +114,7 @@ mtext("(b)",side=3,line=0,adj=0)
 
 
 par(fig=c(0,0.5,0.25,.625), new=TRUE,omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
-plot(f31$t,f31$H3,type="l",xlab="frequency (Hz)",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")),ylim=c(70,120),'col'=gray(0.7))
+plot(f31$t,f31$H3,type="l",xlab="Frequency (Hz)",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")),ylim=c(70,120),'col'=gray(0.7))
 lines(f31$t,f31$H4,'col'=gray(.75))
 lines(f31$t,f31$H5,'col'=gray(.8))
 lines(f31$t,f31$H6,'col'=gray(.85))
@@ -125,7 +124,7 @@ lines(f31$t,f31$H2,'col'=gray(0))
 mtext("(c)",side=3,line=0,adj=0)
 
 par(fig=c(0.5,1,0.25,.625), new=TRUE,omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
-plot(f41$t,f41$H3,type="l",xlab="frequency (Hz)",ylab="",ylim=c(60,92),'col'=gray(0.7))
+plot(f41$t,f41$H3,type="l",xlab="Frequency (Hz)",ylab="",ylim=c(60,92),'col'=gray(0.7))
 lines(f31$t,f41$H4,'col'=gray(.75))
 lines(f31$t,f41$H5,'col'=gray(.8))
 lines(f31$t,f41$H6,'col'=gray(.85))
@@ -136,8 +135,8 @@ mtext("(d)",side=3,line=0,adj=0)
 
 par(fig=c(0,1,0,.25), new=TRUE,omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
 i<-1
-plot(unlist(ctd$ctdData[i+1]),-unlist(ctd$ctdData[i]),type="l",xlab=expression(paste("sound speed (m",s^-1,")")),
-ylab="depth (m)",'col'=gray(.8),ylim=c(-45,0),xlim=c(1483,1508))
+plot(unlist(ctd$ctdData[i+1]),-unlist(ctd$ctdData[i]),type="l",xlab=expression(paste("Sound speed (m",s^-1,")")),
+ylab="Depth (m)",'col'=gray(.8),ylim=c(-45,0),xlim=c(1483,1508))
 for(i in  seq(4, 33, by = 3))
 {
 lines(unlist(ctd$ctdData[i+1]),-unlist(ctd$ctdData[i]),'col'=gray(.8))
@@ -146,6 +145,16 @@ mtext("(e)",side=3,line=0,adj=0)
 
 dev.off()
 
+png(filename="Figure4a.png",width = fw1, height = fh1/2, units="in",res=300)
+par(omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
+plot(f11$t,f11$H3,type="l",xlab="Frequency (Hz)",ylab=expression(paste("PSD (dB re 1",mu,"P",a^2," H",z^-1,")")),ylim=c(65,105),'col'=gray(0.7))
+lines(f11$t,f11$H4,'col'=gray(.75))
+lines(f11$t,f11$H5,'col'=gray(.8))
+lines(f11$t,f11$H6,'col'=gray(.85))
+lines(f11$t,f11$H7,'col'=gray(.9))
+lines(f11$t,f11$H8,'col'=rgb(1,0,0))
+lines(f11$t,f11$H2,'col'=gray(0))
+dev.off()
 
 
 #####################################

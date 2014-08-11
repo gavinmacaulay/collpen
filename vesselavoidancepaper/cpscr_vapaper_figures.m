@@ -238,12 +238,27 @@ p={'a','b','c'};
 for j=1:3
     ind  = ((DAT{1,j}.x > par.ek60.passTimeVA(1)   & DAT{1,j}.x < par.ek60.passTimeVA(2)));
     %plot(DAT{1,j}.x(ind),DAT{1,j}.nexus1(ind))
-    disp(['Nexus 1 panel ',p{j},': ',num2str(20*log10(mean(DAT{1,j}.nexus1(ind))),4),'dB'])
-    disp(['Nexus 2 panel ',p{j},': ',num2str(20*log10(mean(DAT{1,j}.nexus2(ind))),4),'dB'])
+    disp(['Nexus 1 panel ',p{j},': ',num2str(20*log10(quantile(DAT{1,j}.nexus1(ind),.9)),4),'dB'])
+    disp(['Nexus 2 panel ',p{j},': ',num2str(20*log10(quantile(DAT{1,j}.nexus2(ind),.9)),4),'dB'])
     
 end
-%
-10^((171.1-136)/20)
+
+% Difference between target and real levels
+128.76 -114.6
+142.16 -137.9
+142.16 -138.8
+
+% Source levels 
+A.SL.JH = 171.7;
+A.SL.GOS = 158.3;
+% Target SPL at 30 m range
+A.SPL.JH = A.SL.JH - 20*log10(30);
+A.SPL.GOS = A.SL.GOS - 20*log10(30);
+
+% "Real distance"
+A.d.GOS   = 10^((A.SL.GOS - 114.6)/20);
+A.d.GOSup = 10^((A.SL.JH  - 137.9)/20);
+A.d.JH    = 10^((A.SL.JH  - 138.8)/20);
 
 
 save Figure1 fig11_1 fig12_1 fig13_1 fig21_1 fig22_1 fig23_1 fig31_1 fig32_1 fig33_1 fig11_2 fig12_2 fig13_2 fig21_2 fig22_2 fig23_2 fig31_2 fig32_2 fig33_2
