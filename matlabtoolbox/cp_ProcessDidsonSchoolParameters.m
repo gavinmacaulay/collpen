@@ -1,7 +1,8 @@
 function cp_ProcessDidsonSchoolParameters(blockn,block,par)
 %
-% This function reads the Didson data and calculates key school parameters
-% before and during exposure.
+%
+% This function reads the Didson data and creates short movies associated
+% with the each stimuli. The videos are stored in the figures folder
 %
 % Input:
 % blockn - The block number
@@ -15,13 +16,12 @@ function cp_ProcessDidsonSchoolParameters(blockn,block,par)
 %
 %
 % Output:
-% dat.<mean school parameter>
-% dat.<mean school parameter>
-% dat.<mean school parameter>
-% dat.<mean school parameter>
-% ...
+% avi files for further analysis
+%
 
+% (C) Nils Olav Handegard, CollPen project, CC-BY 3.0
 
+close all
 
 % The number of subblocks for this block
 N = length(block(blockn).subblock);
@@ -69,10 +69,21 @@ for j=1:N
             % Start and stop time of the didson data
             %             d.starttime(1)  = block(blockn).subblock(j).s_start_time_mt + par.preRefTimeWB(1);
             %             d.stoptime(1)   = block(blockn).subblock(j).s_start_time_mt + par.preRefTimeWB(2);
+            % We are simply using the first part of the file for the
+            % background bevahiour
             d.starttime(1)  = par.preRefTimeWB(1);
             d.stoptime(1)   = par.preRefTimeWB(2);
             
+            % The times for the bottle treatment. par.preRefTimeWB 
+            for nls = 1:length(block(blockn).subblock(j).treatment)
+                % Pick the treamtent only, skip the control
+                if strcmp(block(blockn).subblock(j).treatment(nls).t_treatmenttype,'predmodel_bottle')
+                    d.starttime(2)  = block(blockn).subblock(j).treatment(nls).t_start_time_mt + par.passTimeWB(1);
+                    d.stoptime(2)   = block(blockn).subblock(j).treatment(nls).t_stop_time_mt + par.passTimeWB(2);
+                end
+            end
             d.hdr  = [block(blockn).b_groupsize,'_','didson_block',num2str(block(blockn).b_block),'_sub',num2str(block(blockn).subblock(j).s_subblock)];
+            
             nt=1;
         else
             nt=length(block(blockn).subblock(j).treatment);
@@ -101,13 +112,13 @@ for j=1:N
                     hdrn = {'_TREAT','_NULL'};
                     d.hdr  = ['didson_block',num2str(block(blockn).b_block),'_sub',num2str(block(blockn).subblock(j).s_subblock),'_treat',num2str(block(blockn).subblock(j).treatment(l).t_treatment)];
                 elseif strcmp(cas,'predmodel2013')
-                    hdrn = {''};
+                    %hdrn = {''};
+                    hdrn = {'_NULL','_TREAT'};
                 else
                     hdrn = {''};
                     error('Unknown case')
                 end
                 
-
                 % (T.mat)
                 
                 %Sometimes there are NaN in the time vector. Let's interpolate:
@@ -116,7 +127,7 @@ for j=1:N
                 T(:,1) = interp1(x(nanind),T(nanind,1),x,'linear','extrap');
                 
                 % Loop over one or two start times
-                for k = 1:length(d.starttime)
+                for k = 2%1:length(d.starttime)
                     
                     d.hdr2=[cas,hdrn{k},'_',d.hdr];
                     d.avifile = fullfile(par.datadir,'figures',[d.hdr2,'.avi']);
@@ -128,7 +139,7 @@ for j=1:N
                     disp(datestr(d.stoptime(k)))
                     
                     % Get files and frames to be read and plotted from the index data
-                    if strcmp(cas,'predmodel2013')
+                    if strcmp(cas,'predmodel2013') && k==1
                         % In this case it is only relative to start of
                         % file!
                         ind = (T(:,1)-T(1,1))>d.starttime(k) & (T(:,1)-T(1,1))<d.stoptime(k);
@@ -140,7 +151,7 @@ for j=1:N
                     if sum(ind)==0
                         warning(['Failed: No Didson data for ',d.hdr])
                         disp(['Data spans:',datestr(T(1,1)),' to ',datestr(T(end,1))])
-                        disp(['Passing spans:',datestr(d.starttime0),' to ',datestr(d.stoptime0)])
+                        disp(['Passing spans:',datestr(d.starttime(k)),' to ',datestr(d.stoptime(k))])
                     else
                         [~,ind1]=min(abs(T(:,1)-d.starttime(k)));
                         [~,ind2]=min(abs(T(:,1)-d.stoptime(k)));
@@ -170,10 +181,14 @@ function [ek60]=cpsrPlotDidson(d)
 ddf = dir(fullfile(d.ddfdir, '*.ddf'));
 
 % Generate the avi file
-trackflowavi = avifile(d.avifile,'keyframe',20,...
-    'Compression','none');
+trackflowavi = VideoWriter(d.avifile,'Grayscale AVI');
+trackflowavi.FrameRate =8;
 
-border=1;
+%trackflowavi2 = VideoWriter([d.avifile(1:end-4),'_v2.avi'],'Grayscale AVI');
+open(trackflowavi)
+%open(trackflowavi2)
+
+%border=1;
 
 for i=1:size(d.files);
     % Open ddf file
@@ -192,47 +207,52 @@ for i=1:size(d.files);
         end
     end
     % Loop over frames for the open file
+    warning('Range is hardcoded to 0.83 m. Not in metadata. Fuck SoundMetrics.')
     for framenumber = frames
         data=get_frame_new(data,framenumber);
-        
+        data.minrange = 0.83;
+        data.maxrange = 10.83;
+        figure(1)
         if i==1&&framenumber==frames(1) % Generate plot if this is the first frame
             iptsetpref('Imshowborder','tight');
             data=make_first_image(data,4,400); %make the first image array
             fd = imshow(data.image);
-            colormap bone;%(bluebar);
-            set(gca,'Clim',[30,200]); %set bottom and top of color map
+            %colormap bone;%(bluebar);
+            %set(gca,'Clim',[30,200]); %set bottom and top of color map
             set(fd,'EraseMode','none','CDataMapping','scaled');
             %h=text(50,25,d.hdr2,'interpreter','none','color',[1 1 1]);
+            fg1 = gcf;
+            fa1 = gca;
+            set(gcf,'Renderer','zbuffer');
+%              fg2 = figure('Position',[100 174 400 745]);
+%              set(fg2,'Renderer','zbuffer');
         else % If the plot have been made, update it
             if framenumber==1 % If this is the first frame in a new file
                 data = make_first_image(data,4,400); %make the first image array
             else
                 data = make_new_image(data,data.frame);
             end
-%             if d.files(i)==d.indstart(3) && framenumber==d.indstart(2)% If the time is prior/after to the experiment start/stop
-%                 border = 2;
-%             elseif d.files(i)==d.indstop(3) && framenumber==d.indstop(2) % If the time is prior to the experiment start
-%                 border = 3;
-%             end
-%             % Apply border color
-%             switch border
-%                 case 1
-%                     h=text(50,25,'Pre exposure','color',[1 1 1]);
-%                 case 2
-%                     h=text(50,25,'EXPOSURE','color',[1 1 1]);
-%                 case 3
-%                     h=text(50,25,'Post exposure','color',[1 1 1]);
-%             end
             set(fd,'CData',data.image);
         end
         % And add the frame to the avi file
-        trackflowavi = addframe(trackflowavi,getframe(gca));
+        nils=getframe(fa1);
+        nils.cdata=rgb2gray(nils.cdata);
+        writeVideo(trackflowavi,nils);
         drawnow;
-%        delete(h)
+%          figure(fg2)
+%          [H]=imagecartesian2polar(data.frame, data.minrange, data.maxrange);
+%          nils2=getframe(fg2);
+%          nils2.cdata=rgb2gray(nils2.cdata);
+%          writeVideo(trackflowavi2,nils2);
+%          delete(H)
+%         axis equal
     end
+    hold on
     % Close the ddf file
     fclose(data.fid);
 end
 % Close the avi file
-trackflowavi = close(trackflowavi);
+close(trackflowavi);
+close(gcf)
+% close(trackflowavi2);
 
