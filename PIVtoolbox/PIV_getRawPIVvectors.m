@@ -85,21 +85,21 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
     
     %% Opening movie object
     disp(['[PIV_getRawPIVvectors]:..Opening ' filepath]);
-    info     = aviinfo(filepath);
-    movieobj = mmreader(filepath);
-
+%    info     = aviinfo(filepath);
+%    movieobj = mmreader(filepath);
+movieobj = VideoReader(filepath);
     %% PIV settings 
     winsize = parstr.winsize;
     olap    = parstr.olap;
     param   = 'single'; %multi/single 
-    dt      = 1.0/15.0; 
+    dt      = 1;
     rows    = 1;
     cols    = 1;
 
     % initiating
     try
         RGB2                        = read(movieobj, 1);
-        I2                          = RGB2(:,:,1);
+        I2                          = rgb2gray(RGB2);
         I1                          = I2;
         [T,xs,ys,us,vs,snrs,pkhs]   = evalc('matpivCP(I1,I2,winsize,dt,olap,param)');
         [rows cols]                 = size(xs);
@@ -108,7 +108,7 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
     end
   
     % PIV data vectors
-    n      = info.NumFrames-1;
+    n      = movieobj.NumberOfFrames-1;
     xs     = zeros(rows,cols,n);
     ys     = zeros(rows,cols,n);
     us     = zeros(rows,cols,n);
@@ -488,8 +488,11 @@ for jj=1:(1-overlap)*winsize:size(A,1)-winsize+1
                     % Interpolate to find the peak position at subpixel resolution,
                     % using three point curve fit function INTPEAK.
                     % X0,Y0 now denotes the displacements.
-                    [x0,y0]=intpeak(x1,y1,R(y1,x1),R(y1,x1-1),R(y1,x1+1),...                  
-                                          R(y1-1,x1),R(y1+1,x1),2,winsize);
+                    % Nils Olav: We added ones to the aRses to avoid problem
+                    % when the data is noisy. We also changed this to method
+                    % 1 to be less vulnerable to noise.
+                    [x0,y0]=intpeak(x1,y1,R(y1,x1)+1,R(y1,x1-1)+1,R(y1,x1+1)+1,...                  
+                                          R(y1-1,x1)+1,R(y1+1,x1)+1,1,winsize);
                     R2=R;
                     R2(y1-3:y1+3,x1-3:x1+3)=NaN;
                     [p2_y2,p2_x2]=find(R2==max(max(R2( 0.5*N+2:1.5*N-3,0.5*M+2:1.5*M-3))));

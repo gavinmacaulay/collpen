@@ -100,7 +100,7 @@ lines(f11$t,f11$H6,'col'=gray(.85))
 lines(f11$t,f11$H7,'col'=gray(.9))
 lines(f11$t,f11$H8,'col'=rgb(1,0,0))
 lines(f11$t,f11$H2,'col'=gray(0))
-mtext("(a)",side=3,line=0,adj=0)
+mtext("a",side=3,line=0,adj=0)
 
 par(fig=c(0.5,1,0.625,1), new=TRUE)
 plot(f21$t,f21$H3,type="l",xlab="",ylab="",ylim=c(70,120),'col'=gray(0.7))
@@ -110,7 +110,7 @@ lines(f21$t,f21$H6,'col'=gray(.85))
 lines(f21$t,f21$H7,'col'=gray(.9))
 lines(f21$t,f21$H8,'col'=rgb(1,0,0))
 lines(f21$t,f21$H2,'col'=gray(0))
-mtext("(b)",side=3,line=0,adj=0)
+mtext("b",side=3,line=0,adj=0)
 
 
 par(fig=c(0,0.5,0.25,.625), new=TRUE,omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
@@ -121,7 +121,7 @@ lines(f31$t,f31$H6,'col'=gray(.85))
 lines(f31$t,f31$H7,'col'=gray(.9))
 lines(f31$t,f31$H8,'col'=rgb(1,0,0))
 lines(f31$t,f31$H2,'col'=gray(0))
-mtext("(c)",side=3,line=0,adj=0)
+mtext("c",side=3,line=0,adj=0)
 
 par(fig=c(0.5,1,0.25,.625), new=TRUE,omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
 plot(f41$t,f41$H3,type="l",xlab="Frequency (Hz)",ylab="",ylim=c(60,92),'col'=gray(0.7))
@@ -131,17 +131,19 @@ lines(f31$t,f41$H6,'col'=gray(.85))
 lines(f31$t,f41$H7,'col'=gray(.9))
 lines(f31$t,f41$H8,'col'=rgb(1,0,0))
 lines(f31$t,f41$H2,'col'=gray(0))
-mtext("(d)",side=3,line=0,adj=0)
+mtext("d",side=3,line=0,adj=0)
 
 par(fig=c(0,1,0,.25), new=TRUE,omi=c(0.1,0.1,0.1,0.1),mar=c(4, 4.5, .8, .4), bty ="l")
 i<-1
-plot(unlist(ctd$ctdData[i+1]),-unlist(ctd$ctdData[i]),type="l",xlab=expression(paste("Sound speed (m",s^-1,")")),
+plot(unlist(ctd$ctdData[i+1]),-unlist(ctd$ctdData[i]),type="l",xlab=expression(paste("Sound speed (m ",s^-1,")")),
 ylab="Depth (m)",'col'=gray(.8),ylim=c(-45,0),xlim=c(1483,1508))
+#axis(2, at=c(-40,0), label=paste(c(-40, 0)))
+#axis(2, at=c(-30,-20,-10), label=F, tick=T)
 for(i in  seq(4, 33, by = 3))
 {
 lines(unlist(ctd$ctdData[i+1]),-unlist(ctd$ctdData[i]),'col'=gray(.8))
 }
-mtext("(e)",side=3,line=0,adj=0)
+mtext("e",side=3,line=0,adj=0)
 
 dev.off()
 

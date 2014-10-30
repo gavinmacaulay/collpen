@@ -93,19 +93,20 @@ function I = getBGImage(filepath, msg,perc,n)
 
     %% Opening movie object
     dispMsg(msg,'[PIV_createBGImage]: ..Loading movie')
-    info     = aviinfo(filepath);
-    movieobj = mmreader(filepath);
+%     info     = aviinfo(filepath);
+%     movieobj = mmreader(filepath);
 
+    movieobj = VideoReader(filepath);
 
     %% Setting up image stack
     dispMsg(msg,'[PIV_createBGImage]: ..Setting up image stack')
     RGB         = uint16(read(movieobj, 1));
-    nf          = min(info.NumFrames,n);
+    nf          = min(movieobj.NumberOfFrames,n);
     [m n z]     = size(RGB);
     Is          = zeros(m,n,nf);
     for f=1:1:nf
         RGB         = uint16(read(movieobj, f));
-        Is(:,:,f)   = RGB(:,:,1);
+        Is(:,:,f)   = rgb2gray(RGB);
     end
 
     %% Generating percentile BG image
