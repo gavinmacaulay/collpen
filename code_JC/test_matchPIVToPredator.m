@@ -1,50 +1,9 @@
-%%
-close all
-[r c n] = size(xs);
-for i = 1:n
-    x = xs (:,:,i);
-    y = ys (:,:,i);
-    u = us (:,:,i);
-    v = vs (:,:,i);
-    
-    quiver(x,y,u,v,10);axis equal; axis tight;
-    set(gca,'YDir','reverse');
-end
-
-
-%%
-close all
-I = zeros(100,100);
-wsize = 16;
-x = 16;
-y = 8;
-
-lowerx = x-wsize/2;
-lowery = y-wsize/2;
-upperx = x+wsize/2;
-uppery = y+wsize/2;
-
-if (lowerx <=0)
-    lowerx=1 ;
-end
-
-if (lowery <=0)
-    lowery=1 ;
-end
-
-I(lowery:uppery,lowerx:upperx) = 255;
-imagesc(I); axis equal; axis tight; colormap gray;
-hold on
-quiver(x,y,20,20);
-keyboard
-
-
 %% Script to test matching PIVs to predator positions from folder
 clear
 close all
 clc
 
-folder              = '/Volumes/Datos/collpen/predator/test/';
+folder              = '/Volumes/Datos/collpen/test_predator/test/';
 wsize               = 32;
 fps                 = 8;
 fov_left1           = [3,26]; %Points to define sonar Field of View
@@ -58,16 +17,19 @@ d=dir([folder '*.avi']);
 
 for i = 1:length(d)
     file = d(i).name;
-    [frame_acc pred_x_acc pred_y_acc pred_u_acc pred_v_acc piv_x_acc piv_y_acc ... 
-        piv_u_acc piv_v_acc intensity_wsize_acc intensity_half_wsize_acc score_acc fov_limit_acc] =...
-        matchPIVToPredator(folder, file, wsize, fps, denoising_method, denoising_param, fov_left1, fov_left2, fov_right1, fov_right2);
+    [frame_acc pred_x_acc pred_y_acc pred_u_acc pred_v_acc piv_x_acc ...
+        piv_y_acc piv_u_acc piv_v_acc intensity_wsize_acc ...
+        intensity_half_wsize_acc score_acc fov_limit_acc] =...
+        matchPIVToPredator(folder, file, wsize, fps, denoising_method, ...
+        denoising_param, fov_left1, fov_left2, fov_right1, fov_right2);
     
     savepath = strrep(file,'.avi','_match_PIV_predator.mat');
     savepath = [folder '/PIVdata/' savepath];
     
     if(size(frame_acc,1) > 0)
-        D = [frame_acc pred_x_acc pred_y_acc pred_u_acc pred_v_acc piv_x_acc piv_y_acc ... 
-            piv_u_acc piv_v_acc intensity_wsize_acc intensity_half_wsize_acc score_acc fov_limit_acc];
+        D = [frame_acc pred_x_acc pred_y_acc pred_u_acc pred_v_acc...
+            piv_x_acc piv_y_acc piv_u_acc piv_v_acc intensity_wsize_acc...
+            intensity_half_wsize_acc score_acc fov_limit_acc];
         
         save(savepath,'D','wsize','fps');
     end
@@ -75,7 +37,7 @@ for i = 1:length(d)
 end
 
 %% Render frames with PIV/mean intensity info
-folder = '/Volumes/Datos/collpen/predator/test/';
+folder = '/Volumes/Datos/collpen/test_predator/test/';
 
 d=dir([folder '*.avi']);
 wsize = 32;
@@ -87,7 +49,7 @@ end
 
 %% Script to merge all PIV matching matrices into a single file
 
-folder = '/Volumes/Datos/collpen/predator/test/PIVdata/';
+folder = '/Volumes/Datos/collpen/test_predator/test/PIVdata/';
 
 d=dir([folder '*_match_PIV_predator.mat']);
 E = [];
@@ -107,7 +69,7 @@ save(savepath,'E','wsize','fps');
 %% Script to plot  PIV projection vs Predator position
 close all
 clear
-folder = '/Volumes/Datos/collpen/predator/test/PIVdata/'
+folder = '/Volumes/Datos/collpen/test_predator/test/PIVdata/'
 datapath = [folder 'merged_match_PIVdata.mat'];
 
 load(datapath);
@@ -141,7 +103,7 @@ plot(direction(:,1),direction(:,2),'*');
 
 %% Script to plot  PIV projection vs Predator position
 close all
-folder = '/Volumes/Datos/collpen/predator/test/PIVdata/'
+folder = '/Volumes/Datos/collpen/test_predator/test/PIVdata/'
 datapath = [folder 'merged_match_PIVdata.mat'];
 
 load(datapath);
@@ -192,7 +154,7 @@ clear
 close all
 clc
 
-folder = '/Volumes/Datos/collpen/predator/test/';
+folder = '/Volumes/Datos/collpen/test_predator/test/';
 file = 'predmodel2013_TREAT_Brown net_didson_block45_sub1.avi';
 
 wsize = 16;

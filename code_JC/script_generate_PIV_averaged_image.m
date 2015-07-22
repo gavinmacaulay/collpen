@@ -17,14 +17,14 @@ clear
 % video_in = '/Volumes/Datos/collpen/predator/test/denoised/predmodel2013_TREAT_White net_didson_block38_sub1___02-Background_subtraction_+_normalization_filter.avi';
 % video_out = '/Volumes/Datos/collpen/predator/test/denoised/video.avi';
 % pivs = '/Volumes/Datos/collpen/predator/test/denoised/PIVdata/32/previously_denoised/predmodel2013_TREAT_White net_didson_block38_sub1___02-Background_subtraction_+_normalization_filter_PIV.mat';
-% 
-% video_in = '/Volumes/Datos/collpen/data/block1/didson/denoised/2013-07-16_085600___bg_sub.avi';
-% pivs = '/Volumes/Datos/collpen/data/block1/didson/PIVdata/32/previously_denoised/2013-07-16_085600_PIV.mat';
-% video_out = 'data/block1/didson/denoised/video.avi';
 
-video_in = '/Volumes/Datos/collpen/RedSlip/gopro_40%.avi';
-pivs = '/Volumes/Datos/collpen/RedSlip/PIVdata/32/previously_denoised/gopro_40%_PIV.mat';
-video_out = '/Volumes/Datos/collpen/RedSlip/denoised/PIV_video.avi';
+video_in = '/Volumes/Datos/collpen/data/block1/didson/denoised/2013-07-16_085600___bg_sub.avi';
+pivs = '/Volumes/Datos/collpen/data/block1/didson/PIVdata/32/previously_denoised/2013-07-16_085600_PIV.mat';
+video_out = 'data/block1/didson/denoised/video.avi';
+
+% video_in = '/Volumes/Datos/collpen/RedSlip/gopro_40%.avi';
+% pivs = '/Volumes/Datos/collpen/RedSlip/PIVdata/32/previously_denoised/gopro_40%_PIV.mat';
+% video_out = '/Volumes/Datos/collpen/RedSlip/denoised/PIV_video.avi';
 
 % video_in = '/Volumes/Datos/collpen/RedSlip/denoised/gopro_40%___bg_sub.avi';
 % pivs = '/Volumes/Datos/collpen/RedSlip/denoised/PIVdata/32/previously_denoised/gopro_40%___bg_sub_PIV.mat';
@@ -69,7 +69,7 @@ sec_frame_ratio = 1/8;
 
 magnitude_uv = sqrt(us_mean.*us_mean + vs_mean.*vs_mean);
 
-magnitude_uv = magnitude_uv * 8 / 115;
+magnitude_uv = magnitude_uv * 8; % Speed in pixels/second [/ 115;] 
 min_magnitude = min(magnitude_uv(:));
 max_magnitude = max(magnitude_uv(:));
 

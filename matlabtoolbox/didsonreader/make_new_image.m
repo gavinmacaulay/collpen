@@ -1,4 +1,4 @@
-function data=make_new_image(data,frame_in);
+function data=make_new_image(data,frame_in)
 %This function reads the data structure after get_frame_new has been called
 %  and adds data.image to the structure.
 %If get_frame_new detects a change in minrange or maxrange, it sets the data.flag to 1

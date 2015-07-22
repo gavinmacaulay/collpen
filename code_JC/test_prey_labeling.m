@@ -1,15 +1,15 @@
-% Script to generate ground truth from video for testing denoising
+%% Script to generate ground truth from video for testing denoising
 % techniques
 
 
-% Along the video, 3 position trajectories are established. Later, the following variables
-% must be grouped into set of 3 rows per variable: frames, pred_x and pred_y
+% Along the video, each prey sample consists of 3 position detections. 
+% The labeled detection will be 3 value tuples: frames, pred_x and pred_y
 
 clear
 close all
 
-filepath = '/Volumes/Datos/collpen/predator/test/';
-filename = 'predmodel2013_TREAT_White net_didson_block53_sub1.avi';
+filepath = '/Volumes/Datos/collpen/denoise_polar/';
+filename = 'block_1_1_white_net-2013-07-16_085600_00250-00258.avi';
 
 
 
@@ -25,11 +25,11 @@ prey = 1;
 [frames pred_x pred_y]
 [frames_interp interp_x interp_y]
 
-%%
+%% Plot ground truth
 close all
 clear 
 
-load('/Volumes/Datos/collpen/predator/test/prey_position/predmodel2013_TREAT_Brown net_didson_block45_sub1_prey_positions.mat');
+load('/Volumes/Datos/collpen/test_remember/prey_position/predmodel2013_TREAT_Brown net_didson_block45_sub1_prey_positions.mat');
 
 % Split prey positions
 close all

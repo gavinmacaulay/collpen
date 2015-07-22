@@ -1,4 +1,6 @@
-function [angles ranges dot_products relative_range] = checkPIV2(file, pr_frames, pr_x, pr_y, movieobj, px_meter, fps, save_path, save_image)
+function [angles ranges dot_products relative_range] = ...
+            checkPIV2(file, pr_frames, pr_x, pr_y, movieobj, px_meter, ...
+                      fps, save_path, save_image)
 
 close
 load(file);

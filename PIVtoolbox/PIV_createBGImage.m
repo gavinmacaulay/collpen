@@ -17,15 +17,15 @@ function [image, filepathbg] = PIV_createBGImage(folder, avifilename, parstr)
     avifilename=strrep([avifilename '.avi'],'.avi.avi','.avi');
     
     % default parstr
-    dparstr = struct('showmsg',0,'Nframes',500,'perc',30,'write',0,'useold',0);
+    dparstr = struct('showmsg',0,'Nframes',50,'perc',30,'write',0,'useold',0);
    
     % Datafolder
-    datafolder = [folder '\PIVdata'];
+    datafolder = [folder '/PIVdata'];
     if ~(exist(datafolder,'dir')==7)
         dispMsg(parstr.showmsg,['[PIV_getRawPIVvectors]: Creating data folder, ' datafolder]);
         mkdir(datafolder);
     end
-    tmpfilepathbg = strrep([datafolder '\' avifilename],'.avi','_BG.bmp');
+    tmpfilepathbg = strrep([datafolder '/' avifilename],'.avi','_BG.bmp');
     
     
     % Setting return to empty
@@ -43,7 +43,8 @@ function [image, filepathbg] = PIV_createBGImage(folder, avifilename, parstr)
         disp(fieldnames(dparstr))
         return;
     end
-    if nargin == 3 
+
+    if nargin == 3
         if sum(strcmp('showmsg',fieldnames(parstr)))==1
             dparstr.showmsg = parstr.showmsg;
         end
@@ -74,7 +75,7 @@ function [image, filepathbg] = PIV_createBGImage(folder, avifilename, parstr)
     
     % getting BG image
     dispMsg(parstr.showmsg,'[PIV_createBGImage]: Getting BG image')
-    image = getBGImage([folder '\' avifilename], parstr.showmsg,parstr.perc, parstr.Nframes);
+    image = getBGImage([folder '/' avifilename], parstr.showmsg,parstr.perc, parstr.Nframes);
 
     % writing BG image
     if parstr.write==1
@@ -93,10 +94,9 @@ function I = getBGImage(filepath, msg,perc,n)
 
     %% Opening movie object
     dispMsg(msg,'[PIV_createBGImage]: ..Loading movie')
-%     info     = aviinfo(filepath);
-%     movieobj = mmreader(filepath);
-
+   % info     = aviinfo(filepath);
     movieobj = VideoReader(filepath);
+
 
     %% Setting up image stack
     dispMsg(msg,'[PIV_createBGImage]: ..Setting up image stack')
@@ -104,9 +104,13 @@ function I = getBGImage(filepath, msg,perc,n)
     nf          = min(movieobj.NumberOfFrames,n);
     [m n z]     = size(RGB);
     Is          = zeros(m,n,nf);
-    for f=1:1:nf
-        RGB         = uint16(read(movieobj, f));
-        Is(:,:,f)   = rgb2gray(RGB);
+    for f=1:1:movieobj.NumberOfFrames
+        RGB = read(movieobj, f);
+        if(z>1)
+            RGB = rgb2gray(RGB);
+        end
+        Is(:,:,f)   = RGB(:,:,1);
+        %keyboard
     end
 
     %% Generating percentile BG image

@@ -1,4 +1,7 @@
-function [frames predator_x predator_y frames_interpolated interp_x interp_y]  = labelPredatorPosition(filepath, filename, predator_prey, start_frame, end_frame, interpolate, save_data, debug)
+function [frames predator_x predator_y frames_interpolated interp_x interp_y] = ...
+             labelPredatorPosition(filepath, filename, predator_prey, ...
+                                    start_frame, end_frame, interpolate,...
+                                    save_data, debug)
 % This function allows to label the predator trajectory in a set of frames
 % by just pointing a click the estimated position. If the predator is no
 % present in the image, just press "enter" to skip that frame and let the
@@ -10,7 +13,7 @@ function [frames predator_x predator_y frames_interpolated interp_x interp_y]  =
 %   - filepath : Folder with the file to be labeled
 %   - filename : AVI file to be labeled
 %   - predator_prey : Flag to select if a predator trajectory or prey
-%   positions are to be labelled: 0 = predator ; 1 0 prey
+%   positions are to be labelled: 0 = predator ; 1 = prey
 %   - start_frame : Initial frame of the sequence
 %   - end_frame : Last frame of the sequence
 %   - interpolate : 0 or 1. 1 means perform interpolation. If the parameter
@@ -43,10 +46,9 @@ function [frames predator_x predator_y frames_interpolated interp_x interp_y]  =
 % (c) Jose Carlos Castillo: jccmontoya@gmail.com
 
 
-info     = aviinfo([filepath filename]);
-movieobj = mmreader([filepath filename]);
-RGB         = uint16(read(movieobj, 1));
-nf          = min(info.NumFrames,end_frame);
+video_reader    = VideoReader([filepath filename]);
+RGB         = uint16(read(video_reader, 1));
+nf          = min(video_reader.NumberOfFrames,end_frame);
 [m n z]     = size(RGB);
 Is          = zeros(m,n,nf);
 
@@ -55,10 +57,10 @@ predator_positions = [];
 
 %current_img = zeros(m,n);
 
-current_img = rgb2gray(read(movieobj, nf)); 
+current_img = rgb2gray(read(video_reader, nf)); 
 colormap gray
 for i = nf:-1:start_frame-1
-    img = rgb2gray(read(movieobj, i));    
+    img = rgb2gray(read(video_reader, i));    
     subplot(1,2,2);
     imagesc(img);
     title(['Next frame: ' int2str(i)]);

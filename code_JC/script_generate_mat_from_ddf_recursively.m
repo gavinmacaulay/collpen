@@ -23,6 +23,7 @@ sub_folders = unique(sub_folders);
 
 out_type = 'D'; % Create Matlab file per ddf file
 
+
 for i = 1:length(sub_folders)
     disp(['Converting folder ' num2str(i) ' of ' ...
           num2str(length(sub_folders))]);

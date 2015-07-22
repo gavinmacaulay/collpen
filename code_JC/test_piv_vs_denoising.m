@@ -67,7 +67,8 @@ winsize=64;
 for i = 1: length(denoising_techniques)
    % getPIVsFromFolder(folder, denoising_techniques(i,1), denoising_techniques(i,2), denoising_techniques_name(i));
     
-    JC_PIV_getPIVvectorsFromFolder(folder, denoising_techniques(i,1), denoising_techniques(i,2), denoising_techniques_name(i), winsize)
+    JC_PIV_getPIVvectorsFromFolder(folder, denoising_techniques(i,1), ...
+        denoising_techniques(i,2), denoising_techniques_name(i), winsize);
     
     
 end
@@ -78,7 +79,8 @@ winsize=32;
 for i = 1: length(denoising_techniques)
    % getPIVsFromFolder(folder, denoising_techniques(i,1), denoising_techniques(i,2), denoising_techniques_name(i));
    
-    JC_PIV_getPIVvectorsFromFolder(folder, denoising_techniques(i,1), denoising_techniques(i,2), denoising_techniques_name(i), winsize)
+    JC_PIV_getPIVvectorsFromFolder(folder, denoising_techniques(i,1),...
+        denoising_techniques(i,2), denoising_techniques_name(i), winsize);
     
     
 end
@@ -89,7 +91,8 @@ winsize=64;
 for i = 1: length(denoising_techniques)
    % getPIVsFromFolder(folder, denoising_techniques(i,1), denoising_techniques(i,2), denoising_techniques_name(i));
     
-    JC_PIV_getPIVvectorsFromFolder(folder, denoising_techniques(i,1), denoising_techniques(i,2), denoising_techniques_name(i), winsize)
+    JC_PIV_getPIVvectorsFromFolder(folder, denoising_techniques(i,1), ...
+        denoising_techniques(i,2), denoising_techniques_name(i), winsize)
     
     
 end
@@ -162,7 +165,8 @@ folder = 'c:/collpen/predator/test/';
 for i = 1: length(denoising_techniques)
    % getPIVsFromFolder(folder, denoising_techniques(i,1), denoising_techniques(i,2), denoising_techniques_name(i));
     
-    JC_PIV_getPIVvectorsFromFolder(folder, denoising_techniques(i,1), denoising_techniques(i,2), denoising_techniques_name(i), winsize)
+    JC_PIV_getPIVvectorsFromFolder(folder, denoising_techniques(i,1), ...
+        denoising_techniques(i,2), denoising_techniques_name(i), winsize)
     
     
 end
@@ -224,7 +228,7 @@ denoising_techniques_name{17} = '17-Frost-filter';
 % denoising_techniques_name{5}  = '08-Wavelet + Median + average-filter';
 
 
-d=dir('/Volumes/Datos/collpen/predator/test/*.avi');
+d=dir([folder '*.avi']);
 % Acquire image size
 % filepath = [folder d(1).name];
 % movieobj = VideoReader(filepath);
@@ -257,21 +261,27 @@ for j = 1:length(denoising_techniques_name)
         filepath = [folder d(i).name];
         movieobj = VideoReader(filepath);
         % Load prey positions file
-        preyfile = strrep([folder 'prey_position/' d(i).name],'.avi','_prey_positions.mat');
+        preyfile = strrep([folder 'prey_position/' d(i).name], '.avi',...
+            '_prey_positions.mat');
         %disp(['Load prey file ' preyfile]);
         load(preyfile);
         
         % Load PIVdata path
         
-        pivdatapath   = strrep([folder 'PIVdata/' denoising_techniques_name{j} '/' d(i).name],'.avi','_PIV.mat');
+        pivdatapath   = strrep([folder 'PIVdata/' ...
+            denoising_techniques_name{j} '/' d(i).name],'.avi','_PIV.mat');
        % disp(['Load PIVdata file ' pivdatapath]);
         load(pivdatapath);
         
         px_meter = 71.4413;
         fps = 8;
-        save_path = strrep([folder 'PIVdata/' denoising_techniques_name{j} '/' d(i).name],'.avi','');
+        save_path = strrep([folder 'PIVdata/' ...
+            denoising_techniques_name{j} '/' d(i).name],'.avi','');
         % Check disparity
-        [PIVdata_angles PIVdata_ranges PIVdata_dotproduct PIV_relative_range] = checkPIV2(pivdatapath, frames, predator_x, predator_y, movieobj, px_meter, fps, save_path, save_image);
+        [PIVdata_angles PIVdata_ranges PIVdata_dotproduct ...
+            PIV_relative_range] = checkPIV2(pivdatapath, frames,...
+            predator_x, predator_y, movieobj, px_meter, fps, save_path,...
+            save_image);
         
 %         % Load PIVdata2 path
 %         pivdata2path   = strrep([folder 'PIVdata2/' denoising_techniques_name{j} '/' d(i).name],'.avi','_PIV.mat');
@@ -285,13 +295,17 @@ for j = 1:length(denoising_techniques_name)
 %         
        % disp('Append');
         
-        PIVdata_angles_denoising{j,i} = [PIVdata_angles_denoising{j,i} ; PIVdata_angles];
+        PIVdata_angles_denoising{j,i} = [PIVdata_angles_denoising{j,i} ;...
+            PIVdata_angles];
    %     PIVdata2_angles_denoising{j,i} = [PIVdata2_angles_denoising{j,i} ; PIVdata2_angles];
-        PIVdata_ranges_denoising{j,i} = [PIVdata_ranges_denoising{j,i} ; PIVdata_ranges];
+        PIVdata_ranges_denoising{j,i} = [PIVdata_ranges_denoising{j,i} ; ...
+            PIVdata_ranges];
     %    PIVdata2_ranges_denoising{j,i} = [PIVdata2_ranges_denoising{j,i} ; PIVdata2_ranges];
-        PIVdata_dot_prod_denoising{j,i} = [PIVdata_dot_prod_denoising{j,i} ; PIVdata_dotproduct];
+        PIVdata_dot_prod_denoising{j,i} = [PIVdata_dot_prod_denoising{j,i}...
+            ; PIVdata_dotproduct];
      %   PIVdata2_dot_prod_denoising{j,i} = [PIVdata2_dot_prod_denoising{j,i} ; PIVdata2_dotproduct];
-        PIVdata_rel_ranges_denoising{j,i} = [PIVdata_rel_ranges_denoising{j,i} ; PIV_relative_range];
+        PIVdata_rel_ranges_denoising{j,i} = [PIVdata_rel_ranges_denoising{j,i}...
+            ; PIV_relative_range];
 
     end
 end
@@ -366,7 +380,8 @@ for i=1:size(PIVdata_angles_denoising,1)
        % piv2_dot_prod_acc = [piv2_dot_prod_acc ; PIVdata2_dot_prod_denoising{i,j}];
          piv_rel_ranges_acc = [piv_rel_ranges_acc ; PIVdata_rel_ranges_denoising{i,j}];
 
-        piv_nan_acc = [piv_nan_acc ; sum(isnan(PIVdata_angles_denoising{i,j}))*100/length(PIVdata_angles_denoising{i,j})];
+        piv_nan_acc = [piv_nan_acc ; ...
+            sum(isnan(PIVdata_angles_denoising{i,j}))*100/length(PIVdata_angles_denoising{i,j})];
     end
     mean_piv_angles(i) = mean(piv_angles_acc(~isnan(piv_angles_acc)));
 %    mean_piv2_angles(i) = mean(piv2_angles_acc(~isnan(piv2_angles_acc)));
@@ -415,20 +430,24 @@ for i = 1:length(d)
     
     for j = 1:size(PIVdata_angles_denoising,1)
         piv_angles_video_denoising =  PIVdata_angles_denoising{j,i};
-        piv_mean_angle_test_file =[ piv_mean_angle_test_file ; mean(piv_angles_video_denoising(~isnan(piv_angles_video_denoising)))];
+        piv_mean_angle_test_file =[ piv_mean_angle_test_file ;...
+            mean(piv_angles_video_denoising(~isnan(piv_angles_video_denoising)))];
 
         piv_ranges_video_denoising =  PIVdata_ranges_denoising{j,i};
-        piv_mean_range_test_file =[ piv_mean_range_test_file ; mean(piv_ranges_video_denoising(~isnan(piv_ranges_video_denoising)))];
+        piv_mean_range_test_file =[ piv_mean_range_test_file ;...
+            mean(piv_ranges_video_denoising(~isnan(piv_ranges_video_denoising)))];
         
         piv_dotprod_video_denoising =  PIVdata_dot_prod_denoising{j,i};
-        piv_dotprod_test_file =[ piv_dotprod_test_file mean(piv_dotprod_video_denoising(~isnan(piv_dotprod_video_denoising)))];
+        piv_dotprod_test_file =[ piv_dotprod_test_file ...
+            mean(piv_dotprod_video_denoising(~isnan(piv_dotprod_video_denoising)))];
         
         nan_percentage = sum(isnan(piv_angles_video_denoising))*100/length(piv_angles_video_denoising);
         
         piv_nan_test_file = [piv_nan_test_file ; nan_percentage];
         
          piv_rel_ranges_video_denoising =  PIVdata_rel_ranges_denoising{j,i};
-         piv_rel_ranges_test_file =[ piv_rel_ranges_test_file ; mean(piv_rel_ranges_video_denoising(~isnan(piv_rel_ranges_video_denoising)))];
+         piv_rel_ranges_test_file =[ piv_rel_ranges_test_file ; ...
+             mean(piv_rel_ranges_video_denoising(~isnan(piv_rel_ranges_video_denoising)))];
         
 %         piv2_angles_video_denoising =  PIVdata2_angles_denoising{j,i};
 %         piv2_mean_angle_test_file =[ piv2_mean_angle_test_file ; mean(piv2_angles_video_denoising(~isnan(piv2_angles_video_denoising)))];
@@ -492,7 +511,8 @@ print(f,'-dpng',[path int2str(winsize) '-reldiff.png']);
 % figure(5);
 % plot(mean_piv_nan',mean_piv_angles','o'); axis equal
 disp(sprintf('Technique \t NaN \t Angle \t Range \t Dot Product'));
-values = [(1:size(PIVdata_angles_denoising,1))' mean_piv_nan' mean_piv_angles' mean_piv_ranges' mean_piv_dotprod'];
+values = [(1:size(PIVdata_angles_denoising,1))' mean_piv_nan'...
+    mean_piv_angles' mean_piv_ranges' mean_piv_dotprod'];
 display(values);
 % figure(3);
 % plot(mean_piv2_angles);
@@ -551,7 +571,8 @@ for i = 1:length(d)
     filepath = [filedir{i}  file{i}];
     for k = 1:length(denoising_techniques_name)
         % Datapath
-        datapath   = strrep([filedir{i} 'PIVdata2/' denoising_techniques_name{k} '/' file{i}],'.avi','_PIV.mat');
+        datapath   = strrep([filedir{i} 'PIVdata2/' ...
+            denoising_techniques_name{k} '/' file{i}],'.avi','_PIV.mat');
         pivavipath = strrep(datapath, 'mat','avi');
         disp(['Generate PIV video for file ' filepath]);
         load(datapath);

@@ -18,8 +18,9 @@ load(mat_file);
 output_video = avifile(destination_file, 'compression', 'none', 'fps', 8);
 disp(['Creating PIV avi in ' destination_file]);
 tic
-f = figure;
-for i = 1:input_video.NumberOfFrames-1
+%f = figure;
+f = figure('units','normalized','outerposition',[0 0 1 1])
+for i = 2000:2500%input_video.NumberOfFrames-1
     I = read(input_video,i);
    % colormap gray
     xs_frame = xs(:,:,i);

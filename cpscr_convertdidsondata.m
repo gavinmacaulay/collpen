@@ -111,7 +111,7 @@ block = cp_GetExpPar(par.parfile);
 %17:36
 
 % Functions to convert Didson data to mat and avi files
-for i=20%20:36
+for i=20:36
     try
         cp_ProcessDidsondata(block(i).b_block,block,par);
         disp(['Block ',num2str(i),' ok'])
@@ -136,13 +136,12 @@ par.passTimeVA   = ([-3 3]+21)/(24*3600);% time in seconds to define the referen
 par.preRefTimeKW = ([-152 -88])/(24*3600);% time in seconds to define the reference window for killer whale pb
 par.passTimeKW   = ([0 60])/(24*3600);% time in seconds to define the reference window for killer whale pb
 par.preRefTimeWB = ([0 30])/(24*3600);% time in seconds to define the reference window for the 2013 experiment. Note that this is different from the 2012 experiment
-par.passTimeWB = ([-5 5])/(24*3600);% time in seconds to define the time before/after bottle attac
 
 % Functions to extract school parameters
-for i=37:68%20:82
+for i=20:82
     try
-        cp_ProcessDidsonSchoolParameters(block(i).b_block,block,par);
-   end
+    cp_ProcessDidsonSchoolParameters(block(i).b_block,block,par);
+    end
 end
 
 

@@ -15,7 +15,7 @@ function [datapath rawpivel] = PIV_getRawPIVvectors(folder, avifilename, parstr)
     end
     
     % Datafolder
-    datafolder = [folder '\PIVdata'];
+    datafolder = [folder '/PIVdata'];
     if ~(exist(datafolder,'dir')==7)
         dispMsg(parstr.showmsg,['[PIV_getRawPIVvectors]: Creating data folder, ' datafolder]);
         mkdir(datafolder);
@@ -23,7 +23,7 @@ function [datapath rawpivel] = PIV_getRawPIVvectors(folder, avifilename, parstr)
     
     
     % Datapath
-    datapath   = strrep([datafolder '\' avifilename],'.avi','_PIV.mat');
+    datapath   = strrep([datafolder '/' avifilename],'.avi','_PIV.mat');
     
     % Empty answer
     rawpivel    = struct('parstr',parstr,'xs',[],'ys',[],'us',[],'vs',[],'snrs',[],'pkhs',[],'is',[]);
@@ -83,23 +83,28 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
     %filepath='DidsonFilesOfInterest\didson_block22_sub1_treat1.avi';
     filepath=[folder '/' avifilename];
     
+    %% Load Bg image
+    bgpath = [folder '/PIVdata/' avifilename];
+    bgpath = strrep(bgpath, '.avi','_BG.bmp');
+    BG = imread(bgpath);
+    
     %% Opening movie object
     disp(['[PIV_getRawPIVvectors]:..Opening ' filepath]);
-%    info     = aviinfo(filepath);
-%    movieobj = mmreader(filepath);
-movieobj = VideoReader(filepath);
+    info     = aviinfo(filepath);
+    movieobj = mmreader(filepath);
+
     %% PIV settings 
     winsize = parstr.winsize;
     olap    = parstr.olap;
     param   = 'single'; %multi/single 
-    dt      = 1;
+    dt      = 1.0/15.0; 
     rows    = 1;
     cols    = 1;
 
     % initiating
     try
         RGB2                        = read(movieobj, 1);
-        I2                          = rgb2gray(RGB2);
+        I2                          = RGB2(:,:,1);
         I1                          = I2;
         [T,xs,ys,us,vs,snrs,pkhs]   = evalc('matpivCP(I1,I2,winsize,dt,olap,param)');
         [rows cols]                 = size(xs);
@@ -108,7 +113,7 @@ movieobj = VideoReader(filepath);
     end
   
     % PIV data vectors
-    n      = movieobj.NumberOfFrames-1;
+    n      = info.NumFrames-1;
     xs     = zeros(rows,cols,n);
     ys     = zeros(rows,cols,n);
     us     = zeros(rows,cols,n);
@@ -121,17 +126,30 @@ movieobj = VideoReader(filepath);
     dispMsg(parstr.showmsg,['[PIV_getRawPIVvectors]:..Performing PIV-analysis of all frames']); c=0;
     RGB2    = read(movieobj, 1);
     I2      = RGB2(:,:,1);
+    I2      = abs(I2-BG);
+    I2      = normalizeSonarImage(I2);
+    
+    denoising_method = 1;
+    denoising_param = 1;
+%    I2 = preprocessingSonarImage(I2,BG,denoising_method,denoising_param,0,0);
+    
     H       = fspecial('average', winsize);
     for i=1:1:n
         I1  = I2;
-        warning off
-        If  = imfilter(I1,H); % Lars: So that is is based on average in window, change done 14.11.2013
-        warning on
+         warning off
+         If  = imfilter(I1,H); % Lars: So that is is based on average in window, change done 14.11.2013
+%         %imagesc(If);axis equal; axis tight;
+ %        If = preprocessingSonarImage(I1,BG,denoising_method,denoising_param,0,0);
+
+         warning on
         
         % Loading frames
         RGB2    = read(movieobj, i+1);
-        I2=RGB2(:,:,1);
-        
+        I2=rgb2gray(RGB2);
+         I2=abs(I2-BG);
+         I2=normalizeSonarImage(I2);
+ %       I2 = preprocessingSonarImage(I2,BG,denoising_method,denoising_param,0,0);
+
         % Outut to show that something is happening
         c=c+1;
         if c>30
@@ -148,8 +166,8 @@ movieobj = VideoReader(filepath);
             warning(['[PIV_getRawPIVvectors]: Error in matpiv for frames ' num2str(i) ' and ' num2str(i+1)]);
             disp(exception.message);
         end
-    end
     
+    end
 
 end
 
@@ -488,11 +506,8 @@ for jj=1:(1-overlap)*winsize:size(A,1)-winsize+1
                     % Interpolate to find the peak position at subpixel resolution,
                     % using three point curve fit function INTPEAK.
                     % X0,Y0 now denotes the displacements.
-                    % Nils Olav: We added ones to the aRses to avoid problem
-                    % when the data is noisy. We also changed this to method
-                    % 1 to be less vulnerable to noise.
-                    [x0,y0]=intpeak(x1,y1,R(y1,x1)+1,R(y1,x1-1)+1,R(y1,x1+1)+1,...                  
-                                          R(y1-1,x1)+1,R(y1+1,x1)+1,1,winsize);
+                    [x0,y0]=intpeak(x1,y1,R(y1,x1),R(y1,x1-1),R(y1,x1+1),...                  
+                                          R(y1-1,x1),R(y1+1,x1),2,winsize);
                     R2=R;
                     R2(y1-3:y1+3,x1-3:x1+3)=NaN;
                     [p2_y2,p2_x2]=find(R2==max(max(R2( 0.5*N+2:1.5*N-3,0.5*M+2:1.5*M-3))));

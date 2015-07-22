@@ -1,10 +1,10 @@
 %% Labeling of frames to track predator trajectory
-
+% 
 clear
 close all
 
-filepath = '/Volumes/Datos/collpen/predator/brown_net/seq1/';
-filename = 'predmodel2013_TREAT_Brown net_didson_block47_sub1.avi';
+filepath = '/Volumes/Datos/collpen/test_remember/';
+filename = 'predmodel2013_TREAT_Brown net_didson_block45_sub1.avi';
 
 
 
@@ -15,24 +15,26 @@ debug = 1;
 save_data = 1;
 predator = 0; 
 
-[frames pred_x pred_y frames_interp interp_x interp_y]  = labelPredatorPosition(filepath, filename, predator, start_frame, end_frame, interpolate, save_data, debug);
+[frames pred_x pred_y frames_interp interp_x interp_y]  =...
+    labelPredatorPosition(filepath, filename, predator, start_frame, ...
+                          end_frame, interpolate, save_data, debug);
 
 [frames pred_x pred_y]
 [frames_interp interp_x interp_y]
 
-%% Data analysis after separating labeled data into white_net, brown_net, with 2 subsequences each dataset
-
+%% Data analysis after separating labeled data into white_net, brown_net,
+%  with 2 subsequences each dataset
 close all
 clear
 clc
 
-path = '/Volumes/Datos/collpen/predator/test/';
+path = '/Volumes/Datos/collpen/test_remember/';
 d = dir([path '*_raw_predator_positions.mat']);
 
-filepath = '/Volumes/Datos/collpen/predator/test/predmodel2013_TREAT_Brown net_didson_block45_sub1.avi';
+filepath = '/Volumes/Datos/collpen/test_remember/predmodel2013_TREAT_Brown net_didson_block45_sub1.avi';
 
 
-debug = 0;
+debug = 1;
 
 
 info     = aviinfo(filepath);
@@ -82,7 +84,8 @@ for i = 1:length(d)
     
     
     if(~isempty(predator_x))
-        [r_x r_y r_frames_x r_frames_y m_x m_y ] = regressionPredatorTrajectory(px{i}, py{i}, fr{i}, debug);
+        [r_x r_y r_frames_x r_frames_y m_x m_y ] = ...
+            regressionPredatorTrajectory(px{i}, py{i}, fr{i}, debug);
         
         reg_x{i} = r_x;
         reg_y{i} = r_y;
@@ -133,7 +136,10 @@ for f = 1:length(fr)
             figure(2);
             hold all;
         end
-        [ext_x ext_y ext_fr] = extrapolatePredatorTrajectory(smoothed_x{f}(1), smoothed_y{f}(1), smoothed_fr{f}(1), mean_mx, mean_my, debug);
+        [ext_x ext_y ext_fr] = extrapolatePredatorTrajectory(...
+                                    smoothed_x{f}(1), smoothed_y{f}(1), ...
+                                    smoothed_fr{f}(1), mean_mx, ...
+                                    mean_my, debug);
         
         extrapolated_x{f} = ext_x(end:-1:1);
         extrapolated_y{f} = ext_y(end:-1:1);
@@ -172,12 +178,15 @@ end
 
 tic
 for f = 1:length(extrapolated_fr)
-    extrap = [extrapolated_fr{f}, extrapolated_x{f},extrapolated_y{f}, repmat(1, length(extrapolated_fr{f}), 1)];
-    smooth = [smoothed_fr{f}, smoothed_x{f}, smoothed_y{f}, repmat(2, length(smoothed_fr{f}), 1)];
+    extrap = [extrapolated_fr{f}, extrapolated_x{f},extrapolated_y{f}, ...
+              repmat(1, length(extrapolated_fr{f}), 1)];
+    smooth = [smoothed_fr{f}, smoothed_x{f}, smoothed_y{f}, ...
+              repmat(2, length(smoothed_fr{f}), 1)];
     frame_pixel_info = [extrap ; smooth];
     
     if(~isempty(extrapolated_fr{f}))
-        str = strrep(leg{f}, '_raw_predator_positions.mat', '_interp_extrap_path.mat');
+        str = strrep(leg{f}, '_raw_predator_positions.mat', ...
+                             '_interp_extrap_path.mat');
         %datafolder = [path 'predator_position/'];
         str = [path str];
         

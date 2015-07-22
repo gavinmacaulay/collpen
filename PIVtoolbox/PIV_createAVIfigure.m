@@ -16,13 +16,13 @@ function savepath = PIV_createAVIfigure(folder, avifilename, xs, ys, us, vs, w, 
     
     
     % Datafolder
-    datafolder = [folder '\PIVdata'];
+    datafolder = [folder '/PIVdata'];
     if ~exist(datafolder,'dir')==7
         dispMsg(parstr.showmsg,['[PIV_createAVIfigure]: Creating data folder, ' datafolder]);
         mkdir(datafolder);
     end
-    avifilepath = [folder '\' avifilename];
-    savepath    = [datafolder '\' strrep(avifilename,'.avi', ['_PIV' parstr.id '.avi'])];
+    avifilepath = [folder '/' avifilename];
+    savepath    = [datafolder '/' strrep(avifilename,'.avi', ['_PIV' parstr.id '.avi'])];
 
     % Loading movie
     dispMsg(parstr.showmsg,['[PIV_createAVIfigure]: Loading avi-file: ' avifilepath]);
@@ -62,7 +62,7 @@ function savepath = PIV_createAVIfigure(folder, avifilename, xs, ys, us, vs, w, 
             quiver(x(ni),y(ni),u(ni),v(ni),'-k');
             
             axis tight
-            
+            pause(0.05)
             F       = getframe(fig);
             Sp       = F.cdata;
             
