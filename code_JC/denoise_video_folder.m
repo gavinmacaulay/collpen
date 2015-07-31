@@ -50,6 +50,11 @@ function denoise_video_folder(folder, denoising_method, denoising_param,...
                           
 disp('[denoise_video_folder]: Start');
 
+
+if folder(end)~='/'
+    folder = [folder '/'];
+end
+
 d=dir([folder '*.avi']);
 for i = 1: length(d)
     disp(['Denoising video file' d(i).name]);
