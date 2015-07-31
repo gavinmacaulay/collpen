@@ -89,3 +89,75 @@ colorbar
 set(gca,'CLim', [min_magnitude max_magnitude]);
 
 disp('Finished!');
+
+
+%% Subsample static case
+
+xs_sub = xs_1(1:2:end,1:2:end);
+ys_sub = ys_1(1:2:end,1:2:end);
+us_sub = us_mean(1:2:end,1:2:end);
+vs_sub = vs_mean(1:2:end,1:2:end);
+
+imagesc(I); axis equal; axis tight;
+hold on;
+
+quiver(xs_sub,ys_sub,us_sub,vs_sub,'r');
+
+save('dynamic_case','xs_sub','ys_sub','us_sub','vs_sub','I','map');
+
+%% First step of the attack
+
+% Save the first step of the attack (for manually modified points)
+
+save('dynamic_case_t1','xs_sub','ys_sub','us_sub','vs_sub','I','map');
+
+% Load and render the first step of the attack
+
+load('dynamic_case_t1');
+
+imagesc(I); axis equal; axis tight;
+hold on;
+
+quiver(xs_sub,ys_sub,us_sub,vs_sub,'r');
+
+quiver(208,16,0,2,20,'k');
+set(gca,'xtick',[],'ytick',[]);
+
+
+%% Second step of the attack
+
+% Save the first step of the attack (for manually modified points)
+
+save('dynamic_case_t2','xs_sub','ys_sub','us_sub','vs_sub','I','map');
+
+% Load and render the first step of the attack
+
+load('dynamic_case_t2');
+
+imagesc(I); axis equal; axis tight;
+hold on;
+
+quiver(xs_sub,ys_sub,us_sub,vs_sub,'r');
+
+quiver(208,176,0,2,20,'k');
+set(gca,'xtick',[],'ytick',[]);
+
+ %%
+% 
+% us_sub3 = us_sub./2;
+% vs_sub3 = vs_sub./2;
+% 
+% for i = 1:length(vs_sub(:))
+%     if vs_sub(i) ~= vs_sub2(i)
+%         vs_sub3(i) = vs_sub2(i);
+%     end
+%     if us_sub(i) ~= us_sub2(i)
+%        us_sub3(i) = us_sub2(i);
+%     end
+% end
+% 
+% us_sub = us_sub3;
+% vs_sub = vs_sub3;
+
+
+
