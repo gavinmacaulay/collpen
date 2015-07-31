@@ -1,6 +1,7 @@
 function getPIVvectorsFromVideoFolder(folder, winsize)
-% Data will be saved following this scheme:
-% ./PIVdata/denoising_label/avi_file_name.mat
+
+% This function calculates PIVs in all videos in the input folder for a
+% given window size
 
 disp('[getPIVvectorsFromVideoFolder]: Start');
 
@@ -32,15 +33,6 @@ for i = 1:length(d)
                          'write',1,'useold',0);
     [xs ys us vs snrs pkhs is] = getPIVvectorsFromVideo(folder, d(i).name, parstrpiv64);
 
- % Filter vectors
-%     parstrfilt = struct('showmsg',1,'global',4,'timeaverage',5,'localmedian',[3 3]);
-% 
-%     [xs ys us vs snrs pkhs is] = PIV_filterPIVvectors(xs, ys, us, vs, snrs, pkhs, is, parstrfilt);
-
-        % writing mat file with vectors
-        
-    % Discard NaN values
-    
     i_us = isnan(us);
     us(i_us) = 0;
     i_vs = isnan(vs);
@@ -50,7 +42,4 @@ for i = 1:length(d)
     save(datapath,'xs', 'ys', 'us', 'vs', 'snrs', 'pkhs', 'is');
     
     disp('[getPIVvectorsFromVideoFolder]: End');
-
-   
-
 end
