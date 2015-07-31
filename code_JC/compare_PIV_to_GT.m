@@ -1,8 +1,9 @@
 function comparison_result = compare_PIV_to_GT(PIVs_folder, GT_folder, ...
     source_video_folder, px_per_meter, frames_per_second)
 
-% This function compares PIVs to the groundtruth. Such groundtruth should
-% be generated with the script named test_prey_labeling.m
+% This function compares PIVs to the groundtruth. 
+% The groundtruth should be generated with the script named test_prey_labeling.m
+% For each ground truth file all videos matching its name are compared.
 
 
 % Constants for unit conversion 
