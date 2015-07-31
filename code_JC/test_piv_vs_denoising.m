@@ -229,20 +229,16 @@ denoising_techniques_name{17} = '17-Frost-filter';
 
 
 d=dir([folder '*.avi']);
-% Acquire image size
-% filepath = [folder d(1).name];
-% movieobj = VideoReader(filepath);
-% RGB         = read(movieobj, 1);
 
+
+% -------------------------------------------------------------------------------
+% Configuration of the input videos
+% -------------------------------------------------------------------------------
 px_meter = 71.4413;
 fps = 8;
 
 save_image = 0;
 
-% PIVdata_angles_denoising = [];
-% PIVdata2_angles_denoising = [];
-% PIVdata_ranges_denoising = [];
-% PIVdata2_ranges_denoising = [];
 
 disp('Loading and averaging data...');
 tic
@@ -280,20 +276,8 @@ for j = 1:length(denoising_techniques_name)
         % Check disparity
         [PIVdata_angles PIVdata_ranges PIVdata_dotproduct ...
             PIV_relative_range] = checkPIV2(pivdatapath, frames,...
-            predator_x, predator_y, movieobj, px_meter, fps, save_path,...
-            save_image);
-        
-%         % Load PIVdata2 path
-%         pivdata2path   = strrep([folder 'PIVdata2/' denoising_techniques_name{j} '/' d(i).name],'.avi','_PIV.mat');
-%        % disp(['Load PIVdata2 file ' pivdata2path]);
-%         save_path = strrep([folder 'PIVdata2/' denoising_techniques_name{j} '/' d(i).name],'.avi','.');
-%         load(pivdata2path);
-%         px_meter = 71.4413;
-%         fps = 8;
-%         % Check disparity
-%         [PIVdata2_angles PIVdata2_ranges PIVdata2_dotproduct] = checkPIV2(pivdata2path, frames, predator_x, predator_y, movieobj, save_path, save_image);
-%         
-       % disp('Append');
+            predator_x, predator_y, px_meter, fps, save_path,...
+            save_image, movieobj);
         
         PIVdata_angles_denoising{j,i} = [PIVdata_angles_denoising{j,i} ;...
             PIVdata_angles];
@@ -418,10 +402,8 @@ close all
 for i = 1:length(d)
     piv_mean_angle_test_file = [];
     piv_mean_range_test_file = [];
-%     piv2_mean_angle_test_file = [];
-%     piv2_mean_range_test_file = [];
-    piv_dotprod_test_file = [];
-    piv_nan_test_file = [];
+    piv_dotprod_test_file    = [];
+    piv_nan_test_file        = [];
     piv_rel_ranges_test_file = [];
     
     
@@ -473,13 +455,7 @@ for i = 1:length(d)
     figure(5);
     plot(piv_rel_ranges_test_file,'o');
     hold all  
-    
-%     figure(3);
-%     plot(piv2_mean_angle_test_file,'o');
-%     hold all
-%     figure(4);
-%     plot(piv2_mean_angle_test_file,'o');
-%     hold all
+
 end
 
 f = figure(1); set(f,'name','Angles');
@@ -507,20 +483,10 @@ plot(mean_piv_relative_ranges);
 legend(d.name,'Location','northoutside')
 print(f,'-dpng',[path int2str(winsize) '-reldiff.png']);
 
-
-% figure(5);
-% plot(mean_piv_nan',mean_piv_angles','o'); axis equal
 disp(sprintf('Technique \t NaN \t Angle \t Range \t Dot Product'));
 values = [(1:size(PIVdata_angles_denoising,1))' mean_piv_nan'...
     mean_piv_angles' mean_piv_ranges' mean_piv_dotprod'];
 display(values);
-% figure(3);
-% plot(mean_piv2_angles);
-% legend(d.name,'Location','northoutside')
-% 
-% figure(4);
-% plot(mean_piv2_angles);
-% legend(d.name,'Location','northoutside')
 
 
 %% Script to generate videos from all fish input and denoising technique combinations
@@ -576,7 +542,6 @@ for i = 1:length(d)
         pivavipath = strrep(datapath, 'mat','avi');
         disp(['Generate PIV video for file ' filepath]);
         load(datapath);
-        %keyboard;
         
         % Opening movie object
         disp(['..Opening ' filepath]);
@@ -598,8 +563,7 @@ for i = 1:length(d)
             subplot(1,2,2);
             imagesc(I); axis equal;axis tight;
             hold on
-            %US = imresizeNN(us(:,:,j),size(I));
-            %VS = imresizeNN(vs(:,:,j),size(I));
+            
             US = us(:,:,j);
             VS = vs(:,:,j);
             US = medfilt2(US); % Median filter
