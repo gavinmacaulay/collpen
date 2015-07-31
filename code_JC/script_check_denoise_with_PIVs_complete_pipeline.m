@@ -1,4 +1,4 @@
-%% Script to check what denoising technique works better with the PIV technique
+%% Script to check what denoising technique works better for PIV computation
 %
 % The script is divided into different blocks that can be run separatedly
 % as long as the script has ben run at least once (to generate the
@@ -41,7 +41,7 @@
 % ----- prey_position % Folder containing the groundtruth
 %     ----- video1_prey_positions.mat
 %     ----- predmodel2013_TREAT_Brown\ net_didson_block521_sub1_prey_positions.mat
-
+%
 
 %% Select Input parameters
 clear
@@ -63,7 +63,14 @@ video_folder = '/Volumes/Datos/collpen/test_workflow';
 % maximum displacement between frames will be 16/2 = 8 pixels.
 % -------------------------------------------------------------------------------
 
-PIV_winsize = [16,32,64];
+PIV_winsize         = [16,32,64];
+
+% -------------------------------------------------------------------------------
+% Configuration of the input videos
+% -------------------------------------------------------------------------------
+
+px_per_meter        = 71.4413;
+frames_per_second   = 8;
 
 % Select denoising techniques to be applied. 
 
@@ -208,7 +215,7 @@ for i = 1:length(PIV_winsize)
     disp(['Compare PIVs to groundtruth in winsize ' int2str(PIV_winsize(i))]);
     PIVs_folder = [denoised_folder '/PIVdata/' int2str(PIV_winsize(i))];
     comparison_result = compare_PIV_to_GT(PIVs_folder,prey_gt_folder,...
-        video_folder);
+        video_folder, px_per_meter, frames_per_second);
     PIV_GT_comparisons{i} = comparison_result;
     
 end
