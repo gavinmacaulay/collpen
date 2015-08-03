@@ -51,6 +51,7 @@ end
 
 % The size of the image from which PIVs are obtained is necessary
 I = read(movieobj, 1);
+[r c n] = size(I);
 if(n>1)
     I = rgb2gray(I);
 end
@@ -59,12 +60,13 @@ if(save_image)
     f = figure('Units','normalized','Position',[0 0 0.5 1]);
     
 end
-
-for i = 1:length(preys)
+[r c] = size(preys);
+for i = 1:r
     
     if(save_image)
         clf(f,'reset');
         I = read(movieobj, preys(i,1));
+        [r c n] = size(I);
         if(n>1)
             I = rgb2gray(I);
         end
