@@ -23,10 +23,10 @@ function [mean_dot_product mean_angle mean_range mean_relative_range] = ...
     for i=1:length(comparison_win_size)
         comparison = comparison_win_size(i);
         if(~isempty(strfind(comparison.piv_file,denoising_technique_name)))
-            dot_product_acc = [dot_product_acc comparison.dotproduct];
-            angle_acc       = [angle_acc comparison.angles];
-            range           = [range comparison.ranges];
-            relative_range  = [relative_range comparison.relative_range];
+            dot_product_acc = [dot_product_acc; comparison.dotproduct];
+            angle_acc       = [angle_acc; comparison.angles];
+            range           = [range; comparison.ranges];
+            relative_range  = [relative_range; comparison.relative_range];
         end        
     end
     mean_dot_product    = mean(dot_product_acc);
