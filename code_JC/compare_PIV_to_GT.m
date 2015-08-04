@@ -43,9 +43,9 @@ end
 comparison_result = [];
 
 % For each prey file, find the PIV files associated and process
-
+index = 1;
 for i = 1:length(source_file)
-    inc_i = (i-1)*length(source_file);
+    %inc_i = (i-1)*length(source_file);
     for j = 1:length(PIV_files)
         disp(PIV_files{j}); disp(source_file{i});
         % Match prey (source) files to PIV_files
@@ -62,6 +62,9 @@ for i = 1:length(source_file)
             movieobj = VideoReader(source_video);
             
             % Compare PIVs to GT
+            if(index == 9)
+                disp('');
+            end
             
             [PIVdata_angles PIVdata_ranges PIVdata_dotproduct ...
                 PIV_relative_range] = checkPIV2(pivdatapath, frames,...
@@ -69,12 +72,13 @@ for i = 1:length(source_file)
                 0, movieobj);
             
             % Save results for the current file
-            comparison_result(inc_i + j).piv_file = PIV_files{j};
-            comparison_result(inc_i + j).piv_folder = PIVs_folder;
-            comparison_result(inc_i + j).angles = PIVdata_angles;
-            comparison_result(inc_i + j).ranges = PIVdata_ranges;
-            comparison_result(inc_i + j).dotproduct = PIVdata_dotproduct;
-            comparison_result(inc_i + j).relative_range = PIV_relative_range;
+            comparison_result(index).piv_file = PIV_files{j};
+            comparison_result(index).piv_folder = PIVs_folder;
+            comparison_result(index).angles = PIVdata_angles;
+            comparison_result(index).ranges = PIVdata_ranges;
+            comparison_result(index).dotproduct = PIVdata_dotproduct;
+            comparison_result(index).relative_range = PIV_relative_range;
+            index = index + 1;
         end
     end
 end
