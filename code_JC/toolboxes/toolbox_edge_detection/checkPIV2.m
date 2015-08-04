@@ -76,12 +76,22 @@ for i = 1:r
     end
     US = imresizeNN(us(:,:,preys(i,1)),size(I));
     VS = imresizeNN(vs(:,:,preys(i,1)),size(I));
+    i_us = isnan(US);
+    US(i_us) = 0;
+    i_vs = isnan(VS);
+    VS(i_vs) = 0;
     
     piv_u = US(round(preys(i,3)),round(preys(i,2))); % In pixels/sec
     piv_v = VS(round(preys(i,3)),round(preys(i,2))); % In pixels/sec
+ 
     
     vvv = vs(:,:,preys(i,1)); % In pixels/sec
     uuu = us(:,:,preys(i,1)); % In pixels/sec
+    i_us = isnan(uuu);
+    uuu(i_us) = 0;
+    i_vs = isnan(vvv);
+    vvv(i_vs) = 0;
+    
     xxx = xs(:,:,preys(i,1));
     yyy = ys(:,:,preys(i,1));
     prey_u = preys(i,4); % In pixels/frame
