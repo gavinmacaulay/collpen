@@ -12,7 +12,7 @@ frame(1,1)=0; %make sure first element is zero to "paint" outside of sector blac
 % *** If display parameters change, update the map and mapscale parameters
 if data.flag == 1; %Mark that window has changed since last frame
    degtorad=0.0174533; % degrees to radians
-    nrows = data.numbeams*data.smooth - data.smooth +1;
+   nrows = data.numbeams*data.smooth - data.smooth +1;
    data.map=mapscan(data.imagexsize,data.maxrange,data.minrange,14.4,nrows,512);
    ws = 2*data.maxrange*sin(14.25*degtorad)/data.imagexsize; % widthscale meters/pixels
    hs = (data.maxrange - data.minrange*cos(14.25*degtorad))/data.map.iysize; % heightscale meters/pixels

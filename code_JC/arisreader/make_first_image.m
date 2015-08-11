@@ -11,7 +11,9 @@ function data=make_first_image(data,smooth,imagexsize)
 %  data.mapscale= [hs ws i0 j0]  See definitions below
 
 data.smooth = smooth;
-
+% data.frame = fliplr(data.frame)
+% data.frame = data.frame';
+% data.frame = imrotate(data.frame,180);
 if data.smooth > 1
     frame = smooth1(data.frame,data.smooth,'expand');
 else
@@ -19,10 +21,16 @@ else
 end
 
 frame(1,1)=0; %make sure first element is zero to "paint" outside of sector black
-
+%frame = imrotate(frame,180);
 data.imagexsize=imagexsize;
 nrows = data.numbeams*smooth -smooth +1;
-data.map=mapscan(imagexsize,data.maxrange,data.minrange,14.4,nrows,512);
+if(data.version == 5)
+    half_angle = 14; % Field of view for ARIS
+else
+    half_angle =14.4;
+end
+data.map=mapscan(imagexsize,data.maxrange,data.minrange,half_angle,...
+    nrows,data.sampleperchannel);
 
 data.image=uint8(reshape(frame(data.map.svector),data.map.iysize,imagexsize));
 

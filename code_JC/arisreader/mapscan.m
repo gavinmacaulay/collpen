@@ -20,7 +20,7 @@ radtodeg = 180./3.14159;  %conversion of radians to degrees
 
 d2=rmax*cos(halffov*degtorad); %see drawing (distance from point scan touches image boundary to origin)
 d3=rmin*cos(halffov*degtorad); %see drawing (bottom of image frame to r,theta origin in meters)
-c1= 511/(rmax-rmin); %precalcualtion of constants used in do loop below
+c1= (nbins-1)/(rmax-rmin); %precalcualtion of constants used in do loop below
 c2= (nbeams-1)/(2*halffov);
 
 gamma= ixsize/(2*rmax*sin(halffov*degtorad)); %Ratio of pixel number to position in meters
@@ -47,7 +47,7 @@ for iy = 1:iysize
        % fprintf('iy %d \n',iy);      
     end
 end
-svector(find(svector == 0)) = 1; %set all zero elements to one to satisfy matlab indexing rules.
+svector(svector == 0) = 1; %set all zero elements to one to satisfy matlab indexing rules.
 map.iysize=iysize; %Output the calculated y size of the image array and the map vector
 map.svector=svector;
 
