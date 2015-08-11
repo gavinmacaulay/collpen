@@ -34,8 +34,8 @@ header.focus       =fread(fid,1,'int32');
 header.battery     =fread(fid,1,'int32');
 header.status1     =char(fread(fid,16,'char'))';  %User defined and supplied
 header.status2     =char(fread(fid,8,'char'))';   %User defined and supplied
-header.panwcom      =fread(fid,1,'float32');  % Return from Pan/Tilt if used when compass present
-header.tiltwcom     =fread(fid,1,'float32');  % Return from Pan/Tilt if used when compass is present
+header.panwcom     =fread(fid,1,'float32');  % Return from Pan/Tilt if used when compass present
+header.tiltwcom    =fread(fid,1,'float32');  % Return from Pan/Tilt if used when compass is present
 header.velocity    =fread(fid,1,'float32');  %Platform variables supplied by user
 header.depth       =fread(fid,1,'float32');
 header.altitude    =fread(fid,1,'float32');
@@ -63,22 +63,28 @@ if (serialnumber == 15)  %Special Case 2
     header.configflags = 3;
 end
 
-warning('Hack in didson reader to make things work')
-%switch header.configflags % 
-%case 0
-    winlengths=[1.25 2.5 5 10 20 40];      % DIDSON-S, Extended Windows
-% case 1
-%     winlengths=[1.125 2.25 4.5 9 18 36];   % DIDSON-S, Classic Windows
-% case 2
-%     winlengths=[2.5 5 10 20 40 70];        % DIDSON-LR, Extended Windows
-% case 3
-%     winlengths=[2.25 4.5 9 18 36 72];      % DIDSON-LR, Classic Windows
-%end
+% bit0: 1=classic, 0=extended windows; bit1: 0=Standard, 1=LR
+cflags = dec2bin(header.configflags); 
+configflags = 2*str2int(cflags(end-1)) + str2int(cflags(end));
+
+%warning('Hack in didson reader to make things work') % Fixed! (hopefully)
+switch configflags % 
+case 0
+    winlengths=[0.83 2.5 5 10 20 40];      % DIDSON-S, Extended Windows
+case 1
+    winlengths=[1.125 2.25 4.5 9 18 36];   % DIDSON-S, Classic Windows
+case 2
+    winlengths=[2.5 5 10 20 40 70];        % DIDSON-LR, Extended Windows
+case 3
+    winlengths=[2.25 4.5 9 18 36 72];      % DIDSON-LR, Classic Windows
+end
 
 header.windowlength = winlengths(index);   % Convert windowlength code to meters
 
+
+
 %Windowstart 1 to 31 times 0.75 (lo) or 0.375 (hi) or 0.419 for extended
-switch header.configflags
+switch configflags
 case {1,3}
     header.windowstart = header.windowstart*(0.375 +(resolution == 0)*0.375); %meters for standard or long range DIDSON
 case {0,2}
