@@ -29,6 +29,7 @@ video_writer = VideoWriter(output_video);
 
 if frame_rate == 0
     video_writer.FrameRate = video_reader.FrameRate;
+    fr_step = 1;
 else
     video_writer.FrameRate = frame_rate;
     
