@@ -47,7 +47,7 @@ for iy = 1:iysize
        % fprintf('iy %d \n',iy);      
     end
 end
-svector(find(svector == 0)) = 1; %set all zero elements to one to satisfy matlab indexing rules.
+svector(svector == 0) = 1; %set all zero elements to one to satisfy matlab indexing rules.
 map.iysize=iysize; %Output the calculated y size of the image array and the map vector
 map.svector=svector;
 
