@@ -1,7 +1,11 @@
-function mat_to_avi(mat_data,avi_out,frame_rate)
+function mat_to_avi(mat_data,avi_out,frame_rate,init_frame,end_frame)
 % This function render the information contained in a 3 dimensonal matrix
 % into an avi file. The third dimension of the matrix must index the
 % samples that will be translated into frames.
+%
+% If init_frame or end_frame equals -1 the whole video length will be
+% rendered. Otherwise, the output video will be rendered according to the
+% input length.
 %
 % This function was intially thought to work with the information coming
 % from ddf files containing ultrasound data.
@@ -25,7 +29,15 @@ open(video_writer);
 
 [fr, ~, ~] = size(mat_data);
 
-for i = 1:fr
+if(init_frame == -1 || end_frame == -1)
+    init_frame = 1;    
+    end_frame = fr;
+elseif (end_frame > fr)
+    end_frame = fr;
+end
+
+
+for i = init_frame:end_frame
     img = uint8(mat_data(i,:,:));
     img = squeeze(img);
     img = imrotate(img,180);
