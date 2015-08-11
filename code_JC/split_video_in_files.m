@@ -6,9 +6,7 @@ function next_clip_in_seconds = split_video_in_files(video_in,out_folder, ...
 % Output clips will be placed in the out_folder with the following naming
 % scheme: video_name-init_time-end_time.avi
 % Thus to allow easy matching with the main video independently from the
-% frame_rate
-%
-% clip_length and clip_interval are supposed to be in seconds
+% frame_rate clip_length and clip_interval are supposed to be in seconds
 
 disp('[split_video_in_files] Start');
 
