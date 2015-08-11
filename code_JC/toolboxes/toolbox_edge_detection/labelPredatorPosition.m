@@ -1,7 +1,6 @@
 function [frames predator_x predator_y frames_interpolated interp_x interp_y] = ...
-             labelPredatorPosition(filepath, filename, predator_prey, ...
-                                    start_frame, end_frame, interpolate,...
-                                    save_data, debug)
+    labelPredatorPosition(filepath, filename, predator_prey, start_frame,...
+    end_frame, interpolate, save_data, debug)
 % This function allows to label the predator trajectory in a set of frames
 % by just pointing a click the estimated position. If the predator is no
 % present in the image, just press "enter" to skip that frame and let the
@@ -41,7 +40,9 @@ function [frames predator_x predator_y frames_interpolated interp_x interp_y] = 
 % save_data = 1;
 % predator = 0;
 % 
-% [frames pred_x pred_y frames_interp interp_x interp_y]  = labelPredatorPosition(filepath, start_frame, predator, end_frame, interpolate, save_data, debug);
+% [frames pred_x pred_y frames_interp interp_x interp_y]  = ...
+%   labelPredatorPosition(filepath, start_frame, predator, end_frame, ...
+%   interpolate, save_data, debug);
 %
 % (c) Jose Carlos Castillo: jccmontoya@gmail.com
 
@@ -127,11 +128,12 @@ end
 
 if (save_data)
     
+    
     if(predator_prey==0)
-        file_save = strrep(filename, '.avi', '_raw_predator_positions.mat');
+        file_save = [filename(1:end-4) '_raw_predator_positions.mat'];      
         fullpath = [filepath 'predator_position/'];
     else
-        file_save = strrep(filename, '.avi', '_prey_positions.mat');
+        file_save = [filename(1:end-4) '_prey_positions.mat'];
         fullpath = [filepath 'prey_position/'];
     end
     
@@ -142,7 +144,8 @@ if (save_data)
     end
     
     file_save = [fullpath file_save];
-    savePredatorPositions(file_save, frames, predator_x, predator_y, frames_interpolated, interp_x, interp_y);
+    savePredatorPositions(file_save, frames, predator_x, predator_y,...
+        frames_interpolated, interp_x, interp_y);
 end
 
 % Show results
@@ -163,9 +166,11 @@ end
 
 end
 
-function savePredatorPositions(file, frames, predator_x, predator_y, frames_interpolated, interp_x, interp_y)
+function savePredatorPositions(file, frames, predator_x, predator_y, ...
+    frames_interpolated, interp_x, interp_y)
 % Save the input arguments into a file named after the content of 'file'
 
-save(file, 'frames', 'predator_x', 'predator_y', 'frames_interpolated', 'interp_x', 'interp_y');
+save(file, 'frames', 'predator_x', 'predator_y', 'frames_interpolated',...
+    'interp_x', 'interp_y');
 
 end
