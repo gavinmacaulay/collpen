@@ -46,14 +46,29 @@ D(1,:,:) = data.frame;
 T(1,1) = data.datenum;
 T(1,2) = 1;
 
-if type=='D'
+
+% In aris we couldn't read the timestamp as data.datenum is alwways 0.
+% The solution adopted has been to create a new timestamp considering the
+% framerate as time step between frames.
+if(strcmp(file_extension,'aris'))
+    time_step = (1/double(data.framerate)); % time step between frames in microseconds
+    time_index = 0;
+    T(1,1) = 0;
+end
+
+if type=='D' || type=='T'
     for i = 2:data.numframes %= pari.startframe:pari.endframe
         data=get_frame_new(data,i);
+        time_index = time_index + time_step;
         if ~isempty(data.frame)% If the data frame is empty, keep the NaN's
             D(i,:,:) = data.frame;
         end
         if ~isempty(data.datenum)% If the data frame is empty, keep the NaN's
-            T(i,1) = data.datenum;
+            if(strcmp(file_extension,'aris'))
+                T(i,1) = time_index;
+            else
+                T(i,1) = data.datenum;
+            end
         end
         T(i,2)=i;
     end
@@ -62,7 +77,10 @@ if type=='D'
     data.frame=[];
     data.frame = D;
     
-    save(matfilename,'D','T');
+    if type=='D'
+        save(matfilename,'D','T');
+    end
+    
 elseif type=='A'
     % Generate avi file
     
@@ -77,14 +95,14 @@ elseif type=='A'
     set(gca,'Clim',[30,200]); %set bottom and top of color map
     set(fd,'EraseMode','none','CDataMapping','scaled');
     
-    trackflowavi = avifile(avifilename,'keyframe',20,...
-        'Quality',100);
-    
+    trackflowavi = VideoWriter(avifilename); %,'keyframe',20, 'Quality',100);
+    trackflowavi.FrameRate = data.framerate;
+    open(trackflowavi)
     for framenumber = 2:data.numframes
         data=get_frame_new(data,framenumber);
         data=make_new_image(data,data.frame);
         set(fd,'CData',data.image);
-        trackflowavi = addframe(trackflowavi,getframe(gca));
+        writeVideo(trackflowavi,getframe(gca));
         drawnow;
         disp(['Frame ',num2str(framenumber),...
             ' of ',num2str(data.numframes)])
