@@ -65,7 +65,7 @@ end
 
 % bit0: 1=classic, 0=extended windows; bit1: 0=Standard, 1=LR
 cflags = dec2bin(header.configflags); 
-configflags = 2*str2int(cflags(end-1)) + str2int(cflags(end));
+configflags = 2*str2num(cflags(end-1)) + str2num(cflags(end));
 
 %warning('Hack in didson reader to make things work') % Fixed! (hopefully)
 switch configflags % 
