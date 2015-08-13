@@ -59,7 +59,10 @@ end
 if type=='D' || type=='T'
     for i = 2:data.numframes %= pari.startframe:pari.endframe
         data=get_frame_new(data,i);
-        time_index = time_index + time_step;
+        if(strcmp(file_extension,'aris'))
+            time_index = time_index + time_step;
+        end
+        
         if ~isempty(data.frame)% If the data frame is empty, keep the NaN's
             D(i,:,:) = data.frame;
         end
@@ -88,22 +91,27 @@ elseif type=='A'
     
     data=get_frame_first(filename);
     iptsetpref('Imshowborder','tight');
-    data=make_first_image(data,4,400); %make the first image array
+    [r c] = size(data.frame);
+    %Straight line equation to allow scale images according to the number of samples per beam
+    image_width = round(0.1773*r + 309); 
+    data=make_first_image(data,4,image_width); %make the first image array
     %data=make_first_image(data,4,2000); %make the first image array
-    fd = imshow(data.image);
-    colormap bone;%(bluebar);
-    set(gca,'Clim',[30,200]); %set bottom and top of color map
-    set(fd,'EraseMode','none','CDataMapping','scaled');
+%     fd = imshow(data.image);
+%     colormap bone;%(bluebar);
+%     set(gca,'Clim',[30,200]); %set bottom and top of color map
+%     set(fd,'EraseMode','none','CDataMapping','scaled');
     
     trackflowavi = VideoWriter(avifilename); %,'keyframe',20, 'Quality',100);
     trackflowavi.FrameRate = data.framerate;
     open(trackflowavi)
+    writeVideo(trackflowavi, data.image);
     for framenumber = 2:data.numframes
         data=get_frame_new(data,framenumber);
         data=make_new_image(data,data.frame);
-        set(fd,'CData',data.image);
-        writeVideo(trackflowavi,getframe(gca));
-        drawnow;
+%         set(fd,'CData',data.image);
+%         writeVideo(trackflowavi,getframe(gca));
+%         drawnow;
+        writeVideo(trackflowavi, data.image);
         disp(['Frame ',num2str(framenumber),...
             ' of ',num2str(data.numframes)])
     end
