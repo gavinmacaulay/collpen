@@ -37,7 +37,7 @@ if (header.windowstart ~= data.minrange) || (maxirange ~= data.maxrange)
 end
 
 frame=uint8(fread(data.fid,[data.numbeams,data.sampleperchannel],...
-    'uint8')); % 512 for DIDSON, 3506 for ARIS
+    'uint8')); % 512 for DIDSON, data.numbeams*data.sampleperchannel for ARIS
 
 if data.reverse == 0
     frame=fliplr(frame'); %Transposed and flipped data frame assumes uninverted sonar
