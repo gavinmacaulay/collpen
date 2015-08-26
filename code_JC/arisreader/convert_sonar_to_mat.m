@@ -95,27 +95,11 @@ elseif type=='A'
     %Straight line equation to allow scale images according to the number of samples per beam
     image_width = round(0.1773*r + 309); 
     data=make_first_image(data,4,image_width); %make the first image array
-    %data=make_first_image(data,4,2000); %make the first image array
-%     fd = imshow(data.image);
-%     colormap bone;%(bluebar);
-%     set(gca,'Clim',[30,200]); %set bottom and top of color map
-%     set(fd,'EraseMode','none','CDataMapping','scaled');
     
     trackflowavi = VideoWriter(avifilename); %,'keyframe',20, 'Quality',100);
     trackflowavi.FrameRate = data.framerate;
     open(trackflowavi)
-    writeVideo(trackflowavi, data.image);
-    for framenumber = 2:data.numframes
-        data=get_frame_new(data,framenumber);
-        data=make_new_image(data,data.frame);
-%         set(fd,'CData',data.image);
-%         writeVideo(trackflowavi,getframe(gca));
-%         drawnow;
-        writeVideo(trackflowavi, data.image);
-        disp(['Frame ',num2str(framenumber),...
-            ' of ',num2str(data.numframes)])
-    end
-    
+
     % Close the files
     fclose(data.fid); %Close the ddf file
     close(trackflowavi);
