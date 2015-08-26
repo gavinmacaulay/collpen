@@ -3,7 +3,7 @@
 
 %% Find recursively all subdirectories in a directory containing ddf files
 clear
-in_dir = '/Volumes/Datos/collpen/data';
+in_dir = '/Volumes/Datos/collpen/methods_paper_sources/didson_herring/';
 
 ddf_files = rdir([in_dir '/**/*.mat']);
 % sub_folders = {};
@@ -22,19 +22,23 @@ ddf_files = rdir([in_dir '/**/*.mat']);
 
 % Data contained in D has the following format (frame,height,width)
 
-frame_rate = 8; % by default, Didson works at a frequence of 8 samples
+frame_rate = 8; % by default Didson works at a frequence of 8 samples
                 % per second
 for i = 1:length(ddf_files)
     disp(['Rendering file ' num2str(i) ' of ' num2str(length(ddf_files))]);
     try
         load(ddf_files(i).name);
-        avi_out = strrep(ddf_files(i).name, '.mat', '.avi');
+        avi_out = strrep(ddf_files(i).name, '.mat', '_raw_polar.avi');
         mat_to_avi(D,avi_out,frame_rate,-1, -1);
+        video_reader = VideoReader(avi_out);
+        I = read(video_reader,1);
+        [r c] = size(I);        
+        avi_out_wide = strrep(ddf_files(i).name, '.mat', '_raw_polar_wide.avi');
+        change_video_framerate_resolution(avi_out,avi_out_wide,0,r,c*2,0,0); % For ARIS only?
         
     catch
         disp('Wrong mat data file');
-    end
-    
+    end    
     
 end
 disp('End');
