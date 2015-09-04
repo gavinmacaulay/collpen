@@ -8,8 +8,19 @@
 clear
 close all
 
-filepath = '/Volumes/Datos/collpen/denoising_tests/';
-filename = '2013-07-17_171402_1844_1947_raw_polar.avi';
+% Videos for the tests
+% 2013-07-17_085620_Raw_1825_1920_raw_cartesian.avi 
+% 2013-07-19_105504_Raw_1758_1821_raw_cartesian.avi
+% 2013-07-17_171402_Raw_1844_1947_raw_cartesian.avi 
+% block10_1_Raw_395_476_raw_cartesian.avi
+% 2013-07-18_090802_Raw_1735_1810_raw_cartesian.avi 
+% block5_1_Raw_396_514_raw_cartesian.avi
+% 2013-07-18_120502_Raw_1450_1520_raw_cartesian.avi 
+% block9_1_Raw_730_830_raw_cartesian.avi
+% 2013-07-18_161457_Raw_726_804_raw_cartesian.avi
+
+filepath = '/Volumes/Datos/collpen/methods_paper_sources/';
+filename = '2013-07-18_161457_Raw_726_804_raw_cartesian.avi';
 
 
 
