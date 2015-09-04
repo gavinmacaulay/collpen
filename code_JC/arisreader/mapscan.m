@@ -1,4 +1,4 @@
-function map=mapscan(ixsize,rmax,rmin,halffov,nbeams,nbins)
+function map=mapscan(ixsize,rmax,rmin,halffov,nbeams,nbins)%,isaris)
 % Forms vector that maps data from sample space to image space
 % ixsize= number of pixels in horizontal direction in image space
 % rmax = maximum range in meters
@@ -14,6 +14,10 @@ function map=mapscan(ixsize,rmax,rmin,halffov,nbeams,nbins)
 %a2=a*14.8 + b*14.8^3;
 %factor=(nbeams-1)/(a2-a1);
 %offset=nbeams-factor*a2;
+
+% if (nargin<7)
+%     isaris=0;
+% end
 
 degtorad = 3.14159/180.; %conversion of degrees to radians
 radtodeg = 180./3.14159;  %conversion of radians to degrees
@@ -37,7 +41,11 @@ for iy = 1:iysize
     binnum = fix((r - rmin)*c1 + 1.5); % the rangebin number
     %beamnum = fix((theta + halffov)*c2 + 1.5); %the linear function to get beam number
     %beamnum = round(factor*(a*theta+b*theta.^3) + offset); %remove lens distortion
-    beamnum =lens_distortion(nbeams,theta); %remove lens distortion using empirical formula 
+%     if(isaris)
+%         beamnum = get_aris_beam_from_angle(theta);
+%     else
+        beamnum = lens_distortion(nbeams,theta); %remove lens distortion using empirical formula 
+%    end
     %find position in sample array expressed as a vector
      % make pos = 0 if outside sector, else give it the offset in the sample array
     pos = (beamnum > 0).*(beamnum <= nbeams).*(binnum > 0).*(binnum <= nbins).*((beamnum -1)*nbins + binnum);
