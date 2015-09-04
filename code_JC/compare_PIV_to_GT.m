@@ -27,6 +27,8 @@ end
 d = dir([GT_folder '*_prey_positions.mat']);
 
 prey_files = cell(length(d),1); % Preallocate to increase speed
+source_file = cell(length(d),1); % Preallocate to increase speed
+
 for i = 1:length(d)
     prey_files{i} = d(i).name;
     source_file{i} = strrep(prey_files{i},'_prey_positions.mat', '');
