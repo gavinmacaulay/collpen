@@ -33,7 +33,7 @@ for i = 1:length(ddf_files)
         video_reader = VideoReader(avi_out);
         I = read(video_reader,1);
         [r c] = size(I);        
-        avi_out_wide = strrep(ddf_files(i).name, '.mat', '_raw_polar_wide.avi');
+        avi_out_wide = strrep(ddf_files(i).name, '.mat', '_raw_polarwide.avi');
         change_video_framerate_resolution(avi_out,avi_out_wide,0,r,c*2,0,0); % For ARIS only?
         
     catch
