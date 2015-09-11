@@ -71,6 +71,11 @@ switch frameheader.configflags
         data.configuration ='DIDSON-LR Classic Windows';
 end
 
+if version == 5
+    data.framerate = frameheader.framerate;
+else
+    data.framerate = fileheader.framerate;
+end
 data.minrange=frameheader.windowstart;
 data.maxrange=data.minrange + frameheader.windowlength;
 data.numbeams = fileheader.numbeams;

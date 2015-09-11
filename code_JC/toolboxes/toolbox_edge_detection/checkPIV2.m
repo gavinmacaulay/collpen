@@ -81,12 +81,12 @@ for i = 1:r
     i_vs = isnan(VS);
     VS(i_vs) = 0;
     
-    piv_u = US(round(preys(i,3)),round(preys(i,2))); % In pixels/sec
-    piv_v = VS(round(preys(i,3)),round(preys(i,2))); % In pixels/sec
+    piv_u = single(US(round(preys(i,3)),round(preys(i,2)))); % In pixels/frame
+    piv_v = single(VS(round(preys(i,3)),round(preys(i,2)))); % In pixels/frame
  
     
-    vvv = vs(:,:,preys(i,1)); % In pixels/sec
-    uuu = us(:,:,preys(i,1)); % In pixels/sec
+    vvv = vs(:,:,preys(i,1)); % In pixels/frame
+    uuu = us(:,:,preys(i,1)); % In pixels/frame
     i_us = isnan(uuu);
     uuu(i_us) = 0;
     i_vs = isnan(vvv);
@@ -94,10 +94,10 @@ for i = 1:r
     
     xxx = xs(:,:,preys(i,1));
     yyy = ys(:,:,preys(i,1));
-    prey_u = preys(i,4); % In pixels/frame
-    prey_v = preys(i,5); % In pixels/frame
-    prey_x = preys(i,2);
-    prey_y = preys(i,3);
+    prey_u = single(preys(i,4)); % In pixels/frame
+    prey_v = single(preys(i,5)); % In pixels/frame
+    prey_x = single(preys(i,2));
+    prey_y = single(preys(i,3));
     
     if(save_image)
         quiver(xxx,yyy,uuu,vvv,'color',[0 0 1]);

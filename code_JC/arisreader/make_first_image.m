@@ -29,8 +29,15 @@ if(data.version == 5)
 else
     half_angle =14.4;
 end
+
+% isaris=0;
+% 
+% if data.version == 5
+%     isaris=1;
+% end
+
 data.map=mapscan(imagexsize,data.maxrange,data.minrange,half_angle,...
-    nrows,data.sampleperchannel);
+    nrows,data.sampleperchannel);%,isaris);
 
 data.image=uint8(reshape(frame(data.map.svector),data.map.iysize,imagexsize));
 

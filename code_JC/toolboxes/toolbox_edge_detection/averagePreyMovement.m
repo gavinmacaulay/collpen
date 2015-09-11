@@ -1,4 +1,4 @@
-function [x y u v] =  averagePreyMovement(fr,px,py)
+function [x, y, u, v] =  averagePreyMovement(fr,px,py)
 
 % Xx = [fr ones(size(fr,1),1)];
 % a = regress(px,Xx);

@@ -46,14 +46,32 @@ D(1,:,:) = data.frame;
 T(1,1) = data.datenum;
 T(1,2) = 1;
 
-if type=='D'
+
+% In aris we couldn't read the timestamp as data.datenum is alwways 0.
+% The solution adopted has been to create a new timestamp considering the
+% framerate as time step between frames.
+if(strcmp(file_extension,'aris'))
+    time_step = (1/double(data.framerate)); % time step between frames in microseconds
+    time_index = 0;
+    T(1,1) = 0;
+end
+
+if type=='D' || type=='T'
     for i = 2:data.numframes %= pari.startframe:pari.endframe
         data=get_frame_new(data,i);
+        if(strcmp(file_extension,'aris'))
+            time_index = time_index + time_step;
+        end
+        
         if ~isempty(data.frame)% If the data frame is empty, keep the NaN's
             D(i,:,:) = data.frame;
         end
         if ~isempty(data.datenum)% If the data frame is empty, keep the NaN's
-            T(i,1) = data.datenum;
+            if(strcmp(file_extension,'aris'))
+                T(i,1) = time_index;
+            else
+                T(i,1) = data.datenum;
+            end
         end
         T(i,2)=i;
     end
@@ -62,7 +80,10 @@ if type=='D'
     data.frame=[];
     data.frame = D;
     
-    save(matfilename,'D','T');
+    if type=='D'
+        save(matfilename,'D','T');
+    end
+    
 elseif type=='A'
     % Generate avi file
     
@@ -70,26 +91,26 @@ elseif type=='A'
     
     data=get_frame_first(filename);
     iptsetpref('Imshowborder','tight');
-    data=make_first_image(data,4,400); %make the first image array
-    %data=make_first_image(data,4,2000); %make the first image array
-    fd = imshow(data.image);
-    colormap bone;%(bluebar);
-    set(gca,'Clim',[30,200]); %set bottom and top of color map
-    set(fd,'EraseMode','none','CDataMapping','scaled');
+    [r c] = size(data.frame);
+    %Straight line equation to allow scale images according to the number of samples per beam
+    image_width = round(0.1773*r + 309); 
+    data=make_first_image(data,4,image_width); %make the first image array
     
-    trackflowavi = avifile(avifilename,'keyframe',20,...
-        'Quality',100);
-    
+    trackflowavi = VideoWriter(avifilename); %,'keyframe',20, 'Quality',100);
+    trackflowavi.FrameRate = data.framerate;
+    open(trackflowavi)
     for framenumber = 2:data.numframes
         data=get_frame_new(data,framenumber);
         data=make_new_image(data,data.frame);
-        set(fd,'CData',data.image);
-        trackflowavi = addframe(trackflowavi,getframe(gca));
-        drawnow;
+        %set(fd,'CData',data.image);
+       % imagesc(data.image);
+        writeVideo(trackflowavi,data.image);
+%        trackflowavi = addframe(trackflowavi,getframe(gca));
+ %       drawnow;
+        
         disp(['Frame ',num2str(framenumber),...
             ' of ',num2str(data.numframes)])
     end
-    
     % Close the files
     fclose(data.fid); %Close the ddf file
     close(trackflowavi);
