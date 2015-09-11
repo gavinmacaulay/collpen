@@ -97,6 +97,7 @@ rootDataDir = '\\callisto\collpen\AustevollExp\data';
 %% The HERRINGexp - creating the avi per treatment
 clear
 clc
+close all
 % Data directory
 %par.datadir = 'G:\collpen\AustevollExp\data\HERRINGexp';
 par.datadir = '\\callisto\collpen\AustevollExp\data\HERRINGexp';
@@ -111,14 +112,14 @@ block = cp_GetExpPar(par.parfile);
 %17:36
 
 % Functions to convert Didson data to mat and avi files
-for i=20:36
+for i=1:82
     try
         cp_ProcessDidsondata(block(i).b_block,block,par);
         disp(['Block ',num2str(i),' ok'])
     end
 end
 
-%% Calculate school parameters (This generates the NULL and TREATMENT for vessel, orca and w/b net)
+% Calculate school parameters (This generates the NULL and TREATMENT for vessel, orca and w/b net)
 clear
 close all
 % Data directory
