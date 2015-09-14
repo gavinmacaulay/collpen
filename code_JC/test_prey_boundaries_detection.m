@@ -26,8 +26,8 @@ for i = 1 : length(d)
     file_name =  d(i).name;
     tic
     disp(['Analyzing video (' num2str(i) '/' num2str(length(d)) ') ' file_name]);
-    [px_relative_acc py_relative_acc angles_acc ranges_acc intensity_acc ...
-        frames_acc gradient_acc px_absolute_acc py_absoute_acc interpolated_extrapolated] ...
+    [px_relative_acc, py_relative_acc, angles_acc, ranges_acc, intensity_acc, ...
+        frames_acc, gradient_acc, px_absolute_acc, py_absoute_acc, interpolated_extrapolated] ...
         = getCircularRegionFromVideo(filepath, d(i).name, alpha, samples, min_range, max_range, ...
         mask, denoising_method,denoising_param, debug);
     file_index = repmat(i,size(angles_acc{1},1),1);
@@ -110,7 +110,7 @@ p = [point(:,1) - circle(:,1) , point(:,2) - circle(:,2) ];
 d = hypot(point(:,1),point(:,2));
 
 %d = sqrt(sum(power(point - circle(:,1:2), 2), 2));
-b = d-circle(:,3)<=1e-12
+b = d-circle(:,3)<=1e-12;
 
 
 
@@ -410,12 +410,12 @@ debug = 1; % getBoundaries debug
 filepath = '/Volumes/Datos/collpen/predator/brown_net/seq1/predmodel2013_TREAT_Brown net_didson_block45_sub1.avi';
 
 
-info     = aviinfo(filepath);
-movieobj = mmreader(filepath);
+%info     = aviinfo(filepath);
+movieobj = VideoReader(filepath);
 
 
 RGB         = uint16(read(movieobj, 1));
-nf          = info.NumFrames;
+nf          = movieobj.NumberOfFrames;
 [m n z]     = size(RGB);
 Is          = zeros(m,n,nf);
 angle = 180;
@@ -669,12 +669,12 @@ pkhs = pivdatas.rawpivel.pkhs;
 is = pivdatas.rawpivel.is;
 
 
-info     = aviinfo(filepath);
-movieobj = mmreader(filepath);
+%info     = aviinfo(filepath);
+movieobj = VideoReader(filepath);
 
 
 RGB         = uint16(read(movieobj, 1));
-nf          = info.NumFrames;
+nf          = movieobj.NumberOfFrames;
 [m n z]     = size(RGB);
 %Is          = zeros(m,n,nf);
 angle = 180;
@@ -706,7 +706,7 @@ plot(xs(:,:,1),ys(:,:,1));
 quiver(xs(:,:,1),ys(:,:,1), us(:,:,1),vs(:,:,1));
 
 
-[x y z] = size(xs);
+[x, y, z] = size(xs);
 close
 for i =1:z
     pause(0.1);

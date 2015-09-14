@@ -19,8 +19,8 @@ close all
 % block9_1_Raw_730_830_raw_cartesian.avi
 % 2013-07-18_161457_Raw_726_804_raw_cartesian.avi
 
-filepath = '/Volumes/Datos/collpen/methods_paper_sources/';
-filename = '2013-07-18_161457_Raw_726_804_raw_cartesian.avi';
+filepath = 'C:\collpen_jc\test/';
+filename = 'block5_1_396_514_cartesian.avi';
 
 
 
@@ -42,7 +42,7 @@ prey = 1;
 close all
 clear 
 
-load('/Volumes/Datos/collpen/test_remember/prey_position/predmodel2013_TREAT_Brown net_didson_block45_sub1_prey_positions.mat');
+load('C:\collpen_jc\method_paper_sources\prey_position/2013-07-18_161457_Raw_726_804_raw_cartesian_prey_positions.mat');
 
 % Split prey positions
 close all

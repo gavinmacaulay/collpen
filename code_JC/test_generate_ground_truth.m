@@ -20,10 +20,9 @@ endframe = frames(end);;
 
 fullfilename = [filepath filename];
 
-info     = aviinfo(fullfilename);
-movieobj = mmreader(fullfilename);
+movieobj = VideoReader(fullfilename);
 RGB         = rgb2gray(read(movieobj, 1));
-nf          = info.NumFrames;
+nf          = movieobj.NumberOfFrames;
 
 
 RGB         = rgb2gray(read(movieobj, endframe));

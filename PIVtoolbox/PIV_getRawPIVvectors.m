@@ -57,7 +57,7 @@ function [datapath rawpivel] = PIV_getRawPIVvectors(folder, avifilename, parstr)
    
     % Getting raw vectors/datas
     dispMsg(parstr.showmsg,'[PIV_getRawPIVvectors]:....');
-    [rawpivel.xs rawpivel.ys rawpivel.us rawpivel.vs rawpivel.snrs rawpivel.pkhs rawpivel.is] = ...
+    [rawpivel.xs, rawpivel.ys, rawpivel.us, rawpivel.vs, rawpivel.snrs, rawpivel.pkhs, rawpivel.is] = ...
         PIV_getSubRawPIVvectors(folder, avifilename, parstr);
     pivdatas(pos).rawpivel=rawpivel;
     
@@ -90,8 +90,8 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
     
     %% Opening movie object
     disp(['[PIV_getRawPIVvectors]:..Opening ' filepath]);
-    info     = aviinfo(filepath);
-    movieobj = mmreader(filepath);
+    %info     = aviinfo(filepath);
+    movieobj = Videoreader(filepath);
 
     %% PIV settings 
     winsize = parstr.winsize;
@@ -113,7 +113,7 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
     end
   
     % PIV data vectors
-    n      = info.NumFrames-1;
+    n      = movieobj.NumberOfFrames-1;
     xs     = zeros(rows,cols,n);
     ys     = zeros(rows,cols,n);
     us     = zeros(rows,cols,n);

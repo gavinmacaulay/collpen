@@ -24,11 +24,14 @@ for i = 1:length(d)
     
      % Opening movie object
     disp(['..Opening ' filepath]);
-    info     = aviinfo(filepath);
-    movieobj = mmreader(filepath);
     
-    n    = info.NumFrames-1;
-    aviobj = avifile(pivavipath, 'compression', 'none', 'fps',8);
+    movieobj = VideoReader(filepath);
+    
+    n    = movieobj.NumberOfFrames-1;
+    %aviobj = avifile(pivavipath, 'compression', 'none', 'fps',8);
+    aviobj = VideoWriter(pivavipath);
+    aviobj.FrameRate = movieobj.FrameRate;
+    open(aviobj);
 
     % Loop to generate avi file
     disp(['Creating PIV avi in ' pivavipath]);
@@ -36,7 +39,7 @@ for i = 1:length(d)
     for j = 1: n
             I   = rgb2gray(read(movieobj, j));
             colormap gray
-            [r c] = size(I);
+            [r, c] = size(I);
             subplot(1,2,1);
             imagesc(I); axis equal;axis tight;
             subplot(1,2,2); 
@@ -58,10 +61,11 @@ for i = 1:length(d)
             hold off
             pause(0.125);
             F = getframe(f);
-            aviobj = addframe(aviobj,F.cdata);
+           % aviobj = addframe(aviobj,F.cdata);
+            videoWriter(aviobj,F.cdata);
 
     end
     toc
-    aviobj = close(aviobj); 
+    close(aviobj); 
     disp('Video created');
 end

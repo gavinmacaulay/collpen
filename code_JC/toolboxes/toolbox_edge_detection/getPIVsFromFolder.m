@@ -43,7 +43,6 @@ for i = 1:length(d)
     
     % Opening movie object
     disp(['..Opening ' filepath]);
-    info     = aviinfo(filepath);
     movieobj = VideoReader(filepath);
     
     I2  = read(movieobj, 1);
@@ -59,7 +58,7 @@ for i = 1:length(d)
         preprocessingSonarImage(); % Initialize
         I2 = preprocessingSonarImage(I2,BG,denoising_method,denoising_param,0,0);
     end
-    n    = info.NumFrames-1;
+    n    = movieobj.NumberOfFrames-1;
     % The number of rows and columns is hardcoded in file DoFlow.m
     rows = 100;
     cols = 100;

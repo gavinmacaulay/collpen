@@ -27,13 +27,12 @@ for i=1:length(d)
         
     end
     
-    info     = aviinfo(avipath);
-    movieobj = mmreader(avipath);
+    movieobj = VideoReader(avipath);
     
     
     RGB         = uint16(read(movieobj, 1));
-    nf          = info.NumFrames;
-    [m n z]     = size(RGB);
+    nf          = movieobj.NumberOfFrame;
+    [m, n, z]     = size(RGB);
     Is          = zeros(m,n,nf);
     
     for j = 1:size(frame_pixel_info,1)

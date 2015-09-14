@@ -32,11 +32,11 @@ mask_img = single(mask_img);
 index = find(mask_img==0);
 mask_img(index) = NaN; % Pixels out of the ROI are assigned to NaN
 
-info     = aviinfo([filepath filename]);
+
 movieobj = VideoReader([filepath filename]);
 
 I         = read(movieobj, 1);
-nf          = info.NumFrames;
+nf          = movieobj.NumberOfFrames;
 [h w z]     = size(I);
 if(z>1)
     I = rgb2gray(I);

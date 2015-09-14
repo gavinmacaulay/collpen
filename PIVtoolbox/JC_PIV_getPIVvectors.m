@@ -87,7 +87,7 @@ if(denoising_method ~= -1) % apply denoising
     bgpath = [folder 'PIVdata/' avifilename];
     bgpath = strrep(bgpath, '.avi','_BG.bmp');
     BG = imread(bgpath);
-    [r c nc] = size(BG);
+    [r, c, nc] = size(BG);
     if (nc > 1)
         BG = rgb2gray(BG);
     end
@@ -95,7 +95,6 @@ end
 
 %% Opening movie object
 disp(['[PIV_getRawPIVvectors]:..Opening ' filepath]);
-info     = aviinfo(filepath);
 movieobj = VideoReader(filepath);
 
 %% PIV settings
@@ -112,13 +111,13 @@ try
     % I2                          = rgb2gray(RGB2);
     I1                          = I2;
     [T,xs,ys,us,vs,snrs,pkhs]   = evalc('matpivCP(I1,I2,winsize,dt,olap,param)');
-    [rows cols]                 = size(xs);
+    [rows, cols]                 = size(xs);
 catch exception
     disp('[PIV_getRawPIVvectors]: ERROR!')
 end
 
 % PIV data vectors
-n      = info.NumFrames-1;
+n      = movieobj.NumberOfFrames-1;
 xs     = zeros(rows,cols,n);
 ys     = zeros(rows,cols,n);
 us     = zeros(rows,cols,n);
