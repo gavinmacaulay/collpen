@@ -1,5 +1,5 @@
-function [dot_product_acc, angle_acc, range_acc, relative_range_acc] = ...
-            get_PIV_GT_comparison_by_denoising_technique(...
+function [dot_product_acc, angle_acc, range_acc, relative_range_acc,...
+    distance_acc] = get_PIV_GT_comparison_by_denoising_technique(...
             denoising_technique_name, PIV_GT_comparisons, win_size)
         
 % This function averages information of the PIV and GT comparison for a
@@ -10,10 +10,11 @@ function [dot_product_acc, angle_acc, range_acc, relative_range_acc] = ...
     disp(['[PIV_GT_compare_by_denoising_technique]: Extract results for denoising technique '...
         denoising_technique_name]);
     
-    dot_product_acc = [];
-    angle_acc       = [];
+    dot_product_acc     = [];
+    angle_acc           = [];
     range_acc           = [];
     relative_range_acc  = [];
+    distance_acc        = [];
     
     % Get all comparisons for a window size
     comparison_win_size = PIV_GT_comparisons{win_size,1};
@@ -23,10 +24,11 @@ function [dot_product_acc, angle_acc, range_acc, relative_range_acc] = ...
     for i=1:length(comparison_win_size)
         comparison = comparison_win_size(i);
         if(~isempty(strfind(comparison.piv_file,denoising_technique_name)))
-            dot_product_acc = [dot_product_acc; comparison.dotproduct];
-            angle_acc       = [angle_acc; comparison.angles];
-            range_acc           = [range_acc; comparison.ranges];
+            dot_product_acc     = [dot_product_acc; comparison.dotproduct];
+            angle_acc           = [angle_acc ; comparison.angles];
+            range_acc           = [range_acc ; comparison.ranges];
             relative_range_acc  = [relative_range_acc; comparison.relative_range];
+            distance_acc        = [distance_acc ; comparison.distances];
         end        
     end
 
@@ -35,6 +37,7 @@ function [dot_product_acc, angle_acc, range_acc, relative_range_acc] = ...
     dot_product_acc = dot_product_acc(index);
     range_acc = range_acc(index);
     relative_range_acc = relative_range_acc(index);    
+    distance_acc = distance_acc(index);
 %     mean_dot_product    = mean(dot_product_acc);
 %     mean_angle          = mean(angle_acc);
 %     mean_range          = mean(range_acc);
