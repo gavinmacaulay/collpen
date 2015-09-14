@@ -75,7 +75,7 @@ cartesian_video     = '2013-07-17_085620_Raw_1825_1920_raw_cartesian.avi';
 polar_video         = '2013-07-17_085620_Raw_1825_1920_raw_polar.avi';
 aris_cartesian_video = '2013-07-17_085620_1825_1920_aris_cartesian.avi';
 aris_polar_video    = '2013-07-17_085620_1825_1920_aris_polar.avi';
-polar_video_wide    = '2013-07-17_085620_Raw_1825_1920_raw_polar_wide.avi';
+polar_video_wide    = '2013-07-17_085620_Raw_1825_1920_raw_polarwide.avi';
 
 image_h = 800;
 
@@ -96,8 +96,8 @@ video_reader_aris_polar = VideoReader([source_folder aris_polar_video]);
 L = read(video_reader_aris_polar,1);
 [r4, c4, n4] = size(L);
 
-video_reader_polar_wide = VideoReader([source_folder polar_video_wide]);
-M = read(video_reader_polar_wide,1);
+video_reader_polarwide = VideoReader([source_folder polar_video_wide]);
+M = read(video_reader_polarwide,1);
 [r5, c5, n5] = size(M);
 
 n = video_reader_cartesian.NumberOfFrames;
@@ -106,7 +106,7 @@ n = video_reader_cartesian.NumberOfFrames;
 %    video_reader_polar.NumberOfFrames
 %    video_reader_aris_cartesian.NumberOfFrames
 %   video_reader_aris_polar.NumberOfFrames
-%   video_reader_polar_wide.NumberOfFrames
+%   video_reader_polarwide.NumberOfFrames
 
 disp(n);
 
@@ -129,7 +129,7 @@ for i=1:n
     J = read(video_reader_polar,i);
     K = read(video_reader_aris_cartesian,i);
     L = read(video_reader_aris_polar,i);
-    M = read(video_reader_polar_wide,i);
+    M = read(video_reader_polarwide,i);
     
     subplot(1,5,4);
     imagesc(M); axis equal;axis tight;
