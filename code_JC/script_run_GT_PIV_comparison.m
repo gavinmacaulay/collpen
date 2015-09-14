@@ -45,7 +45,7 @@
 
 %% Select Input parameters
 clear
-close all
+close all 
 
 % -------------------------------------------------------------------------------
 % Change video folder to the one containing your videos
