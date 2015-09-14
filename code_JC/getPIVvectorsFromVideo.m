@@ -80,7 +80,7 @@ filepath=[folder avifilename];
 
 %% Opening movie object
 disp(['[PIV_getRawPIVvectors]:..Opening ' filepath]);
-info     = aviinfo(filepath);
+%info     = aviinfo(filepath);
 movieobj = VideoReader(filepath);
 
 %% PIV settings
@@ -103,7 +103,7 @@ catch exception
 end
 
 % PIV data vectors
-n      = info.NumFrames-1;
+n      = movieobj.NumberOfFrames;
 xs     = zeros(rows,cols,n);
 ys     = zeros(rows,cols,n);
 us     = zeros(rows,cols,n);
@@ -123,7 +123,7 @@ end
 
 
 H       = fspecial('average', winsize);
-for i=1:1:n
+for i=1:1:n-1
     I1  = I2;
     warning off
     If  = imfilter(I1,H); % Lars: So that is is based on average in window, change done 14.11.2013
