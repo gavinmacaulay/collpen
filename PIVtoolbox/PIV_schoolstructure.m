@@ -1,4 +1,4 @@
-function [avspeed,dalpha,dcav,mcav2] = PIV_schoolstructure(xs,ys,us,vs,w, par)
+function [avspeed,dalpha,dcav,mcav2,RotOrd] = PIV_schoolstructure(xs,ys,us,vs,w, par)
 %
 % Estimate school structure parameters and average speed
 %
@@ -13,7 +13,7 @@ function [avspeed,dalpha,dcav,mcav2] = PIV_schoolstructure(xs,ys,us,vs,w, par)
 % avspeed : w-weighted average speed in the movie
 % dalpha  : w-weighted temporal correlations
 % cav     : w-weighted angular velocity
-
+% RotOrd  : The rotational order
 
 % Remove NaNs
 ind=isnan(us)|isnan(vs);
@@ -56,12 +56,9 @@ end
 % Spatial curvature (curl)
 dcav = zeros(size(angle,1),size(angle,2),size(angle,3));
 mcav = zeros([size(angle,3) 1]);
-
+RotOrd = NaN([size(angle,3) 1]);
 % Loop over time steps
 for i=1:size(us,3)
-    % Combine the weights for each time step
-    w2(:,:,j) = w(:,:,j) .* w(:,:,j+1);
-    
     % Compute the curl (a) and the angular velocity (b) in radians per unit
     % time (which is half the |curl U|)
     [~,cav]=curl(xs(:,:,i), ys(:,:,i),us(:,:,i),vs(:,:,i));
@@ -76,8 +73,27 @@ for i=1:size(us,3)
     % Take the average across each frame
     dum=abs(dcav(:,:,i)).*w2;
     mcav(i)=sum(dum(:))./sum(w2(:));
+    
+    % Calculate the rotational order parameter
+    % R = 1/N | sum_i^N (X_i \cross V_i)/|X_i \cross V_i| \dot e_z
+    sX= size(squeeze(xs(:,:,i)));
+    X = zeros([sX 3]);
+    V = zeros([sX 3]);
+    X(:,:,1)=xs(:,:,i)-par.x0(1);
+    X(:,:,2)=ys(:,:,i)-par.x0(2);
+    V(:,:,1) = squeeze(us(:,:,i));
+    V(:,:,2) = squeeze(vs(:,:,i));
+    C = cross(X,V);
+    % Similar to the normalisation and dot product since we are in 2D
+    Cn = sign(C(:,:,3));
+    % Do a weighted mean
+    w3 = squeeze(w(:,:,i));
+    w3(isnan(w3)|isnan(Cn))=0;
+    Cn(isnan(Cn))=0;
+    dum=Cn.*w3;
+    RotOrd(i)=sum(dum(:))./sum(w3(:));
 end
 
 % The average across frames
 mcav2= mean(mcav);
-
+RotOrd = nanmean(RotOrd);

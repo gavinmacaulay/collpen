@@ -1,4 +1,4 @@
-function w=PIV_weights(snrs,pkhs,is,par)
+function [w,level,EM]=PIV_weights(snrs,pkhs,is,par)
 %
 % function w=PIV_weights(snrs,pkhs,is,par)
 %
@@ -22,7 +22,8 @@ function w=PIV_weights(snrs,pkhs,is,par)
 % Keane and Adrian Keane and Adrian [1992] suggest that a threshold
 % value of about msnr=1.3 is appropriate.
 %
-% 
+% A threshold level of w is calculated using Otsu's method that can be used
+% to filter out low quality samples.
 
 % (C) Nils Olav Handegard
 
@@ -40,6 +41,9 @@ w = w_snr.*w_thr.*pkhs ;
 
 
 
-hist([w_snr(:) w_thr(:) pkhs(:) w(:)],200)
-legend({'snr','thr','pkhs','w'})
+%hist([w_snr(:) w_thr(:) pkhs(:) w(:)],200)
+%legend({'snr','thr','pkhs','w'})
+
+% Create threshold using Otsu's method
+[level EM] = graythresh(w);
 

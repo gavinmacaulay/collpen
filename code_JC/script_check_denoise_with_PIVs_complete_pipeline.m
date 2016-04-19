@@ -64,8 +64,8 @@ close all
 %video_folder = 'C:\collpen_jc\method_paper_GT_vs_PIV\DIDSON_arissfw_polar';
 %video_folder = 'C:\collpen_jc\method_paper_GT_vs_PIV\DIDSON_raw_cartesian';
 %video_folder = 'C:\collpen_jc\method_paper_GT_vs_PIV\DIDSON_raw_polar';
-video_folder = 'C:\collpen_jc\method_paper_GT_vs_PIV\DIDSON_raw_polarwide';
-
+%video_folder = 'C:\collpen_jc\method_paper_GT_vs_PIV\DIDSON_raw_polarwide';
+video_folder = 'C:\Users\nilsolav\Dropbox\DOK\papers\CollPen_methodspaperJose'
 % -------------------------------------------------------------------------------
 % Select the window size for PIV computation
 % This is the distance among PIVs and also indicates the maximum distance
@@ -117,59 +117,59 @@ denoising_techniques = zeros(26,2);
 % Comment or uncomment the desired denoising techniques
 % -------------------------------------------------------------------------------
 
-denoising_techniques(1,:)  = [-1,0];    % Raw images
+% denoising_techniques(1,:)  = [-1,0];    % Raw images
 denoising_techniques(2,:)  = [0,0];     % Background subtraction + normalization
-denoising_techniques(3,:)  = [1,0];     % Gaussian
-denoising_techniques(4,:)  = [3,0];     % Median
-denoising_techniques(5,:)  = [5,0];     % Median + average
-denoising_techniques(6,:)  = [1,1];     % Wavelet + gaussian
-denoising_techniques(7,:)  = [3,1];     % Wavelet + Median
-denoising_techniques(8,:)  = [5,1];     % Wavelet + Median + average
-denoising_techniques(9,:)  = [9,50];    % DPAD 50
-denoising_techniques(10,:) = [11,50];   % DPAD 50 + Median
-denoising_techniques(11,:) = [10,25];   % SRAD 25
-denoising_techniques(12,:) = [10,50];   % SRAD 50
-denoising_techniques(13,:) = [10,100];  % SRAD 100
-denoising_techniques(14,:) = [12,25];   % SRAD 25 + Median
-denoising_techniques(15,:) = [12,50];   % SRAD 50 + Median
-denoising_techniques(16,:) = [12,100];  % SRAD 100 + Median
-denoising_techniques(17,:) = [8,0];     % Frost
-denoising_techniques(18,:) = [0,-1];    % Background subtraction only
+% denoising_techniques(3,:)  = [1,0];     % Gaussian
+% denoising_techniques(4,:)  = [3,0];     % Median
+% denoising_techniques(5,:)  = [5,0];     % Median + average
+% denoising_techniques(6,:)  = [1,1];     % Wavelet + gaussian
+% denoising_techniques(7,:)  = [3,1];     % Wavelet + Median
+% denoising_techniques(8,:)  = [5,1];     % Wavelet + Median + average
+% denoising_techniques(9,:)  = [9,50];    % DPAD 50
+% denoising_techniques(10,:) = [11,50];   % DPAD 50 + Median
+% denoising_techniques(11,:) = [10,25];   % SRAD 25
+% denoising_techniques(12,:) = [10,50];   % SRAD 50
+% denoising_techniques(13,:) = [10,100];  % SRAD 100
+% denoising_techniques(14,:) = [12,25];   % SRAD 25 + Median
+% denoising_techniques(15,:) = [12,50];   % SRAD 50 + Median
+% denoising_techniques(16,:) = [12,100];  % SRAD 100 + Median
+% denoising_techniques(17,:) = [8,0];     % Frost
+% denoising_techniques(18,:) = [0,-1];    % Background subtraction only
 % denoising_techniques(19,:)  = [9,25];    % DPAD 25
 % denoising_techniques(20,:)  = [9,75];    % DPAD 75
 % denoising_techniques(21,:)  = [9,100];    % DPAD 100
 % denoising_techniques(22,:) = [11,25];   % DPAD 25 + Median
-denoising_techniques(23,:) = [11,75];   % DPAD 75 + Median
+% denoising_techniques(23,:) = [11,75];   % DPAD 75 + Median
 % denoising_techniques(24,:) = [11,100];   % DPAD 100 + Median
 % denoising_techniques(25,:) = [10,75];  % SRAD 100
-denoising_techniques(26,:) = [12,75];   % SRAD 75 + Median
+% denoising_techniques(26,:) = [12,75];   % SRAD 75 + Median
 
-denoising_techniques_name{1}  = '01-Raw images-filter';
+% denoising_techniques_name{1}  = '01-Raw images-filter';
 denoising_techniques_name{2}  = '02-Background_subtraction_+_normalization_filter';
-denoising_techniques_name{3}  = '03-Gaussian-filter';
-denoising_techniques_name{4}  = '04-Median-filter';
-denoising_techniques_name{5}  = '05-Median + average-filter';
-denoising_techniques_name{6}  = '06-Wavelet + gaussian-filter';
-denoising_techniques_name{7}  = '07-Wavelet + Median-filter';
-denoising_techniques_name{8}  = '08-Wavelet + Median + average-filter';
-denoising_techniques_name{9}  = '09-DPAD 50-filter';
-denoising_techniques_name{10} = '10-DPAD 50 + Median-filter';
-denoising_techniques_name{11} = '11-SRAD 25-filter';
-denoising_techniques_name{12} = '12-SRAD 50-filter';
-denoising_techniques_name{13} = '13-SRAD 100-filter';
-denoising_techniques_name{14} = '14-SRAD 25 + Median-filter';
-denoising_techniques_name{15} = '15-SRAD 50 + Median-filter';
-denoising_techniques_name{16} = '16-SRAD 100 + Median-filter';
-denoising_techniques_name{17} = '17-Frost-filter';
-denoising_techniques_name{18} = '18-Background_subtraction_only';
+% denoising_techniques_name{3}  = '03-Gaussian-filter';
+% denoising_techniques_name{4}  = '04-Median-filter';
+% denoising_techniques_name{5}  = '05-Median + average-filter';
+% denoising_techniques_name{6}  = '06-Wavelet + gaussian-filter';
+% denoising_techniques_name{7}  = '07-Wavelet + Median-filter';
+% denoising_techniques_name{8}  = '08-Wavelet + Median + average-filter';
+% denoising_techniques_name{9}  = '09-DPAD 50-filter';
+% denoising_techniques_name{10} = '10-DPAD 50 + Median-filter';
+% denoising_techniques_name{11} = '11-SRAD 25-filter';
+% denoising_techniques_name{12} = '12-SRAD 50-filter';
+% denoising_techniques_name{13} = '13-SRAD 100-filter';
+% denoising_techniques_name{14} = '14-SRAD 25 + Median-filter';
+% denoising_techniques_name{15} = '15-SRAD 50 + Median-filter';
+% denoising_techniques_name{16} = '16-SRAD 100 + Median-filter';
+% denoising_techniques_name{17} = '17-Frost-filter';
+% denoising_techniques_name{18} = '18-Background_subtraction_only';
 % denoising_techniques_name{19}  = '19-DPAD 25';
 % denoising_techniques_name{20} = '20-DPAD 75';
 % denoising_techniques_name{21} = '21-DPAD 100';
 % denoising_techniques_name{22} = '22-DPAD 25 + Median-filter';
-denoising_techniques_name{23} = '23-DPAD 75 + Median-filter';
+% denoising_techniques_name{23} = '23-DPAD 75 + Median-filter';
 % denoising_techniques_name{24} = '24-DPAD 100 + Median-filter';
 % denoising_techniques_name{25} = '25-SRAD 100';
-denoising_techniques_name{26} = '26-SRAD 75 + Median-filter';
+% denoising_techniques_name{26} = '26-SRAD 75 + Median-filter';
 
 
 %% Calculate Background from input videos

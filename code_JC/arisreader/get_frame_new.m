@@ -55,6 +55,7 @@ if(data.version==5) %ARIS file format
     catch
         data.datenum = NaN;
     end
+    data.framerate = header.framerate;
 else
     data.datenum =datenum(header.year,header.month,header.day,header.hour,...
         header.minute,header.second+header.hsecond/100);

@@ -23,7 +23,7 @@ function [datapath rawpivel] = PIV_getRawPIVvectors(folder, avifilename, parstr)
     
     
     % Datapath
-    datapath   = strrep([datafolder '/' avifilename],'.avi','_PIV.mat');
+    datapath   = fullfile(datafolder,[avifilename(1:end-4),'_PIV.mat']);
     
     % Empty answer
     rawpivel    = struct('parstr',parstr,'xs',[],'ys',[],'us',[],'vs',[],'snrs',[],'pkhs',[],'is',[]);
@@ -81,17 +81,19 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
     
     %addpath('MatPIV161');
     %filepath='DidsonFilesOfInterest\didson_block22_sub1_treat1.avi';
-    filepath=[folder '/' avifilename];
+    filepath=fullfile(folder,avifilename);
     
     %% Load Bg image
-    bgpath = [folder '/PIVdata/' avifilename];
-    bgpath = strrep(bgpath, '.avi','_BG.bmp');
+    bgpath = fullfile(folder,'PIVdata',avifilename);
+    bgpath = [bgpath(1:end-4),'_BG.bmp'];
     BG = imread(bgpath);
     
     %% Opening movie object
     disp(['[PIV_getRawPIVvectors]:..Opening ' filepath]);
-    info     = aviinfo(filepath);
-    movieobj = mmreader(filepath);
+    movieobj = VideoReader(filepath);
+   
+%     info     = aviinfo(filepath);
+%     movieobj = mmreader(filepath);
 
     %% PIV settings 
     winsize = parstr.winsize;
@@ -113,7 +115,7 @@ function [xs ys us vs snrs pkhs is] = PIV_getSubRawPIVvectors(folder, avifilenam
     end
   
     % PIV data vectors
-    n      = info.NumFrames-1;
+    n      = movieobj.NumberOfFrames-1;%info.NumFrames-1;
     xs     = zeros(rows,cols,n);
     ys     = zeros(rows,cols,n);
     us     = zeros(rows,cols,n);
@@ -180,7 +182,7 @@ end
    
 % Checking that input arguments are correct
 function [folder, avifilename,parstr]=checkingArguments(folder, avifilename,parstr)
-    avifilename=strrep([avifilename '.avi'],'.avi.avi','.avi');
+    %avifilename=strrep([avifilename '.avi'],'.avi.avi','.avi');
     dparstr = struct('showmsg',1,'winsize',64,'olap',0.5,'write',1,'useold',1,'medianfilter',0,'bgfilter',0);
     
     % Initiating arguments
