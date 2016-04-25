@@ -105,6 +105,14 @@ try
 catch
     data.datenum =NaN;
 end
-data.flag=0; %establish a flag entry for get_new_image.m
-data.framerate = frameheader.framerate;
+data.flag           = 0; %establish a flag entry for get_new_image.m
+data.framerate      = frameheader.framerate;
+data.timestamp      = frameheader.frametime;
+data.depth          = frameheader.depth;
+data.compassheading = frameheader.compassheading;
+data.compasspitch   = frameheader.compasspitch;
+data.compassroll    = frameheader.compassroll;
+data.watertemp      = frameheader.watertemp;
+data.salinity       = frameheader.salinity;
+data.pressure       = frameheader.pressure;
 end
