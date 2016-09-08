@@ -1,5 +1,5 @@
-function [px_relative_accumulated py_relative_accumulated angles_accumulated ranges_accumulated intensity_accumulated ...
-    frames_accumulated gradient_accumulated px_absolute_accumulated py_absolute_accumulated interpolated_extrapolated]...
+function [px_relative_accumulated, py_relative_accumulated, angles_accumulated, ranges_accumulated, intensity_accumulated, ...
+    frames_accumulated, gradient_accumulated, px_absolute_accumulated, py_absolute_accumulated, interpolated_extrapolated]...
           = getCircularRegionFromVideo(filepath, filename, alpha, samples, min_range, max_range, mask, denoising_method,denoising_param, debug)
 %      
 % This function calculates the circular region in front a predator position
@@ -43,7 +43,7 @@ if exist(tmpfilepathbg,'file')~=2
     return;
 end
 BG = imread(tmpfilepathbg); % Load bg image 
-[h w z]     = size(BG);
+[~ , ~, z]     = size(BG);
 if(z>1)
     BG = rgb2gray(BG);
 end
@@ -54,12 +54,11 @@ mask_img = single(mask_img);
 index = find(mask_img==0);
 mask_img(index) = NaN; % Pixels out of the ROI are assigned to NaN
 
-info     = aviinfo([filepath filename]);
 movieobj = VideoReader([filepath filename]);
 
 I         = read(movieobj, 1);
-nf          = info.NumFrames;
-[h w z]     = size(I);
+nf          = movieobj.NumberOfFrames;
+[~ , ~, z]     = size(I);
 if(z>1)
     I = rgb2gray(I);
 end
@@ -90,7 +89,7 @@ grad2Dm(I,1,1); % Initialize gradient
 
 for i = 1: length(predator_x)-1
     I         = read(movieobj, 1);
-    [h w z]     = size(I);
+    [h, w, z]     = size(I);
     if(z>1)
         I = rgb2gray(I);
     end
@@ -105,7 +104,7 @@ for i = 1: length(predator_x)-1
     % applied to the image, adding some noise at the edge    
     v = [round(predator_x(i)) round(predator_y(i)) round(predator_x(i+1)) round(predator_y(i+1))];
     
-    [px_relative py_relative angle ranges intensity gradient px_absolute py_absolute] = ...
+    [px_relative py_relative, angle, ranges, intensity, gradient, px_absolute, py_absolute] = ...
         getCircularRegion(I, mask_img, v, h , w , alpha, samples, min_range, max_range, first_frame, debug);
     first_frame = false;
     px_relative_accumulated{i} = px_relative;

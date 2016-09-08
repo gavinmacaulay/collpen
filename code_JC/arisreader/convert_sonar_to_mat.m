@@ -99,7 +99,18 @@ elseif type=='A'
     trackflowavi = VideoWriter(avifilename); %,'keyframe',20, 'Quality',100);
     trackflowavi.FrameRate = data.framerate;
     open(trackflowavi)
-
+    for framenumber = 2:data.numframes
+        data=get_frame_new(data,framenumber);
+        data=make_new_image(data,data.frame);
+        %set(fd,'CData',data.image);
+       % imagesc(data.image);
+        writeVideo(trackflowavi,data.image);
+%        trackflowavi = addframe(trackflowavi,getframe(gca));
+ %       drawnow;
+        
+        disp(['Frame ',num2str(framenumber),...
+            ' of ',num2str(data.numframes)])
+    end
     % Close the files
     fclose(data.fid); %Close the ddf file
     close(trackflowavi);

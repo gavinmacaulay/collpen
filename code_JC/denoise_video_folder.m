@@ -102,7 +102,7 @@ for i = 1:movieobj.NumberOfFrames
     img_denoised = denoise_frame(img, bg_image, denoising_method, ...
                                  denoising_param);
     img_denoised = uint8(img_denoised);
-    compare_denoised(img, img_denoised);
+%     compare_denoised(img, img_denoised);
     writeVideo(writeobj,img_denoised);
     pause(0.1);
 end

@@ -1,5 +1,8 @@
 function [angleMatlab r] = cartesian2Polar(x, y)
 
+x = single(x);
+y = single(y);
+
 r = sqrt(x*x+y*y);  % radius r
 if x == 0 
     if y > 0

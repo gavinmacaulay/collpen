@@ -50,7 +50,7 @@ end
 
 % Check if predator info is available
 matPath = strrep(file,'.avi','_interp_extrap_path.mat');
-matPath = [folder 'predator_position/' matPath];
+matPath = fullfile(folder,'predator_position', matPath);
 if exist(matPath,'file')~=2
     disp(['matchPIVToPredator: mat file not found in path: ' matPath]);
     disp('Aborting...');
@@ -94,7 +94,7 @@ for i = 1: length(predator_x)-1
     
     % Read and mask frame
     I         = read(movieobj, frames(i));
-    [h w z]     = size(I);
+    z     = size(I,3);
     if(z>1)
         I = rgb2gray(I);
     end

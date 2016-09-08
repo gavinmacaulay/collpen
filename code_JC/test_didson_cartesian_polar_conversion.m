@@ -73,8 +73,8 @@ clear;
 source_folder       = '/Volumes/Datos/collpen/methods_paper_sources/';
 cartesian_video     = '2013-07-17_085620_Raw_1825_1920_raw_cartesian.avi';
 polar_video         = '2013-07-17_085620_Raw_1825_1920_raw_polar.avi';
-aris_cartesian_video = '2013-07-17_085620_1825_1920_aris_cartesian.avi';
-aris_polar_video    = '2013-07-17_085620_1825_1920_aris_polar.avi';
+arissfw_cartesian_video = '2013-07-17_085620_1825_1920_aris_cartesian.avi';
+arissfw_polar_video    = '2013-07-17_085620_1825_1920_aris_polar.avi';
 polar_video_wide    = '2013-07-17_085620_Raw_1825_1920_raw_polarwide.avi';
 
 image_h = 800;
@@ -88,11 +88,11 @@ video_reader_polar = VideoReader([source_folder polar_video]);
 J = read(video_reader_polar,1);
 [r2 c2 n2] = size(J);
 
-video_reader_aris_cartesian = VideoReader([source_folder aris_cartesian_video]);
+video_reader_aris_cartesian = VideoReader([source_folder arissfw_cartesian_video]);
 K = read(video_reader_aris_cartesian,1);
 [r3,c3, n3] = size(K);
 
-video_reader_aris_polar = VideoReader([source_folder aris_polar_video]);
+video_reader_aris_polar = VideoReader([source_folder arissfw_polar_video]);
 L = read(video_reader_aris_polar,1);
 [r4, c4, n4] = size(L);
 
@@ -149,8 +149,11 @@ for i=1:n
     %  cart_point = [200 100];
     plot(cart_point(1),cart_point(2),'or');
     
+        [pout_sfw_cart pout_sfw_pol pout_raw_pol pout_raw_pol_wide] ...
+    = didson_match_raw_cartesian_to_sfw_and_polar(cart_point)
     
-    % ARIS Cartesian
+    
+    % ARIS sfw Cartesian
    % aris_cart_point = homography_transform(cart_point',v1);
     subplot(1,5,2);
     hold on;
@@ -160,9 +163,9 @@ for i=1:n
 %     plot(round(aris_cart_point(1)),round(aris_cart_point(2)),'xg');
 %  
 %     aris_cart_point = homography_transform(cart_point',v3);
-%     plot(round(aris_cart_point(1)),round(aris_cart_point(2)),'+b');
+    plot(round(pout_sfw_cart(1)),round(pout_sfw_cart(2)),'or');
     
-    aris_cart_point = raw_cart_didson_to_cart_arissfw_point(cart_point);
+    aris_cart_point = didson_raw_cart_to_cart_arissfw_point(cart_point);
     plot(round(aris_cart_point(1)),round(aris_cart_point(2)),'xg');
 
     hold off;
@@ -190,26 +193,31 @@ for i=1:n
 %     angle = alpha * c2/28;
     range = round(r2 - (c*r2/r1) + r2*(image_h-r1)/r1);
     
+
+    
+    
     %%%%%%%%%%%%%%%%
-    %[alpha_corrected angle];
+    
+    % Raw polar
     subplot(1,5,3);
     hold on;
-    %plot(round(angle),round(range),'or');
+    plot(round(pout_raw_pol(1)),round(pout_raw_pol(2)),'or');
     plot(round(alpha_corrected),round(range),'xg');
     hold off
-    % Raw wide polar
-  
+    
+    % Raw wide polar  
     subplot(1,5,4);
     hold on;
-   % plot(round(angle*6),round(range),'or');
+    plot(round(pout_raw_pol_wide(1)),round(pout_raw_pol_wide(2)),'or');
     plot(round(alpha_corrected*6),round(range),'xg');
     hold off;
     
+    % Aris sfw polar
     subplot(1,5,5);
     hold on;
     %aris_polar = raw_polar_didson_to_polar_arissfw_point([angle,range]);
-    %plot(round(aris_polar(1)),round(aris_polar(2)),'or');
-    aris_polar = raw_polar_didson_to_polar_arissfw_point([alpha_corrected,range]);
+    plot(round(pout_sfw_pol(1)),round(pout_sfw_pol(2)),'or');
+    aris_polar = didson_raw_polar_to_polar_arissfw_point([alpha_corrected,range]);
     plot(round(aris_polar(1)),round(aris_polar(2)),'xg');
     hold off;
     

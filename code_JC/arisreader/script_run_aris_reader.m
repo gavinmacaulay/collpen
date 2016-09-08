@@ -14,9 +14,9 @@
 %
 % If you find any issue please contact me: 
 %   Jose Carlos Castillo (jccmontoya@gmail.com)
-
-folder_to_process = '/Volumes/Datos/collpen/aris_reader_tests/';
-type = 'T';
+folder_to_process = 'C:\collpen_jc\test';
+%folder_to_process = '/Volumes/Datos/collpen/aris_reader_tests/';
+type = 'A';
 extension = 'aris'; 
 
 convert_sonar_to_mat(folder_to_process,type,extension);

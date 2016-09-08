@@ -14,18 +14,18 @@ function [image, filepathbg] = PIV_createBGImage(folder, avifilename, parstr)
 % Outputfiles (written to fildir):
 % [file'_bg.bmp'] - Background image
     % avifilename - allowing for specified with or whithout .avi
-    avifilename=strrep([avifilename '.avi'],'.avi.avi','.avi');
+   % avifilename=strrep([avifilename '.avi'],'.avi.avi','.avi');
     
     % default parstr
     dparstr = struct('showmsg',0,'Nframes',50,'perc',30,'write',0,'useold',0);
    
     % Datafolder
-    datafolder = [folder '/PIVdata'];
+    datafolder = fullfile(folder,'PIVdata');
     if ~(exist(datafolder,'dir')==7)
         dispMsg(parstr.showmsg,['[PIV_getRawPIVvectors]: Creating data folder, ' datafolder]);
         mkdir(datafolder);
     end
-    tmpfilepathbg = strrep([datafolder '/' avifilename],'.avi','_BG.bmp');
+    tmpfilepathbg = fullfile(datafolder,[avifilename(1:end-4),'_BG.bmp']);
     
     
     % Setting return to empty
@@ -75,7 +75,7 @@ function [image, filepathbg] = PIV_createBGImage(folder, avifilename, parstr)
     
     % getting BG image
     dispMsg(parstr.showmsg,'[PIV_createBGImage]: Getting BG image')
-    image = getBGImage([folder '/' avifilename], parstr.showmsg,parstr.perc, parstr.Nframes);
+    image = getBGImage(fullfile(folder,avifilename), parstr.showmsg,parstr.perc, parstr.Nframes);
 
     % writing BG image
     if parstr.write==1
@@ -104,7 +104,7 @@ function I = getBGImage(filepath, msg,perc,n)
     nf          = min(movieobj.NumberOfFrames,n);
     [m n z]     = size(RGB);
     Is          = zeros(m,n,nf);
-    for f=1:1:movieobj.NumberOfFrames
+    for f=1:1:nf
         RGB = read(movieobj, f);
         if(z>1)
             RGB = rgb2gray(RGB);

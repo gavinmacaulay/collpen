@@ -5,16 +5,16 @@
 %% Create raw PIV
 
 %d=dir('/Volumes/Datos/collpen/predator/test/*.avi');
-d=dir('/Volumes/Datos/collpen/data/block1/didson/*.avi');
+d=dir('\\callisto\collpen\AustevollExp\data\didson_stationary\data\*.avi');
 for i=1:length(d)
     par(i).showmsg = 20;
     % This defines the snrs weights. w =.5*(1+erf(snrs-msnrs)/sqrt(2*snrss^2)
     par(i).msnrs = 1.3;
     par(i).ssnrs = .2;
-    filedir{i} = '/Volumes/Datos/collpen/data/block1/didson';
+    filedir{i} = '\\callisto\collpen\AustevollExp\data\didson_stationary\data';
     file{i} = d(i).name;
 end
-    
+%%
 for i=1:length(d)
     disp([datestr(now),' Running on file: ' num2str(i) ', ' file{i} '.']);
     parstrpiv64 = struct('showmsg',1,'winsize',16,'olap',0.5,'write',1,'useold',0);
@@ -31,11 +31,12 @@ end
 
 %% Filter, weigh and calculate metrics
 clear
-d=dir('/Volumes/Datos/collpen/predator/*.avi');
+d=dir('\\callisto\collpen\AustevollExp\data\didson_stationary\data\*.avi');
 for i=1:length(d)
-    filedir{i} = '/Volumes/Datos/collpen/predator/';
+    filedir{i} = '\\callisto\collpen\AustevollExp\data\didson_stationary\data';
     file{i} = d(i).name;
     par(i).templag = 20;
+    par(i).x0= [186 330];% The centre of the school for the rotational order parameter
     par(i).w = struct('msnrs',1.3,'ssnrs',0.5,'mthr',10,'sthr',7);
 end
 
@@ -66,21 +67,21 @@ for i=1:length(d)
     w=PIV_weights(snrs,pkhs,is,par(i).w);
     
     % Calculate school metrics
-    [speed,dalpha,dcav,cav]=PIV_schoolstructure(xs,ys,us,vs,w,par(i));
+    [speed,dalpha,dcav,cav,RotOrd]=PIV_schoolstructure(xs,ys,us,vs,w,par(i));
     
     % The primary sampling unit
-    PSU = [datapoint_1 {speed,cav}];
+    PSU = [datapoint_1 {speed,cav,RotOrd}];
     % Data point from this video for analysis (NEED TO PARSE THE FILENAMES)
     %{speed,cav}
     
     % Store the filtered school data, weoghts and metrics to file
-    save(fullfile(filedir{i},[file{i}(1:end-4),'_school.mat']),'PSU','speed','dalpha','dcav','cav','xs','ys','us','vs','snrs','pkhs','is','w','par')
+    save(fullfile(filedir{i},[file{i}(1:end-4),'_school.mat']),'PSU','speed','dalpha','dcav','cav','RotOrd','xs','ys','us','vs','snrs','pkhs','is','w','par')
     toc
 end
 
 %% Create AVI
 clear
-d=dir('/Volumes/Datos/collpen/predator/*.avi');
+d=dir('\\callisto\collpen\AustevollExp\data\didson_stationary\data\*.avi');
 for i=1:length(d)
     filedir{i} = '/Volumes/Datos/collpen/predator/';
     file{i} = d(i).name;
@@ -99,7 +100,7 @@ end
 %% Compile data set for analysis in R
 clear
 d=dir('\\callisto\collpen\AustevollExp\data\didson_stationary\data\*_school.mat');
-PSUcombined = {'Type','NT','dummy','Block','Subblock','Treatment','Speed','CAV'};
+PSUcombined = {'Type','NT','dummy','Block','Subblock','Treatment','Speed','CAV','RotOrd'};
 for i=1:length(d)
     filedir{i} = '\\callisto\collpen\AustevollExp\data\didson_stationary\data';
     file{i} = d(i).name;

@@ -8,8 +8,8 @@
 clear
 close all
 
-filepath = '/Volumes/Datos/collpen/denoise_polar/';
-filename = 'block_1_1_white_net-2013-07-16_085600_00250-00258.avi';
+filepath = 'C:\collpen_jc\test/';
+filename = 'block5_1_396_514_cartesian.avi';
 
 
 
@@ -20,7 +20,7 @@ debug = 1;
 save_data = 1;
 prey = 1;
 
-[frames pred_x pred_y frames_interp interp_x interp_y]  = labelPredatorPosition(filepath, filename, prey, start_frame, end_frame, interpolate, save_data, debug);
+[frames, pred_x, pred_y, frames_interp, interp_x, interp_y]  = labelPredatorPosition(filepath, filename, prey, start_frame, end_frame, interpolate, save_data, debug);
 
 [frames pred_x pred_y]
 [frames_interp interp_x interp_y]

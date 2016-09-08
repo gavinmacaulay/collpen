@@ -1,5 +1,5 @@
 function comparison_result = compare_PIV_to_GT(PIVs_folder, GT_folder, ...
-    source_video_folder, px_per_meter, frames_per_second)
+    source_video_folder, px_per_meter, frames_per_second,img_path, save_img)
 
 % This function compares PIVs to the groundtruth. 
 % The groundtruth should be generated with the script named test_prey_labeling.m
@@ -27,6 +27,8 @@ end
 d = dir([GT_folder '*_prey_positions.mat']);
 
 prey_files = cell(length(d),1); % Preallocate to increase speed
+source_file = cell(length(d),1); % Preallocate to increase speed
+
 for i = 1:length(d)
     prey_files{i} = d(i).name;
     source_file{i} = strrep(prey_files{i},'_prey_positions.mat', '');
@@ -66,10 +68,10 @@ for i = 1:length(source_file)
                 disp('');
             end
             
-            [PIVdata_angles PIVdata_ranges PIVdata_dotproduct ...
-                PIV_relative_range] = checkPIV2(pivdatapath, frames,...
-                predator_x, predator_y, px_meter, fps, '',...
-                0, movieobj);
+            [PIVdata_angles, PIVdata_ranges, PIVdata_dotproduct, ...
+                PIVdata_relative_range, PIVdata_distances] = checkPIV2(pivdatapath, ...
+                frames,predator_x, predator_y, px_meter, fps, img_path,...
+                save_img, movieobj);
             
             % Save results for the current file
             comparison_result(index).piv_file = PIV_files{j};
@@ -77,7 +79,9 @@ for i = 1:length(source_file)
             comparison_result(index).angles = PIVdata_angles;
             comparison_result(index).ranges = PIVdata_ranges;
             comparison_result(index).dotproduct = PIVdata_dotproduct;
-            comparison_result(index).relative_range = PIV_relative_range;
+            comparison_result(index).relative_range = PIVdata_relative_range;
+            comparison_result(index).distances = PIVdata_distances;
+
             index = index + 1;
         end
     end

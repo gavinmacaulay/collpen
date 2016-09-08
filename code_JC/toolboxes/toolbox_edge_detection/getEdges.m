@@ -1,4 +1,4 @@
-function [edges regions] = getEdges(filepath, bg_image, msg)
+function [edges, regions] = getEdges(filepath, bg_image, msg)
 % This function preprocess images in a video sequence to detect the edges
 % contained in them. The main steps are commented in the code
 %
@@ -20,14 +20,13 @@ function [edges regions] = getEdges(filepath, bg_image, msg)
 
 % 1) Opening movie object
 dispMsg(msg,'[findEdges]: ..Loading movie')
-info     = aviinfo(filepath);
-movieobj = mmreader(filepath);
+movieobj = VideoReader(filepath);
 
 
 % 2) Setting up image stack
 dispMsg(msg,'[findEdges]: ..Setting up image stack')
 RGB         = uint16(read(movieobj, 1));
-nf          = info.NumFrames;
+nf          = movieobj.NumberOfFrames;
 [m n z]     = size(RGB);
 Is          = zeros(m,n,nf);
 

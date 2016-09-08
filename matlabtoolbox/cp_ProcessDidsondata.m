@@ -68,8 +68,9 @@ function [ek60]=cpsrPlotDidson(d,par)
 ddf = dir(fullfile(d.ddfdir, '*.ddf'));
 
 % Generate the avi file
-trackflowavi = avifile(d.avifile,'keyframe',20,...
-    'Compression','none');
+trackflowavi = VideoWriter(d.avifile);
+trackflowavi.FrameRate = 8;
+open(trackflowavi);
 
 border=1;
 
@@ -124,13 +125,13 @@ for i=1:size(d.files);
             set(fd,'CData',data.image);
         end
         % And add the frame to the avi file
-        trackflowavi = addframe(trackflowavi,getframe(gca));
+        writeVideo(trackflowavi,getframe(gca));
         drawnow;
-        delete(h)
+        %delete(h)
     end
     % Close the ddf file
     fclose(data.fid);
 end
 % Close the avi file
-trackflowavi = close(trackflowavi);
+close(trackflowavi);
 

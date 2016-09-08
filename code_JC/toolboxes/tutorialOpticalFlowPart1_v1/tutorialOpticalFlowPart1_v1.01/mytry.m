@@ -32,8 +32,7 @@ for i = 1:length(d)
     
     % Opening movie object
     disp(['..Opening ' filepath]);
-    info     = aviinfo(filepath);
-    movieobj = mmreader(filepath);
+    movieobj = VideoReader(filepath);
     
     RGB  = read(movieobj, 1);
     I2   = rgb2gray(RGB);
@@ -41,7 +40,7 @@ for i = 1:length(d)
 %     I2   = normalizeSonarImage(I2);
     I2 = preprocessingSonarImage(I2,BG,denoising_method,denoising_param,0,0);
 
-    n    = info.NumFrames-1;
+    n    = movieobj.NumberOfFrames-1;
     % The number of rows and columns is hardcoded in file DoFlow.m
     rows = 100; 
     cols = 100;
@@ -100,11 +99,13 @@ for i = 1:length(d)
     
      % Opening movie object
     disp(['..Opening ' filepath]);
-    info     = aviinfo(filepath);
-    movieobj = mmreader(filepath);
+    movieobj = VideoReader(filepath);
     
-    n    = info.NumFrames-1;
-    aviobj = avifile(pivavipath, 'compression', 'none', 'fps',8);
+    n    = movieobj.NumberOfFrames-1;
+    %aviobj = avifile(pivavipath, 'compression', 'none', 'fps',8);
+    aviobj = VideoWriter(pivavipath);
+    aviobj.FrameRate = movieobj.FrameRate;
+    open(aviobj);
 
     % Loop to generate avi file
     disp(['Creating PIV avi in ' pivavipath]);
@@ -134,11 +135,12 @@ for i = 1:length(d)
             hold off
             pause(0.125);
             F = getframe(f);
-            aviobj = addframe(aviobj,F.cdata);
+           % aviobj = addframe(aviobj,F.cdata);
+            writeVideo(aviobj,F.cdata);
 
     end
     toc
-    aviobj = close(aviobj); 
+    close(aviobj); 
     disp('Video created');
 end
 

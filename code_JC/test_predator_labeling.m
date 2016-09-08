@@ -15,12 +15,12 @@ debug = 1;
 save_data = 1;
 predator = 0; 
 
-[frames pred_x pred_y frames_interp interp_x interp_y]  =...
+[frames, pred_x, pred_y, frames_interp, interp_x, interp_y]  =...
     labelPredatorPosition(filepath, filename, predator, start_frame, ...
                           end_frame, interpolate, save_data, debug);
 
-[frames pred_x pred_y]
-[frames_interp interp_x interp_y]
+[frames, pred_x, pred_y]
+[frames_interp, interp_x, interp_y]
 
 %% Data analysis after separating labeled data into white_net, brown_net,
 %  with 2 subsequences each dataset
@@ -37,8 +37,8 @@ filepath = '/Volumes/Datos/collpen/test_remember/predmodel2013_TREAT_Brown net_d
 debug = 1;
 
 
-info     = aviinfo(filepath);
-movieobj = mmreader(filepath);
+%info     = aviinfo(filepath);
+movieobj = VideoReader(filepath);
 RGB         = rgb2gray(read(movieobj, 10));
 
 
@@ -84,7 +84,7 @@ for i = 1:length(d)
     
     
     if(~isempty(predator_x))
-        [r_x r_y r_frames_x r_frames_y m_x m_y ] = ...
+        [r_x, r_y, r_frames_x, r_frames_y, m_x, m_y ] = ...
             regressionPredatorTrajectory(px{i}, py{i}, fr{i}, debug);
         
         reg_x{i} = r_x;
@@ -136,7 +136,7 @@ for f = 1:length(fr)
             figure(2);
             hold all;
         end
-        [ext_x ext_y ext_fr] = extrapolatePredatorTrajectory(...
+        [ext_x, ext_y, ext_fr] = extrapolatePredatorTrajectory(...
                                     smoothed_x{f}(1), smoothed_y{f}(1), ...
                                     smoothed_fr{f}(1), mean_mx, ...
                                     mean_my, debug);

@@ -1,4 +1,4 @@
-function [frames distances pos_x pos_y angles interp_extrap] = boundariesDetectionRayTracing(filepath, filename, bg_image,preprocessing_params, boundary_detection_params, save_info, debug)
+function [frames, distances, pos_x, pos_y, angles, interp_extrap] = boundariesDetectionRayTracing(filepath, filename, bg_image,preprocessing_params, boundary_detection_params, ~, debug)
 
 avipath = [filepath filename];
 
@@ -8,13 +8,12 @@ if(exist(avipath,'file')~=2)
     return;
 end
 
-info     = aviinfo(avipath);
-movieobj = mmreader(avipath);
+movieobj = VideoReader(avipath);
 
 
 RGB         = uint16(read(movieobj, 1));
-nf          = info.NumFrames;
-[m n z]     = size(RGB);
+nf          = movieobj.NumberOfFrames;
+[m, n, z]     = size(RGB);
 Is          = zeros(m,n,nf);
 
 predator_data_path = strrep(filename,'.avi','_interp_extrap_path.mat');
@@ -56,7 +55,7 @@ for i = 1:size(frame_pixel_info,1)-1
         figure(2);    
     end
     
-    [dist x y ang] = getBoundaries(I_filtered, pred_vector, boundary_detection_params.angle, boundary_detection_params.beams,debug);
+    [dist, x, y, ang] = getBoundaries(I_filtered, pred_vector, boundary_detection_params.angle, boundary_detection_params.beams,debug);
     
     frame(1:size(dist,2),1) = frame_pixel_info(i,1);
     int_ext(1:size(dist,2),1) = frame_pixel_info(i,4);

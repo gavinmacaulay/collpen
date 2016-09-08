@@ -1,4 +1,4 @@
-function [median_dot_product median_angle median_range median_relative_range] = ...
+function [median_dot_product, median_angle, median_range, median_relative_range] = ...
             get_PIV_GT_median_comparison_by_denoising_technique(...
             denoising_technique_name, PIV_GT_comparisons, win_size)
         
@@ -12,8 +12,8 @@ function [median_dot_product median_angle median_range median_relative_range] = 
     
     dot_product_acc = [];
     angle_acc       = [];
-    range           = [];
-    relative_range  = [];
+    range_acc           = [];
+    relative_range_acc  = [];
     
     % Get all comparisons for a window size
     comparison_win_size = PIV_GT_comparisons{win_size,1};
@@ -25,10 +25,16 @@ function [median_dot_product median_angle median_range median_relative_range] = 
         if(~isempty(strfind(comparison.piv_file,denoising_technique_name)))
             dot_product_acc = [dot_product_acc; comparison.dotproduct];
             angle_acc       = [angle_acc; comparison.angles];
-            range           = [range; comparison.ranges];
-            relative_range  = [relative_range; comparison.relative_range];
+            range_acc           = [range_acc; comparison.ranges];
+            relative_range_acc  = [relative_range_acc; comparison.relative_range];
         end        
     end
+    index = ~isnan(angle_acc);
+    angle_acc = angle_acc(index);
+    dot_product_acc = dot_product_acc(index);
+    range_acc = range_acc(index);
+    relative_range_acc = relative_range_acc(index);    
+    
     median_dot_product    = median(dot_product_acc);
     median_angle          = median(angle_acc);
     median_range          = median(range);
