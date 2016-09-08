@@ -87,7 +87,7 @@ data.numframes=fileheader.numframes; %number of frames in the file
 if(data.version==5) % sampleperchannel = 512 for DIDSON, 3506 for ARIS
     data.sampleperchannel = fileheader.sampleperchannel;
 else
-    data.sampleperchannel = 512
+    data.sampleperchannel = 512;
 end
 
 frame=uint8(fread(fid,[data.numbeams,data.sampleperchannel],...
@@ -106,5 +106,5 @@ catch
     data.datenum =NaN;
 end
 data.flag=0; %establish a flag entry for get_new_image.m
-
+data.framerate = frameheader.framerate;
 end
